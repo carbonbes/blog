@@ -2,8 +2,10 @@
   <PinInputRoot
     placeholder="○"
     otp
+    v-model="code"
     class="flex gap-3 items-center"
-    @complete="(e) => emit('complete', +e.join(''))"
+    :class="[state]"
+    @complete="(e) => emit('complete', e.join(''))"
   >
     <PinInputInput
       v-for="(id, index) in length"
@@ -13,9 +15,20 @@
       ref="pinInputs"
     />
   </PinInputRoot>
+
+  <Label
+    for="pin-input"
+    class="text-red-500 text-center hidden"
+    :class="{ '!block': state.error.value }"
+  >
+    {{ state.error.text }}
+  </Label>
 </template>
 
 <script lang="ts" setup>
+import { promiseTimeout } from '@vueuse/core'
+import type { PinInputInput } from 'radix-vue'
+
 withDefaults(defineProps<{
   length?: number
   disabled?: boolean
@@ -24,19 +37,50 @@ withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{
-  complete: [number]
+  complete: [string]
 }>()
 
-const error = ref(false)
+const pinInputs = ref<typeof PinInputInput[]>()
+
+onMounted(() => pinInputs.value![0].$el.focus())
+
+const state: {
+  success: boolean
+  error: {
+    value: boolean
+    text?: string
+  }
+} = reactive({
+  success: false,
+  error: {
+    value: false,
+    text: ''
+  }
+})
 
 const pinInputInputClasses = computed(() => ({
-  'w-8 h-8 bg-white text-center rounded placeholder:text-gray-400 hover:outline-blue-300 focus:outline-blue-500 outline-none transition-all': true,
-  'outline-red-500': error.value
+  'w-8 h-8 rounded-lg placeholder:text-gray-400 text-center outline-none border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 transition-all': true,
+  '!border-green-500': state.success,
+  'animate-shake !border-red-500': state.error.value
 }))
 
-function triggerError() {
-  
+async function showSuccess() {
+  state.success = true
+  await promiseTimeout(3000)
+  state.success = false
 }
 
-defineExpose({ triggerError })
+const code = ref<string[]>([])
+
+async function showError(text?: string) {
+  state.error.value = true
+  state.error.text = text
+  await promiseTimeout(3000)
+  state.error.value = false
+  state.error.text = ''
+  code.value = []
+  pinInputs.value![0].$el.focus()
+}
+
+defineExpose({ showSuccess, showError })
 </script>

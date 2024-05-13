@@ -27,6 +27,7 @@ export default defineNuxtConfig({
   supabase: {
     url: env.NUXT_SUPABASE_URL,
     key: env.NUXT_SUPABASE_KEY,
+    redirect: false,
   },
 
   fonts: {

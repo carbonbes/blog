@@ -1,13 +1,11 @@
 <template>
-  <div>
-    
+  <div class="">
+
   </div>
 </template>
 
 <script lang="ts" setup>
-
+definePageMeta({
+  middleware: 'auth'
+})
 </script>
-
-<style lang="sass" scoped>
-
-</style>

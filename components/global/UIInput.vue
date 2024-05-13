@@ -1,5 +1,12 @@
 <template>
-  <input :type :placeholder :disabled :class="classes" v-model="model" ref="inputRef" />
+  <input
+    :type
+    :placeholder
+    :disabled
+    :class="classes"
+    v-model="model"
+    ref="inputRef"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -18,10 +25,11 @@ const props = withDefaults(
 )
 
 const classes = computed(() => ({
-  'bg-white rounded placeholder:text-gray-400 hover:outline-blue-300 focus:outline-blue-500 outline-none transition-all': true,
-  'p-0.25 text-sm': props.size === 's',
-  'p-0.5': props.size === 'm',
-  'p-1': props.size === 'l',
+  'rounded-lg placeholder:text-gray-400 outline-none border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 transition-all': true,
+  'bg-gray-100': !model.value,
+  'py-0.5 px-1 text-sm': props.size === 's',
+  'py-1 px-2': props.size === 'm',
+  'p-1.5 px-3 text-lg': props.size === 'l',
 }))
 
 const model = defineModel()
