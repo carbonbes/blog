@@ -9,7 +9,7 @@ export default defineApiEndpoint(async ({ event, supabase }) => {
     name: string
   } = await readBody(event)
 
-  if (!(email && email))
+  if (!(email && name))
     throw createError({
       statusCode: 400,
       message: 'Заполните все необходимые поля',

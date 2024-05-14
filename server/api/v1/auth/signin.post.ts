@@ -21,6 +21,9 @@ export default defineApiEndpoint(async ({ event, supabase }) => {
 
   const { data, error } = await supabase.auth.signInWithOtp({
     email,
+    options: {
+      shouldCreateUser: false,
+    },
   })
 
   if (error)

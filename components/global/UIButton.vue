@@ -30,10 +30,10 @@ const nuxtLink = defineNuxtLink({})
 
 const classes = computed(() => ({
   'rounded-lg border-2 border-transparent transition-colors': true,
-  'bg-blue-500 hover:bg-blue-600 active:bg-blue-700 disabled:bg-blue-500/50 text-white': props.variant === 'primary',
-  'bg-white hover:bg-gray-200 active:bg-gray-300 disabled:bg-gray-200/50 text-black': props.variant === 'secondary',
-  'py-0.5 px-1 text-sm': props.size === 's',
-  'py-1 px-2 text-md': props.size === 'm',
-  'p-1.5 px-3 text-lg': props.size === 'l',
+  'bg-blue-500 hover:bg-blue-600 active:bg-blue-700 disabled:bg-blue-500/25 text-white': props.variant === 'primary',
+  'bg-white hover:bg-gray-200 active:bg-gray-300 disabled:bg-gray-200/25 text-black': props.variant === 'secondary',
+  'py-1 px-1 text-sm': props.size === 's',
+  'py-1.5 px-2 text-md': props.size === 'm',
+  'p-2 px-3 text-lg': props.size === 'l',
 }))
 </script>

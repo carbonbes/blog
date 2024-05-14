@@ -2,6 +2,7 @@
   <PinInputRoot
     placeholder="○"
     otp
+    type="number"
     v-model="code"
     class="flex gap-3 items-center"
     :class="[state]"
@@ -40,9 +41,8 @@ const emit = defineEmits<{
   complete: [string]
 }>()
 
+const code = ref<string[]>([])
 const pinInputs = ref<typeof PinInputInput[]>()
-
-onMounted(() => pinInputs.value![0].$el.focus())
 
 const state: {
   success: boolean
@@ -59,7 +59,7 @@ const state: {
 })
 
 const pinInputInputClasses = computed(() => ({
-  'w-8 h-8 rounded-lg placeholder:text-gray-400 text-center outline-none border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 transition-all': true,
+  'w-10 h-10 sm:w-8 sm:h-8 rounded-lg placeholder:text-gray-400 text-center outline-none border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 transition-colors': true,
   '!border-green-500': state.success,
   'animate-shake !border-red-500': state.error.value
 }))
@@ -70,8 +70,6 @@ async function showSuccess() {
   state.success = false
 }
 
-const code = ref<string[]>([])
-
 async function showError(text?: string) {
   state.error.value = true
   state.error.text = text
@@ -81,6 +79,8 @@ async function showError(text?: string) {
   code.value = []
   pinInputs.value![0].$el.focus()
 }
+
+onMounted(() => pinInputs.value![0].$el.focus())
 
 defineExpose({ showSuccess, showError })
 </script>

@@ -9,7 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      article: {
+      articles: {
         Row: {
           author: number | null
           body: Json
@@ -17,7 +17,7 @@ export type Database = {
           id: number
           title: string | null
           title_slug: string
-          updated_at: string | null
+          updated_at: string
         }
         Insert: {
           author?: number | null
@@ -26,7 +26,7 @@ export type Database = {
           id?: number
           title?: string | null
           title_slug: string
-          updated_at?: string | null
+          updated_at?: string
         }
         Update: {
           author?: number | null
@@ -35,11 +35,11 @@ export type Database = {
           id?: number
           title?: string | null
           title_slug?: string
-          updated_at?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: 'article_author_fkey'
+            foreignKeyName: 'articles_author_fkey'
             columns: ['author']
             isOneToOne: false
             referencedRelation: 'profiles'
@@ -51,6 +51,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          email: string
           id: number
           name: string
           user_id: string
@@ -58,6 +59,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          email: string
           id?: number
           name?: string
           user_id?: string
@@ -65,15 +67,16 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          email?: string
           id?: number
           name?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: 'profiles__id_fkey'
+            foreignKeyName: 'profiles_user_id_fkey'
             columns: ['user_id']
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: 'users'
             referencedColumns: ['id']
           }

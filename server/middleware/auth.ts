@@ -1,4 +1,4 @@
-import { serverSupabaseClient } from '#supabase/server'
+import { serverSupabaseClient, serverSupabaseUser } from '#supabase/server'
 import { Profile } from '~/types'
 import { Database } from '~/types/supabase'
 
@@ -12,13 +12,9 @@ export default defineEventHandler(async (event) => {
   event.context.profile = null
 
   const supabase = await serverSupabaseClient<Database>(event)
+  const user = await serverSupabaseUser(event)
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser()
-
-  if (!user || userError) return
+  if (!user) return
 
   const { data: profile, error } = await supabase
     .from('profiles')

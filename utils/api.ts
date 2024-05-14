@@ -1,7 +1,8 @@
-import { type Response, type Profile } from '~/types/index'
+import { type Response, type Profile, type OtpResponse } from '~/types/index'
+import { type AuthResponse } from '@supabase/supabase-js'
 
 export async function signIn(body: { email: string }) {
-  return await $fetch('/api/v1/auth/signin', {
+  return await $fetch<Response<AuthResponse>>('/api/v1/auth/signin', {
     method: 'POST',
     body,
   })
@@ -10,9 +11,8 @@ export async function signIn(body: { email: string }) {
 export async function signUp(body: {
   email: string
   name: string
-  avatar?: string
 }) {
-  return await $fetch('/api/v1/auth/signup', {
+  return await $fetch<Response<AuthResponse>>('/api/v1/auth/signup', {
     method: 'POST',
     body,
   })
@@ -22,7 +22,7 @@ export async function verifyOtp(body: {
   email: string
   token: string
 }) {
-  return await $fetch('/api/v1/auth/verify_otp', {
+  return await $fetch<Response<OtpResponse>>('/api/v1/auth/verify_otp', {
     method: 'POST',
     body,
   })

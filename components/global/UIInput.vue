@@ -25,11 +25,11 @@ const props = withDefaults(
 )
 
 const classes = computed(() => ({
-  'rounded-lg placeholder:text-gray-400 outline-none border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 transition-all': true,
+  'rounded-lg placeholder:text-gray-400 outline-none border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 disabled:opacity-25 disabled:pointer-events-none transition-all': true,
   'bg-gray-100': !model.value,
-  'py-0.5 px-1 text-sm': props.size === 's',
-  'py-1 px-2': props.size === 'm',
-  'p-1.5 px-3 text-lg': props.size === 'l',
+  'py-1 px-1 text-sm': props.size === 's',
+  'py-1.5 px-2': props.size === 'm',
+  'p-2 px-3 text-lg': props.size === 'l',
 }))
 
 const model = defineModel()

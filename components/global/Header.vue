@@ -1,12 +1,21 @@
 <template>
-  <Flex itemsCenter class="sticky top-0 px-6 h-[60px] bg-white shadow z-10">
+  <Flex itemsCenter :class="headerClasses">
     <div class="ml-auto gap-2" v-if="isAuthenticated">
       {{ profile?.name }}
-      <button @click="logoutMe">Выйти</button>
+      <button
+        class="p-1 bg-gray-200 rounded-lg text-sm hover:opacity-50"
+        @click="logoutMe"
+      >
+        Выйти
+      </button>
     </div>
   </Flex>
 </template>
 
 <script lang="ts" setup>
 const { isAuthenticated, profile, logoutMe } = useMe()
+
+const headerClasses = computed(() =>
+  'sticky bottom-0 sm:bottom-[unset] sm:top-0 w-full px-6 h-[60px] bg-white border-t-2 sm:border-t-0 sm:border-b-2 order-1 sm:order-[-1] z-10'
+)
 </script>

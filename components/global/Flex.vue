@@ -2,7 +2,7 @@
   <Component
     :is="tag"
     class="flex"
-    :class="[{
+    :class="{
       'flex-row': row,
       'flex-col': col,
       'items-start': itemsStart,
@@ -14,7 +14,10 @@
       'justify-between': justifyBetween,
       'justify-around': justifyAround,
       'justify-evenly': justifyEvenly,
-    }]"
+      'items-start justify-start': start,
+      'items-center justify-center': center,
+      'items-end justify-end': end
+    }"
   >
     <slot />
   </Component>
@@ -34,6 +37,9 @@ withDefaults(defineProps<{
   justifyBetween?: boolean
   justifyAround?: boolean
   justifyEvenly?: boolean
+  start?: boolean
+  center?: boolean
+  end?: boolean
 }>(), {
   tag: 'div',
 })
