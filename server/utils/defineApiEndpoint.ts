@@ -1,8 +1,6 @@
 import type { H3Event, EventHandler, EventHandlerRequest } from 'h3'
 import { serverSupabaseClient } from '#supabase/server'
-import type { SupabaseClient } from '@supabase/supabase-js'
-import { Database } from '~/types/supabase'
-import { Profile } from '~/types'
+import { Profile, Supabase } from '~/types'
 
 type Handler = ({
   event,
@@ -10,7 +8,7 @@ type Handler = ({
   profile,
 }: {
   event: H3Event
-  supabase: SupabaseClient<Database>
+  supabase: Supabase
   profile: Profile | null
 }) => any
 
@@ -19,7 +17,7 @@ export function defineApiEndpoint<T extends EventHandlerRequest, D>(
   options?: { requireAuth?: boolean }
 ): EventHandler<T, D> {
   return defineEventHandler<T>(async (event) => {
-    const supabase = await serverSupabaseClient<Database>(event)
+    const supabase: Supabase = await serverSupabaseClient(event)
     const profile = event.context.profile
 
     if (options?.requireAuth && !profile)

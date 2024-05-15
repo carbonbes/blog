@@ -1,9 +1,6 @@
 <template>
   <Flex center class="h-[calc(100vh_-_60px)]">
-    <Flex
-      center
-      class="relative w-full h-full sm:w-80 sm:h-96 bg-white sm:ring-1 sm:ring-gray-200 sm:rounded-xl sm:shadow-md overflow-hidden"
-    >
+    <Flex center :class="loginClasses">
       <SlideTransition :initialIndex="state.tab">
         <Flex col :class="tabClasses" v-if="state.tab === 1">
           <SlideTransition :initialIndex="state.signInStep">
@@ -24,6 +21,7 @@
                   Войти
                 </UIButton>
               </Flex>
+
               <UIButton
                 variant="secondary"
                 class="mt-auto !text-gray-500 hover:!text-gray-900"
@@ -33,20 +31,20 @@
               </UIButton>
             </Flex>
 
-            <Flex col center :class="stepClasses" v-else-if="state.signInStep === 2">
-              <p class="font-medium text-center">Введите код из письма</p>
-              <PinInput @complete="requestVerifySignInOtp" ref="pinInput" />
-              <p>Не пришел код?</p>
-              <UIButton size="s">Выслать повторно</UIButton>
-            </Flex>
-
-            <Flex col center :class="stepClasses" v-else-if="state.signInStep === 3">
-              <Flex center class="w-40 h-40 sm:w-20 sm:h-20 bg-green-200 rounded-full">
-                <Flex center class="w-20 h-20 sm:w-10 sm:h-10 bg-green-500 rounded-full">
-                  <ITablerCheck class="text-white !w-10 !h-10 sm:!w-[unset] sm:!h-[unset]" />
-                </Flex>
+            <Flex col center :class="stepClasses" v-else>
+              <Flex col class="mt-auto gap-4">
+                <p class="font-medium text-center">Введите код из письма</p>
+                <PinInput
+                  :disabled="state.otpVerifying"
+                  @complete="requestVerifySignInOtp"
+                  ref="pinInput"
+                />
               </Flex>
-              <p>С возвращением!</p>
+
+              <Flex col class="mt-auto gap-2">
+                <p class="text-center">Не пришел код?</p>
+                <UIButton :disabled="state.otpVerifying">Выслать повторно</UIButton>
+              </Flex>
             </Flex>
           </SlideTransition>
         </Flex>
@@ -77,6 +75,7 @@
                   Зарегистрироваться
                 </UIButton>
               </Flex>
+
               <UIButton
                 variant="secondary"
                 class="mt-auto !text-gray-500 hover:!text-gray-900"
@@ -86,20 +85,20 @@
               </UIButton>
             </Flex>
 
-            <Flex col center :class="stepClasses" v-else-if="state.signUpStep === 2">
-              <p class="font-medium text-center">Введите код из письма</p>
-              <PinInput @complete="requestVerifySignUpOtp" ref="pinInput" />
-              <p>Не пришел код?</p>
-              <UIButton size="s">Выслать повторно</UIButton>
-            </Flex>
-
             <Flex col center :class="stepClasses" v-else>
-              <Flex center class="w-40 h-40 sm:w-20 sm:h-20 bg-green-200 rounded-full">
-                <Flex center class="w-20 h-20 sm:w-10 sm:h-10 bg-green-500 rounded-full">
-                  <ITablerCheck class="text-white" />
-                </Flex>
+              <Flex col class="mt-auto gap-4">
+                <p class="font-medium text-center">Введите код из письма</p>
+                <PinInput
+                  :disabled="state.otpVerifying"
+                  @complete="requestVerifySignUpOtp"
+                  ref="pinInput"
+                />
               </Flex>
-              <p>Поздравляем с регистрацией!</p>
+              
+              <Flex col class="mt-auto gap-2">
+                <p class="text-center">Не пришел код?</p>
+                <UIButton :disabled="state.otpVerifying">Выслать повторно</UIButton>
+              </Flex>
             </Flex>
           </SlideTransition>
         </Flex>
@@ -110,26 +109,28 @@
 
 <script lang="ts" setup>
 import type PinInput from '~/components/global/PinInput.vue'
-import { promiseTimeout } from '@vueuse/core'
 
 definePageMeta({
   name: 'LoginPage'
 })
 
 const { getMe } = useMe()
+const { errorNotify } = useNotifications()
 
 const state: {
   tab: 1 | 2
-  signInStep: 1 | 2 | 3
-  signUpStep: 1 | 2 | 3
+  signInStep: 1 | 2
+  signUpStep: 1 | 2
   signInRequesting: boolean
   signUpRequesting: boolean
+  otpVerifying: boolean
 } = reactive({
   tab: 1,
   signInStep: 1,
   signUpStep: 1,
   signInRequesting: false,
-  signUpRequesting: false
+  signUpRequesting: false,
+  otpVerifying: false
 })
 
 const signInEmail = ref('')
@@ -139,6 +140,7 @@ const signUpFormData = reactive({
   name: '',
 })
 
+const loginClasses = computed(() => 'relative w-full h-full sm:w-80 sm:h-96 bg-white sm:ring-1 sm:ring-gray-200 sm:rounded-xl sm:shadow-md overflow-hidden')
 const tabClasses = computed(() => 'relative w-full h-full overflow-hidden')
 const stepClasses = computed(() => 'p-8 h-full gap-6')
 
@@ -148,8 +150,8 @@ async function requestSignIn() {
   try {
     await signIn({ email: signInEmail.value })
     state.signInStep = 2
-  } catch (error) {
-
+  } catch (error: any) {
+    errorNotify({ text: error.data.message })
   } finally {
     state.signInRequesting = false
   }
@@ -161,8 +163,8 @@ async function requestSignUp() {
   try {
     await signUp(signUpFormData)
     state.signUpStep = 2
-  } catch (error) {
-
+  } catch (error: any) {
+    errorNotify({ text: error.data.message })
   } finally {
     state.signUpRequesting = false
   }
@@ -171,30 +173,32 @@ async function requestSignUp() {
 const pinInput = ref<typeof PinInput>()
 
 async function requestVerifySignInOtp(code: string) {
+  state.otpVerifying = true
+
   try {
     await verifyOtp({ email: signInEmail.value, token: code })
     await getMe()
-    pinInput.value?.showSuccess()
-    await promiseTimeout(1000)
-    state.signInStep = 3
-    await promiseTimeout(3000)
     await navigateTo('/')
   } catch (error: any) {
     pinInput.value?.showError(error.data.message)
+    errorNotify({ text: error.data.message })
+  } finally {
+    state.otpVerifying = false
   }
 }
 
 async function requestVerifySignUpOtp(code: string) {
+  state.otpVerifying = true
+  
   try {
     await verifyOtp({ email: signUpFormData.email, token: code })
     await getMe()
-    pinInput.value?.showSuccess()
-    await promiseTimeout(1000)
-    state.signUpStep = 3
-    await promiseTimeout(3000)
     await navigateTo('/')
   } catch (error: any) {
     pinInput.value?.showError(error.data.message)
+    errorNotify({ text: error.data.message })
+  } finally {
+    state.otpVerifying = false
   }
 }
 </script>

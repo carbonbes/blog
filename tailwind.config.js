@@ -17,6 +17,11 @@ export default {
         previous: {
           '0%': { opacity: 1, transform: 'translateX(0)' },
           '100%': { opacity: 0, transform: 'translateX(-100%)' }
+        },
+        notification: {
+          '0%': { opacity: 0, transform: 'translateX(100%)' },
+          '70%': { transform: 'translateX(-5%)' },
+          '100%': { opacity: 1, transform: 'translateX(0)' }
         }
       },
 
@@ -25,7 +30,8 @@ export default {
         next: 'next .25s',
         'next-reverse': 'next reverse .25s',
         previous: 'previous .25s',
-        'previous-reverse': 'previous reverse .25s'
+        'previous-reverse': 'previous reverse .25s',
+        notification: 'notification .25s ease',
       },
 
       fontFamily: {

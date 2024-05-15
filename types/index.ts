@@ -1,5 +1,8 @@
 import type { Database } from '~/types/supabase'
-import { type AuthOtpResponse } from '@supabase/supabase-js'
+import {
+  type AuthOtpResponse,
+  type SupabaseClient,
+} from '@supabase/supabase-js'
 
 export interface Response<T = {}> {
   success: boolean
@@ -7,6 +10,16 @@ export interface Response<T = {}> {
   message?: string
 }
 
-export type OtpResponse = AuthOtpResponse
+export type Supabase = SupabaseClient<Database>
+
+export interface Notification {
+  id?: string
+  title?: string
+  text: string
+  duration?: number
+  type?: 'success' | 'error'
+}
+
+export type VerifyOtpResponse = AuthOtpResponse
 
 export type Profile = Database['public']['Tables']['profiles']['Row']

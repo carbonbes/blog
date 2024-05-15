@@ -3,6 +3,8 @@
   <main>
     <NuxtPage />
   </main>
+
+  <Notifications />
 </template>
 
 <script lang="ts" setup>

@@ -7,13 +7,17 @@ export default function useMe() {
 
   async function getMe() {
     pending.value = true
-    const { data, error } = await useAsyncData('me', me)
-    pending.value = false
 
-    if (!data.value || error.value) return
+    try {
+      const { data } = await me()
 
-    profile.value = data.value?.data!
-    isAuthenticated.value = true
+      profile.value = data!
+      isAuthenticated.value = true
+    } catch (error) {
+
+    } finally {
+      pending.value = false
+    }
   }
 
   async function logoutMe() {
@@ -21,6 +25,7 @@ export default function useMe() {
       await logout()
       profile.value = null
       isAuthenticated.value = false
+      await navigateTo('/login')
     } catch (error) {
       
     }

@@ -1,6 +1,6 @@
 <template>
   <Flex itemsCenter :class="headerClasses">
-    <div class="ml-auto gap-2" v-if="isAuthenticated">
+    <Flex itemsCenter class="ml-auto gap-2" v-if="isAuthenticated">
       {{ profile?.name }}
       <button
         class="p-1 bg-gray-200 rounded-lg text-sm hover:opacity-50"
@@ -8,7 +8,7 @@
       >
         Выйти
       </button>
-    </div>
+    </Flex>
   </Flex>
 </template>
 

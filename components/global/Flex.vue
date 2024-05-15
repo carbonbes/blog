@@ -44,7 +44,3 @@ withDefaults(defineProps<{
   tag: 'div',
 })
 </script>
-
-<style lang="sass" scoped>
-
-</style>

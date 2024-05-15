@@ -20,8 +20,10 @@ watch(
 )
 
 const enterActiveClass = computed(() =>
-  name.value === 'next' ? '!absolute animate-next' : '!absolute animate-previous-reverse')
+  name.value === 'next' ? '!absolute animate-next' : '!absolute animate-previous-reverse'
+)
 
 const leaveActiveClass = computed(() =>
-  name.value === 'next' ? '!absolute animate-previous' : '!absolute animate-next-reverse')
+  name.value === 'next' ? '!absolute animate-previous' : '!absolute animate-next-reverse'
+)
 </script>

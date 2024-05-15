@@ -25,7 +25,7 @@ const props = withDefaults(
 )
 
 const classes = computed(() => ({
-  'rounded-lg placeholder:text-gray-400 outline-none border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 disabled:opacity-25 disabled:pointer-events-none transition-all': true,
+  'rounded-lg placeholder:text-gray-400 outline-none border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 disabled:opacity-25 disabled:pointer-events-none transition': true,
   'bg-gray-100': !model.value,
   'py-1 px-1 text-sm': props.size === 's',
   'py-1.5 px-2': props.size === 'm',
@@ -36,9 +36,14 @@ const model = defineModel()
 
 const inputRef = ref<HTMLInputElement>()
 
-onMounted(async () => {
+async function focus() {
   await nextTick()
+  inputRef.value?.focus()
+}
 
-  if (props.autofocus) inputRef.value?.focus()
+onMounted(async () => {
+  if (props.autofocus) await focus()
 })
+
+defineExpose({ focus })
 </script>
