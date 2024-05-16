@@ -46,7 +46,7 @@ const state: {
 })
 
 const pinInputInputClasses = computed(() => ({
-  'w-10 h-10 sm:w-8 sm:h-8 rounded-lg placeholder:text-gray-400 text-center outline-none border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 disabled:opacity-25 transition-colors transition-opacity': true,
+  'w-10 h-10 sm:w-8 sm:h-8 rounded-lg placeholder:text-gray-400 text-center outline-none border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 disabled:opacity-25 transition': true,
   '!border-green-500': state.success,
   'animate-shake !border-red-500': state.error
 }))

@@ -22,6 +22,7 @@ export default defineNuxtConfig({
     'radix-vue/nuxt',
     '@nuxt/image',
     '@nuxt/eslint',
+    'dayjs-nuxt',
   ],
 
   supabase: {
@@ -44,6 +45,10 @@ export default defineNuxtConfig({
     config: {
       stylistic: true,
     },
+  },
+
+  dayjs: {
+    plugins: ['relativeTime']
   },
 
   css: ['~/assets/styles/index.sass'],
