@@ -7,10 +7,10 @@ export default function useMe() {
 
   async function getMe() {
     pending.value = true
-    const { data, error } = useAsyncData('me', me)
+    const { data, error } = await useAsyncData('me', me)
     pending.value = false
 
-    if (!data.value || error) return
+    if (!data.value || error.value) return
 
     profile.value = data.value.data!
     isAuthenticated.value = true
