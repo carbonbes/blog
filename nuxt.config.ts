@@ -12,6 +12,10 @@ export default defineNuxtConfig({
   runtimeConfig: {
     supabaseUrl: env.NUXT_SUPABASE_URL,
     supabasekey: env.NUXT_SUPABASE_KEY,
+
+    cloudinaryCloudName: env.NUXT_CLOUDINARY_CLOUD_NAME,
+    cloudinaryApiKey: env.NUXT_CLOUDINARY_API_KEY,
+    cloudinaryApiSecret: env.NUXT_CLOUDINARY_API_SECRET,
   },
 
   modules: [
@@ -21,8 +25,8 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     'radix-vue/nuxt',
     '@nuxt/image',
-    '@nuxt/eslint',
     'dayjs-nuxt',
+    'radix-vue/nuxt',
   ],
 
   supabase: {
@@ -41,14 +45,8 @@ export default defineNuxtConfig({
     ],
   },
 
-  eslint: {
-    config: {
-      stylistic: true,
-    },
-  },
-
   dayjs: {
-    plugins: ['relativeTime']
+    plugins: ['relativeTime'],
   },
 
   css: ['~/assets/styles/index.sass'],

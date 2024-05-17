@@ -3,6 +3,8 @@ import {
   type AuthOtpResponse,
   type SupabaseClient,
 } from '@supabase/supabase-js'
+import type { UploadApiResponse } from 'cloudinary'
+import type { FunctionalComponent, SVGAttributes } from 'vue'
 
 export interface Response<T = {}> {
   success: boolean
@@ -23,3 +25,16 @@ export interface Notification {
 export type VerifyOtpResponse = AuthOtpResponse
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
+
+export type Article = Database['public']['Tables']['articles']['Row']
+
+export type NodeType =
+  | 'heading'
+  | 'paragraph'
+  | 'bulletList'
+  | 'orderedList'
+  | 'gallery'
+
+export type CDNMedia = UploadApiResponse
+
+export type SVGIcon = FunctionalComponent<SVGAttributes, {}, any, {}>

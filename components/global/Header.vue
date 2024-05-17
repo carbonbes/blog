@@ -16,6 +16,6 @@
 const { isAuthenticated, profile, logoutMe } = useMe()
 
 const headerClasses = computed(() =>
-  'sticky bottom-0 sm:bottom-[unset] sm:top-0 w-full px-6 h-[60px] bg-white border-t-2 sm:border-t-0 sm:border-b-2 order-1 sm:order-[-1] z-10'
+  'fixed sm:sticky bottom-0 sm:bottom-[unset] sm:top-0 w-full px-6 h-[60px] bg-white border-t-2 sm:border-t-0 sm:border-b-2 order-1 sm:order-[-1] z-10'
 )
 </script>

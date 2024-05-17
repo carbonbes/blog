@@ -1,5 +1,11 @@
-import { type Response, type Profile, type VerifyOtpResponse } from '~/types/index'
 import { type AuthResponse } from '@supabase/supabase-js'
+import {
+  type Response,
+  type Profile,
+  type VerifyOtpResponse,
+  type Article,
+  type CDNMedia,
+} from '~/types/index'
 
 export async function signIn(body: { email: string }) {
   return await $fetch<Response<AuthResponse>>('/api/v1/auth/signin', {
@@ -30,10 +36,31 @@ export async function verifyOtp(body: {
 
 export async function me() {
   return await $fetch<Response<Profile>>('/api/v1/me', {
-    headers: useRequestHeaders(['cookie']),
+    ...(import.meta.server && { headers: useRequestHeaders(['cookie']) }),
   })
 }
 
 export async function logout() {
   return await $fetch('/api/v1/me/logout')
+}
+
+export async function getProfileArticles(profileId: string) {
+  return await $fetch<Response<Article[]>>(`/api/v1/profile/${profileId}/articles`)
+}
+
+export async function uploadMediaByFile(file: File) {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  return await $fetch<Response<CDNMedia>>('/api/v1/upload/media/by_file', {
+    method: 'POST',
+    body: formData,
+  })
+}
+
+export async function uploadMediaByUrl(url: string) {
+  return await $fetch<Response<CDNMedia>>('/api/v1/upload/media/by_url', {
+    method: 'POST',
+    body: { url },
+  })
 }
