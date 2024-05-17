@@ -9,10 +9,17 @@
       <Component :is="icon" class="text-white !w-3 !h-3" />
     </div>
 
-    <Flex col class>
-      <p v-if="notification.title">{{ notification.title }}</p>
+    <Flex col class="gap-2">
+      <p class="font-medium" v-if="notification.title">{{ notification.title }}</p>
       <p>{{ notification.text }}</p>
     </Flex>
+
+    <button
+      class="ml-2 self-start hover:opacity-50 transition-opacity"
+      @click="remove(props.notification.id)"
+    >
+      <ITablerX class="!w-5 !h-5" />
+    </button>
   </Flex>
 </template>
 

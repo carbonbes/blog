@@ -25,14 +25,16 @@ export function useNotifications() {
     notifications,
     add,
     remove,
-    successNotify: ({ text, duration }: Notification) =>
+    successNotify: ({ title, text, duration }: Notification) =>
       add({
+        title,
         text,
         duration,
         type: 'success',
       }),
-    errorNotify: ({ text, duration }: Notification) =>
+    errorNotify: ({ title, text, duration }: Notification) =>
       add({
+        title,
         text,
         duration,
         type: 'error',

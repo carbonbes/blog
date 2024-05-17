@@ -15,6 +15,7 @@
                   v-model.trim="signInEmail"
                 />
                 <UIButton
+                  class="font-medium"
                   :disabled="!isValidEmail(signInEmail) || state.signInRequesting"
                   @click="requestSignIn"
                 >
@@ -36,15 +37,16 @@
               <Flex col class="mt-auto gap-4">
                 <p class="font-medium text-center">Введите код из письма</p>
                 <PinInput
-                  :disabled="state.otpVerifying"
+                  :disabled="state.otpVerifying || state.signInRequesting"
                   @complete="requestVerifySignInOtp"
                   ref="pinInputRef"
                 />
               </Flex>
 
-              <Flex col class="mt-auto gap-2">
+              <Flex col class="mt-auto w-full gap-2">
                 <p class="text-center text-gray-500">Не пришел код?</p>
                 <UIButton
+                  class="font-medium"
                   :disabled="state.otpVerifying || state.signInRequesting || !state.canResendOtp"
                   @click="requestSignIn"
                 >
@@ -80,6 +82,7 @@
                   v-model.trim="signUpFormData.name"
                 />
                 <UIButton
+                  class="font-medium"
                   :disabled="
                     !(isValidEmail(signUpFormData.email) && signUpFormData.name) || state.signUpRequesting
                   "
@@ -103,15 +106,16 @@
               <Flex col class="mt-auto gap-4">
                 <p class="font-medium text-center">Введите код из письма</p>
                 <PinInput
-                  :disabled="state.otpVerifying"
+                  :disabled="state.otpVerifying || state.signUpRequesting"
                   @complete="requestVerifySignUpOtp"
                   ref="pinInputRef"
                 />
               </Flex>
               
-              <Flex col class="mt-auto gap-2">
+              <Flex col class="mt-auto w-full gap-2">
                 <p class="text-center text-gray-500">Не пришел код?</p>
                 <UIButton
+                  class="font-medium"
                   :disabled="state.otpVerifying || state.signUpRequesting || !state.canResendOtp"
                   @click="requestSignUp"
                 >
@@ -171,7 +175,7 @@ const signUpFormData = reactive({
 
 const loginFormClasses = computed(() => 'relative w-full h-full sm:w-80 sm:h-96 bg-white sm:ring-1 sm:ring-gray-200 sm:rounded-xl sm:shadow-md overflow-hidden')
 const tabClasses = computed(() => 'relative w-full h-full overflow-hidden')
-const stepClasses = computed(() => 'p-8 h-full gap-6')
+const stepClasses = computed(() => 'p-8 h-full')
 
 const countdownRef = ref<typeof Countdown>()
 

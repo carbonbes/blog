@@ -21,13 +21,13 @@ const emit = defineEmits<{
 const dayjs = useDayjs()
 
 const state: {
-  interval: ReturnType<typeof setTimeout> | undefined
+  interval: NodeJS.Timeout | undefined
   countdown: string
-  delta: number
+  delta: number | null
 } = reactive({
   interval: undefined,
   countdown: '',
-  delta: 0
+  delta: null
 })
 
 function setCountdown() {
