@@ -8,7 +8,7 @@
       <Flex col>
         <Flex v-if="!articles?.data?.length" col itemsCenter class="gap-2 text-gray-500">
           У вас еще нет записей
-          <UIButton class="flex items-center gap-2">
+          <UIButton class="flex items-center gap-2 font-medium" @click="openEditor">
             <ITablerPencil class="!w-5 !h-5" />
             Написать
           </UIButton>
@@ -24,6 +24,8 @@ definePageMeta({
 })
 
 const { profile } = useMe()
+const router = useRouter()
+const route = useRoute()
 
 const {
   data: articles,
@@ -35,4 +37,8 @@ if (error.value)
     statusCode: error.value.statusCode,
     message: error.value.message,
   })
+
+function openEditor() {
+  router.push({ path: route.path, query: { dialog: 'editor' }, replace: true })
+}
 </script>

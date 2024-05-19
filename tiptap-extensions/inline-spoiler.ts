@@ -35,7 +35,6 @@ const inlineSpoiler = Mark.create<InlineSpoilerOptions>({
     return [
       'span',
       mergeAttributes(HTMLAttributes, {
-        class: 'blur-sm',
         'data-type': 'inline-spoiler',
       }),
       0,

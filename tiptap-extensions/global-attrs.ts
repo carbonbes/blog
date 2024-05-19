@@ -1,5 +1,9 @@
 import { Extension } from '@tiptap/core'
+import { Plugin, PluginKey } from '@tiptap/pm/state'
+import { Decoration, DecorationSet } from '@tiptap/pm/view'
 import type { NodeType } from '~/types'
+import Pin from '~icons/tabler/pin?raw'
+import EyeOff from '~icons/tabler/eye-off?raw'
 
 export interface GlobalAttrsOptions {
   types: NodeType[]
@@ -35,9 +39,7 @@ const globalAttrs = Extension.create<GlobalAttrsOptions>({
             default: false,
             keepOnSplit: false,
             renderHTML: (attributes) => {
-              if (!attributes.pinned) {
-                return {}
-              }
+              if (!attributes.pinned) return {}
 
               return { 'data-pinned': 'true' }
             },
@@ -48,9 +50,7 @@ const globalAttrs = Extension.create<GlobalAttrsOptions>({
             default: false,
             keepOnSplit: false,
             renderHTML: (attributes) => {
-              if (!attributes.spoiler) {
-                return {}
-              }
+              if (!attributes.spoiler) return {}
 
               return { 'data-spoiler': 'true' }
             },
@@ -95,6 +95,49 @@ const globalAttrs = Extension.create<GlobalAttrsOptions>({
           )
         },
     }
+  },
+
+  addProseMirrorPlugins() {
+    const plugin = new PluginKey(this.name)
+
+    return [
+      new Plugin({
+        key: plugin,
+
+        props: {
+          decorations(state) {
+            const decorations: Decoration[] = []
+
+            state.doc.descendants((node) => {
+              if (node.attrs.pinned || node.attrs.spoiler) {
+                const indicators = document.createElement('div')
+                indicators.className = 'indicators'
+
+                if (node.attrs.pinned) {
+                  const container = document.createElement('div')
+                  container.innerHTML = Pin as unknown as string
+                  indicators.appendChild(container.firstElementChild as Node)
+                }
+
+                if (node.attrs.spoiler) {
+                  const container = document.createElement('div')
+                  container.innerHTML = EyeOff as unknown as string
+                  indicators.appendChild(container.firstElementChild as Node)
+                }
+
+                const decos = Decoration.widget(node.nodeSize - 1, () => {
+                  return indicators
+                })
+
+                decorations.push(decos)
+              }
+            })
+            
+            return DecorationSet.create(state.doc, decorations)
+          },
+        },
+      })
+    ]
   },
 })
 

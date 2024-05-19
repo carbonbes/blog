@@ -18,20 +18,13 @@ import Dropcursor from '@tiptap/extension-dropcursor'
 import InlineSpoiler from '~/tiptap-extensions/inline-spoiler'
 import GlobalAttrs from '~/tiptap-extensions/global-attrs'
 import Gallery from '~/tiptap-extensions/gallery'
+import TrailingNode from '~/tiptap-extensions/trailing-node'
 
 const extensions: Extensions = [
   Document,
   Heading.extend({
-    levels: [2, 3],
+    levels: [1, 2],
     marks: 'italic underline strike link inlineSpoiler',
-    addAttributes() {
-      return {
-        level: {
-          default: 2,
-          rendered: false,
-        },
-      }
-    },
   }),
   Paragraph,
   Text,
@@ -65,6 +58,7 @@ const extensions: Extensions = [
   InlineSpoiler,
   GlobalAttrs,
   Gallery,
+  TrailingNode
 ]
 
 export default function useEditor() {

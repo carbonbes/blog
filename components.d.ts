@@ -7,6 +7,10 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ITablerArrowBackUp: typeof import('~icons/tabler/arrow-back-up')['default']
+    ITablerArrowForwardUp: typeof import('~icons/tabler/arrow-forward-up')['default']
+    ITablerArrowsDiagonal: typeof import('~icons/tabler/arrows-diagonal')['default']
+    ITablerExpand: typeof import('~icons/tabler/expand')['default']
     ITablerPencil: typeof import('~icons/tabler/pencil')['default']
     ITablerX: typeof import('~icons/tabler/x')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

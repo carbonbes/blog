@@ -5,6 +5,7 @@ import {
 } from '@supabase/supabase-js'
 import type { UploadApiResponse } from 'cloudinary'
 import type { FunctionalComponent, SVGAttributes } from 'vue'
+import type { JSONContent } from '@tiptap/vue-3'
 
 export interface Response<T = {}> {
   success: boolean
@@ -34,7 +35,10 @@ export type NodeType =
   | 'bulletList'
   | 'orderedList'
   | 'gallery'
+  | 'socialNetworkEmbed'
 
 export type CDNMedia = UploadApiResponse
 
 export type SVGIcon = FunctionalComponent<SVGAttributes, {}, any, {}>
+
+export type ArticleContent = JSONContent

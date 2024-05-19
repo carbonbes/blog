@@ -1,36 +1,38 @@
 <template>
-  <PopoverRoot v-model:open="isOpen">
-    <PopoverPortal>
-      <FadeTransition>
-        <PopoverContent
-          @openAutoFocus="(e) => e.preventDefault()"
-          @focusOutside="(e) => e.preventDefault()"
-          asChild
+  <Popover
+    @openAutoFocus="(e) => e.preventDefault()"
+    @focusOutside="(e) => e.preventDefault()"
+    ref="popoverRef"
+  >
+    <Flex itemsCenter
+      class="p-1 gap-1 bg-white shadow-lg ring-1 ring-gray-200 rounded-xl"
+      :style="floatingStyles"
+      ref="popoverBodyRef"
+    >
+      <template v-for="mark in marks">
+        <Flex
+          tag="button"
+          class="p-1 rounded-lg hover:bg-gray-200 [&.active]:bg-blue-100 [&.active]:text-blue-500"
+          :class="{ active: mark.active }"
+          @click="mark.action"
+          v-if="!mark.disabled"
         >
-          <div
-            class="editor-inline-tools-popover"
-            :style="floatingStyles"
-            ref="popoverRef"
-          >
-            <template v-for="mark in marks">
-              <button
-                class="btn"
-                :class="{ active: mark.active }"
-                @click="mark.action"
-                v-if="!mark.disabled"
-              >
-                <Component :is="mark.icon" />
-              </button>
-            </template>
-          </div>
-        </PopoverContent>
-      </FadeTransition>
-    </PopoverPortal>
-  </PopoverRoot>
+          <Component :is="mark.icon" />
+        </Flex>
+      </template>
+    </Flex>
+  </Popover>
+
+  <EditorLinkInsertingDialog
+    @complete="(link) => setLink(link)"
+    @cancel="editor?.commands.focus()"
+    ref="editorLinkInsertingDialogRef"
+  />
 </template>
 
 <script lang="ts" setup>
-import { offset, shift, useFloating } from '@floating-ui/vue'
+import EditorLinkInsertingDialog from '~/components/editor/inline-tools-popover/EditorLinkInsertingDialog.vue'
+import { autoUpdate, offset, shift, useFloating } from '@floating-ui/vue'
 import Bold from '~icons/tabler/bold'
 import Italic from '~icons/tabler/italic'
 import Strikethrough from '~icons/tabler/strikethrough'
@@ -38,13 +40,14 @@ import Underline from '~icons/tabler/underline'
 import Link from '~icons/tabler/link'
 import EyeOff from '~icons/tabler/eye-off'
 import type { SVGIcon } from '~/types'
+import type Popover from '~/components/global/Popover.vue'
 
-const isOpen = ref(false)
+const popoverRef = ref<typeof Popover>()
 
 const { editor, selectionIsEmpty, selectionRect } = useEditor()
 
 watch(selectionIsEmpty, (v) => {
-  isOpen.value = v
+  popoverRef.value?.setOpen(v)
 })
 
 const boldActive = computed(() => !!editor.value?.isActive('bold'))
@@ -60,11 +63,14 @@ const canSetLink = computed(() => editor.value?.can().setLink()!)
 const inlineSpoilerActive = computed(() => !!editor.value?.isActive('inlineSpoiler'))
 const canSetInlineSpoiler = computed(() => editor.value?.can().toggleInlineSpoiler()!)
 
-const popoverRef = ref<HTMLDivElement>()
+const popoverBodyRef = ref<HTMLDivElement>()
 
-const { floatingStyles } = useFloating(selectionRect, popoverRef, {
+const { floatingStyles } = useFloating(selectionRect, popoverBodyRef, {
   middleware: [shift(), offset(5)],
+  whileElementsMounted: autoUpdate,
 })
+
+const editorLinkInsertingDialogRef = ref()
 
 const marks = computed<{
   action: () => void
@@ -152,7 +158,7 @@ function toggleInlineSpoiler() {
 }
 
 function setOpen(value: boolean) {
-  isOpen.value = value
+  popoverRef.value?.setOpen(value)
 }
 
 defineExpose({ setOpen })

@@ -1,7 +1,7 @@
 <template>
   <Transition
-    enterActiveClass="transition-opacity duration-[0.25s]"
-    leaveActiveClass="transition-opacity duration-[0.25s]"
+    :enterActiveClass
+    :leaveActiveClass
     enterFromClass="opacity-0"
     leaveToClass="opacity-0"
   >
@@ -10,5 +10,6 @@
 </template>
 
 <script lang="ts" setup>
-
+const enterActiveClass = computed(() => 'transition-opacity duration-[250ms]')
+const leaveActiveClass = computed(() => 'transition-opacity duration-[250ms]')
 </script>

@@ -4,6 +4,7 @@
     <NuxtPage />
   </main>
 
+  <EditorDialog />
   <Notifications />
 </template>
 
