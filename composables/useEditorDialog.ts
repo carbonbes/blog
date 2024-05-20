@@ -3,7 +3,6 @@ export default function useEditorDialog(dialogRef: Ref) {
   const route = useRoute()
 
   function open() {
-    dialogRef.value?.setOpen(true)
     router.push({
       path: route.path,
       query: { dialog: 'editor' },
@@ -12,7 +11,6 @@ export default function useEditorDialog(dialogRef: Ref) {
   }
 
   function close() {
-    dialogRef.value?.setOpen(false)
     router.push({ path: route.path, replace: true })
   }
 
@@ -22,11 +20,8 @@ export default function useEditorDialog(dialogRef: Ref) {
   }
 
   watchEffect(() => {
-    if (route.query.dialog === 'editor') {
-      open()
-    } else {
-      close()
-    }
+    if (route.query.dialog === 'editor') dialogRef.value?.setOpen(true)
+    else dialogRef.value?.setOpen(false)
   })
 
   return { setOpen }
