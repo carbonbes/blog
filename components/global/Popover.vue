@@ -8,7 +8,10 @@
 
     <PopoverPortal>
       <FadeTransition>
-        <PopoverContent v-bind="{ ...forwarded, ...$attrs }" asChild>
+        <PopoverContent
+          v-bind="{ ...forwarded, ...$attrs }"
+          asChild
+        >
           <slot />
         </PopoverContent>
       </FadeTransition>
@@ -25,6 +28,7 @@ import {
 
 const props = defineProps<PopoverContentProps & {
   class?: string
+  style?: object
 }>()
 const emits = defineEmits<PopoverContentEmits & {
   close: any

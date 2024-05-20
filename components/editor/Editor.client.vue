@@ -1,5 +1,5 @@
 <template>
-  <ScrollArea>
+  <ScrollArea v-bind="$attrs">
     <EditorContent :editor class="editor" />
   </ScrollArea>
   <EditorInlineToolsPopover />
@@ -77,7 +77,16 @@ watch(data, () => emit('update', data.value!))
     a
       @apply text-blue-600 underline
 
-    > p
+    ol, ul
+      @apply pl-4
+
+    ol
+      @apply list-decimal
+
+    ul
+      @apply list-disc
+
+    > p, ol, ul
       margin-top: .5rem
 
     > h1, h2

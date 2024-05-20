@@ -1,3 +1,5 @@
+@tailwind utilities
+  
 html
   background-color: #f6f6f6
   word-break: break-word
@@ -5,7 +7,15 @@ html
 #__nuxt
   display: flex
   flex-direction: column
-  
+
 .icon
   width: 24px
   height: 24px
+
+@layer utilities
+  .no-scrollbar::-webkit-scrollbar
+    display: none
+
+  .no-scrollbar
+    -ms-overflow-style: none
+    scrollbar-width: none

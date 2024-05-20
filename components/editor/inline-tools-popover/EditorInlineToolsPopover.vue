@@ -2,11 +2,11 @@
   <Popover
     @openAutoFocus="(e) => e.preventDefault()"
     @focusOutside="(e) => e.preventDefault()"
+    :style="floatingStyles"
     ref="popoverRef"
   >
     <Flex itemsCenter
       class="p-1 gap-1 bg-white shadow-lg ring-1 ring-gray-200 rounded-xl"
-      :style="floatingStyles"
       ref="popoverBodyRef"
     >
       <template v-for="mark in marks">
@@ -26,13 +26,14 @@
   <EditorLinkInsertingDialog
     @complete="(link) => setLink(link)"
     @cancel="editor?.commands.focus()"
+    @close="editor?.commands.focus()"
     ref="editorLinkInsertingDialogRef"
   />
 </template>
 
 <script lang="ts" setup>
 import EditorLinkInsertingDialog from '~/components/editor/inline-tools-popover/EditorLinkInsertingDialog.vue'
-import { autoUpdate, offset, shift, useFloating } from '@floating-ui/vue'
+import { offset, shift, useFloating } from '@floating-ui/vue'
 import Bold from '~icons/tabler/bold'
 import Italic from '~icons/tabler/italic'
 import Strikethrough from '~icons/tabler/strikethrough'
@@ -66,8 +67,7 @@ const canSetInlineSpoiler = computed(() => editor.value?.can().toggleInlineSpoil
 const popoverBodyRef = ref<HTMLDivElement>()
 
 const { floatingStyles } = useFloating(selectionRect, popoverBodyRef, {
-  middleware: [shift(), offset(5)],
-  whileElementsMounted: autoUpdate,
+  middleware: [shift(), offset(5)]
 })
 
 const editorLinkInsertingDialogRef = ref()

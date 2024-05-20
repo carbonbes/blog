@@ -8,10 +8,14 @@
       <FadeTransition>
         <DialogContent
           aria-describedby=""
-          class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col bg-white"
+          class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 flex flex-col bg-white rounded-xl"
           v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
         >
-          <Flex itemsCenter class="pb-2 sm:pb-4">
+          <VisuallyHidden>
+            <DialogTitle />
+          </VisuallyHidden>
+
+          <Flex itemsCenter class="pb-4">
             <DialogClose class="ml-auto">
               <ITablerX class="hover:opacity-50 transition-opacity" />
             </DialogClose>
@@ -19,7 +23,7 @@
 
           <slot />
 
-          <Flex v-if="$slots.footer" itemsCenter class="pt-2 sm:pt-4">
+          <Flex v-if="$slots.footer" itemsCenter class="pt-4">
             <slot name="footer" />
           </Flex>
         </DialogContent>

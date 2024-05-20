@@ -30,6 +30,7 @@
 <script lang="ts" setup>
 withDefaults(defineProps<{
   direction?: 'horizontal' | 'vertical'
+  class?: string
 }>(), {
   direction: 'vertical'
 })
