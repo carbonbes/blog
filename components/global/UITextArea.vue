@@ -20,7 +20,7 @@ const model = defineModel()
 
 const textArea = ref<HTMLTextAreaElement>()
 
-const classes = computed(() => 'p-2 max-h-80 rounded-lg placeholder:text-gray-400 border-2 border-gray-200 outline-none resize-none no-scrollbar hover:border-blue-300 focus:border-blue-500 disabled:opacity-25 disabled:pointer-events-none transition')
+const classes = computed(() => 'p-2 rounded-lg placeholder:text-gray-400 border-2 border-gray-200 outline-none resize-none no-scrollbar hover:border-blue-300 focus:border-blue-500 disabled:opacity-25 disabled:pointer-events-none transition')
 
 async function focus() {
   await nextTick()

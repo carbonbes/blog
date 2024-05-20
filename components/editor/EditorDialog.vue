@@ -1410,5 +1410,5 @@ const data = {
   ]
 }
 
-const editorDialogClasses = computed(() => 'fixed inset-0 w-full h-full max-w-[780px] max-h-[800px]')
+const editorDialogClasses = computed(() => 'fixed inset-0 h-full max-w-[780px] max-h-[800px]')
 </script>

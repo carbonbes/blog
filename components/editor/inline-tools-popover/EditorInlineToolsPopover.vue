@@ -25,7 +25,6 @@
 
   <EditorLinkInsertingDialog
     @complete="(link) => setLink(link)"
-    @cancel="editor?.commands.focus()"
     @close="editor?.commands.focus()"
     ref="editorLinkInsertingDialogRef"
   />
