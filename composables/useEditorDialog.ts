@@ -1,4 +1,6 @@
-export default function useEditorDialog(dialogRef: Ref) {
+import Dialog from '~/components/global/Dialog.vue'
+
+export default function useEditorDialog(dialogRef: Ref<InstanceType<typeof Dialog>>) {
   const router = useRouter()
   const route = useRoute()
 

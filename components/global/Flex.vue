@@ -1,7 +1,7 @@
 <template>
   <Component
     :is="tag"
-    class="flex"
+    class="!flex"
     :class="{
       'flex-row': row,
       'flex-col': col,

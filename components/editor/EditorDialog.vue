@@ -11,1404 +11,609 @@
 <script lang="ts" setup>
 import type Dialog from '~/components/global/Dialog.vue'
 
-const dialogRef = ref<typeof Dialog>()
+const dialogRef = ref<InstanceType<typeof Dialog>>()
 
 const { setOpen } = useEditorDialog(dialogRef)
 
 const data = {
-  "type": "doc",
-  "content": [
-    {
-      "type": "heading",
-      "attrs": {
-        "pinned": true,
-        "spoiler": true,
-        "level": 1
-      },
-      "content": [
+    "type": "doc",
+    "content": [
         {
-          "type": "text",
-          "text": "XYZ School: $1000+ за курс, которого нет"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": true
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Многие слышали про XYZ School, ведь их «купи курс» иногда даже из чайника доносится. Вас обещают сделать «профессионалом игровой индустрии» и пророчат позиции чуть ли не мидла, даже если вы вообще про геймдев до этого не слышали. Но сегодня, дорогой читатель, обширная группа студентов курса "
+            "type": "heading",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false,
+                "level": 1
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Черные дыры: Загадки Вселенной"
+                }
+            ]
         },
         {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "http://school-xyz.com/gamecode",
-                "target": "_blank",
-                "rel": "nofollow noreferrer noopener",
-                "class": null
-              }
-            }
-          ],
-          "text": "GameCode"
-        },
-        {
-          "type": "text",
-          "text": " расскажет тебе из собственного опыта, как на самом деле нас «обучала» XYZ School."
-        }
-      ]
-    },
-    {
-      "type": "heading",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false,
-        "level": 2
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Небольшой дисклеймер"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Прежде чем приступить к тексту, хотим сделать небольшое отступление для администрации ООО «Икс Вай Зет Нетворк». Мы очень долгое время старались идти вам навстречу, ждали исправления ситуации до последнего момента. К сожалению, вы всячески нас игнорировали, отказывались как-либо комментировать ситуацию, перестали идти на контакт с людьми, заплатившими вам (немалые) деньги. Вы выбрали тактику «никак не комментируем, само затихнет»."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Мы были бы рады, если бы можно было обойтись без этой статьи — так сказать, не выносить сор из избы. Поскольку нам не удалось добиться никакой реакции от XYZ School по официальными каналам, нам ничего не осталось, кроме как объединиться и написать коллективное письмо."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Запорожцы Илья Репин"
-        }
-      ]
-    },
-    {
-      "type": "heading",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false,
-        "level": 2
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Фу, лошара, купил курс!"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Многие скажут, что ТРУ разработчики учатся исключительно самостоятельно и по документации. Это, конечно же, верно — но только отчасти."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Мы неоднократно обсуждали между собой этот вопрос, и были рады узнать, что большинство из нас не шли на обучение спонтанно, а внимательно взвешивало «за» и «против», прежде купить данный курс. И уж точно никто не ждал халявы в виде «отсижу курс — получу работу». Выделим топ-3 причин:"
-        }
-      ]
-    },
-    {
-      "type": "bulletList",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "listItem",
-          "content": [
-            {
-              "type": "paragraph",
-              "attrs": {
+            "type": "paragraph",
+            "attrs": {
                 "pinned": false,
                 "spoiler": false
-              },
-              "content": [
+            },
+            "content": [
                 {
-                  "type": "text",
-                  "text": "экономия времени;"
+                    "type": "text",
+                    "text": "Черные дыры являются одними из самых загадочных и захватывающих объектов во Вселенной. Они привлекают внимание ученых и любителей астрономии своими удивительными свойствами и непостижимой природой. В этой статье мы рассмотрим, что такое черные дыры, как они образуются и какие необычные явления с ними связаны."
                 }
-              ]
-            }
-          ]
+            ]
         },
         {
-          "type": "listItem",
-          "content": [
-            {
-              "type": "paragraph",
-              "attrs": {
+            "type": "heading",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false,
+                "level": 2
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Что такое черная дыра?"
+                }
+            ]
+        },
+        {
+            "type": "paragraph",
+            "attrs": {
                 "pinned": false,
                 "spoiler": false
-              },
-              "content": [
+            },
+            "content": [
                 {
-                  "type": "text",
-                  "text": "получение экспертизы от реальных специалистов, работающих в отрасли;"
+                    "type": "text",
+                    "text": "Черная дыра — это область пространства, в которой гравитация настолько сильна, что ничто, даже свет, не может покинуть ее пределы. Граница черной дыры называется "
+                },
+                {
+                    "type": "text",
+                    "marks": [
+                        {
+                            "type": "bold"
+                        }
+                    ],
+                    "text": "горизонтом событий"
+                },
+                {
+                    "type": "text",
+                    "text": ". За пределами этого горизонта информация о любых объектах становится недоступной для внешнего наблюдателя."
                 }
-              ]
-            }
-          ]
+            ]
         },
         {
-          "type": "listItem",
-          "content": [
-            {
-              "type": "paragraph",
-              "attrs": {
+            "type": "heading",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false,
+                "level": 2
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Образование черных дыр"
+                }
+            ]
+        },
+        {
+            "type": "paragraph",
+            "attrs": {
                 "pinned": false,
                 "spoiler": false
-              },
-              "content": [
+            },
+            "content": [
                 {
-                  "type": "text",
-                  "text": "поиск единомышленников и общение."
+                    "type": "text",
+                    "text": "Черные дыры могут образовываться несколькими способами, но наиболее распространены следующие механизмы:"
                 }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "heading",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false,
-        "level": 2
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Где наш курс, Лебовски?"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Каждый из нас пришел на курс своей дорогой. Кто-то уже давно работает в gamedev, и решил сменить текущий движок на Unreal Engine, кто-то устал от «кровавого энтерпрайза» и ищет для себя чего-то нового, а кто-то пришел совсем из другой специальности, и только-только решил связать свою жизнь с IT."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Но в одном мы точно похожи: мы — ждуны и терпилы, ведь за почти 9 месяцев с начала курса мы увидели только 2 учебных блока из 8, один из которых — вводный блок с лекциями вроде \"как поставить unreal engine\". Да и сам курс начался с опозданием из-за отсутствия материала."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Как такое может быть, спросите вы? Ведь XYZ рекламируют у себя "
+            ]
         },
         {
-          "type": "text",
-          "marks": [
-            {
-              "type": "bold"
-            }
-          ],
-          "text": "готовый курс"
+            "type": "orderedList",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false,
+                "start": 1
+            },
+            "content": [
+                {
+                    "type": "listItem",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "attrs": {
+                                "pinned": false,
+                                "spoiler": false
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ],
+                                    "text": "Гравитационный коллапс"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ". Когда массивная звезда исчерпывает своё термоядерное топливо, её ядро может коллапсировать под действием собственной гравитации, образуя черную дыру."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "listItem",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "attrs": {
+                                "pinned": false,
+                                "spoiler": false
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ],
+                                    "text": "Слияние звезд"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ". Две нейтронные звезды или белые карлики могут сливаться, образуя черную дыру."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "listItem",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "attrs": {
+                                "pinned": false,
+                                "spoiler": false
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ],
+                                    "text": "Аккреция массы"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ". Сверхмассивные черные дыры могут расти, поглощая окружающее вещество и сливаясь с другими черными дырами."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "type": "text",
-          "text": " с проработанной программой и четко обозначенной датой завершения? Берут за него очень даже немаленькие деньги? Они ведь даже выпускают "
+            "type": "heading",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false,
+                "level": 2
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Классификация черных дыр"
+                }
+            ]
         },
         {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "https://media-xyz.com/ru/articles/1952-vypuskniki-xyz-iz-diplomatov-v-programmisty-i",
-                "target": "_blank",
-                "rel": "nofollow noreferrer noopener",
-                "class": null
-              }
-            }
-          ],
-          "text": "интервью с «бывшими студентами»"
+            "type": "paragraph",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Черные дыры можно классифицировать по их массе:"
+                }
+            ]
         },
         {
-          "type": "text",
-          "text": " о том, как «сложилась судьба после курса»?"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Как говорил доктор Зойдберг, и дня не проходит, чтобы я не задал себе этот вопрос."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Разумеется, задавали мы эти вопросы не только себе. Студенты старательно писали об этом в официальных чатах, призывая автора курса, службу поддержки XYZ, администраторов — никто даже не подумал хоть как-то прокомментировать наши вопросы в чате (но модерировать не забывали). Зато дата курса в личном кабинете постоянно сдвигается без каких-либо анонсов со стороны Школы: 3 дня назад там было 1 июля, а теперь это уже 1 сентября — 11 месяцев с начала курса, Карл!"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Кроме сроков курса, начали претерпевать изменения и его объемы. Давайте посмотрим несколько моментов, которые нам обещали. (Кстати, часть из обещанного уже удалили с публичной страницы, поэтому воспользуемся "
+            "type": "bulletList",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false
+            },
+            "content": [
+                {
+                    "type": "listItem",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "attrs": {
+                                "pinned": false,
+                                "spoiler": false
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ],
+                                    "text": "Планетарные черные дыры"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ": масса менее 3 солнечных масс."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "listItem",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "attrs": {
+                                "pinned": false,
+                                "spoiler": false
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ],
+                                    "text": "Сверхмассивные черные дыры"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ": масса от миллионов до миллиардов солнечных масс."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "listItem",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "attrs": {
+                                "pinned": false,
+                                "spoiler": false
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ],
+                                    "text": "Первичные черные дыры"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ": гипотетические черные дыры, образовавшиеся вскоре после Большого взрыва."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "http://web.archive.org/web/20200814113453/http://school-xyz.com/gamecode",
-                "target": "_blank",
-                "rel": "nofollow noreferrer noopener",
-                "class": null
-              }
-            }
-          ],
-          "text": "архивом"
+            "type": "heading",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false,
+                "level": 2
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Интересные факты о черных дырах"
+                }
+            ]
         },
         {
-          "type": "text",
-          "text": ".)"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "italic"
-            }
-          ],
-          "text": "Дипломная работа"
+            "type": "bulletList",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false
+            },
+            "content": [
+                {
+                    "type": "listItem",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "attrs": {
+                                "pinned": false,
+                                "spoiler": false
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ],
+                                    "text": "Горизонт событий"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ": Все, что пересекает горизонт событий, не может вернуться назад. Это делает черные дыры невидимыми в традиционном смысле."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "listItem",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "attrs": {
+                                "pinned": false,
+                                "spoiler": false
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ],
+                                    "text": "Спагеттификация"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ": Объекты, приближающиеся к черной дыре, могут быть растянуты в тонкую нить из-за сильных приливных сил. Этот процесс называется "
+                                },
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "italic"
+                                        }
+                                    ],
+                                    "text": "спагеттификацией"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "listItem",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "attrs": {
+                                "pinned": false,
+                                "spoiler": false
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ],
+                                    "text": "Время и пространство"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ": Вблизи черной дыры время замедляется, а пространство искривляется. Это явление предсказывается общей теорией относительности Эйнштейна."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "listItem",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "attrs": {
+                                "pinned": false,
+                                "spoiler": false
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ],
+                                    "text": "Гравитационные волны"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ": Слияние черных дыр вызывает выброс гравитационных волн, которые могут быть обнаружены на Земле с помощью специальных детекторов, таких как LIGO и Virgo."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "type": "text",
-          "text": " (исключено из текущей рекламы курса) — где-то к декабрю выяснилось, что дипломными будут считаться не анонсированные ранее индивидуальные задания, а тот самый проект, который все делают на протяжении всего курса в качестве домашнего задания. Разумеется, рекрутеры не будут всерьез рассматривать проекты-клоны как демонстрацию навыков, что сильно убавляет его ценность."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "italic"
-            }
-          ],
-          "text": "Живые трансляции с приглашенными гостями"
+            "type": "heading",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false,
+                "level": 2
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Исследование черных дыр"
+                }
+            ]
         },
         {
-          "type": "text",
-          "text": " — за 8 месяцев было проведено всего 3 стрима (два, Карл!): дважды tools-разработчиком (довольно содержательные) и с одним из лидов разработки инди-игры (скорее в формате интервью). К сожалению, стримы не затрагивали основную тему, на изучение которой мы все сюда пришли — геймплей-разработку. При этом тематических стримов с гостями (которые не раз анонсировались в чатах и на созвонах) мы так и не дождались."
-        }
-      ]
-    },
-    {
-      "type": "heading",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false,
-        "level": 2
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "А что, если «Школа» — на самом деле не школа?"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Отчаявшись ждать, мы пошли читать "
+            "type": "paragraph",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Современные технологии позволяют ученым исследовать черные дыры и их окрестности. Вот некоторые методы, используемые для изучения этих загадочных объектов:"
+                }
+            ]
         },
         {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "https://network-xyz.com/ru/info/agreement",
-                "target": "_blank",
-                "rel": "nofollow noreferrer noopener",
-                "class": null
-              }
-            }
-          ],
-          "text": "пользовательское соглашение"
+            "type": "bulletList",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false
+            },
+            "content": [
+                {
+                    "type": "listItem",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "attrs": {
+                                "pinned": false,
+                                "spoiler": false
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ],
+                                    "text": "Рентгеновская астрономия"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ": Черные дыры, поглощающие вещество, излучают мощное рентгеновское излучение, которое можно наблюдать с помощью космических телескопов."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "listItem",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "attrs": {
+                                "pinned": false,
+                                "spoiler": false
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ],
+                                    "text": "Гравитационные волны"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ": Обнаружение гравитационных волн позволяет изучать слияние черных дыр и другие катастрофические события."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "listItem",
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "attrs": {
+                                "pinned": false,
+                                "spoiler": false
+                            },
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "marks": [
+                                        {
+                                            "type": "bold"
+                                        }
+                                    ],
+                                    "text": "Радиоастрономия"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": ": Радиотелескопы, такие как Event Horizon Telescope (EHT), позволяют получать изображения горизонта событий черных дыр."
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "type": "text",
-          "text": ", чтобы понять, как мы можем повлиять на происходящее. Вы скажете, соглашение надо читать до оплаты — да, надо, но..."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Правообладатель оставляет за собой право в любое время изменять, добавлять или удалять пункты настоящего Соглашения без уведомления Пользователя."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "К тебе не может быть претензий по обучению, если ты на самом деле не школа."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "И вот внезапно (!) оказалось, что XYZ School, несмотря на слово в названии и в имени домена, школой и вообще каким-либо образовательным учреждением не является. Нет, XYZ School — это «онлайн-платформа для предоставления Пользователям онлайн-доступа к материалам Видеокурсов и мастер-классов». И это несмотря на слоганы «"
+            "type": "paragraph",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Черные дыры остаются одной из самых захватывающих тем в современной астрофизике. Их изучение помогает нам лучше понять фундаментальные законы природы и структуру Вселенной."
+                }
+            ]
         },
         {
-          "type": "text",
-          "marks": [
-            {
-              "type": "italic"
-            }
-          ],
-          "text": "Учим"
-        },
-        {
-          "type": "text",
-          "text": " программировать для Action игр в Unreal Engine на C++» на странице курса…"
+            "type": "paragraph",
+            "attrs": {
+                "pinned": false,
+                "spoiler": false
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "marks": [
+                        {
+                            "type": "italic"
+                        }
+                    ],
+                    "text": "Для дальнейшего чтения и углубления в тему, рекомендуем ознакомиться с работами Стивена Хокинга и Роджера Пенроуза, а также последними научными статьями по астрономии и физике."
+                }
+            ]
         }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Ответственность за достоверность информации, размещенной в описании произведений, а также в самих произведениях, Правообладатель не несет. Пользователь обязуется осуществлять самостоятельную проверку такой информации в целях, указанных в настоящем Соглашении."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Как можно учиться по материалу, за достоверность которого никто не несет ответственности? Это же не развлекательное ток-шоу, в самом деле!"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Или, например, согласно п.4.1.5, XYZ вправе «в любое время по своему усмотрению вносить изменения … без уведомления Пользователя», в частности, в «структуру Видеокурсов» и «сроки длительности Видеокурсов». Фактически, состав и сроки выхода оплачиваемых курсов могут быть в любой момент изменены — и никто не обязан отчитываться перед Пользователями, в том числе и за недополученные знания."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Можно долго продолжать разбирать этот документ, но мы здесь остановимся. Важно понимать, что другие аналогичные учебные платформы такой халатности и наглости себе не позволяют."
-        }
-      ]
-    },
-    {
-      "type": "heading",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false,
-        "level": 2
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "А чем занята Шк… онлайн-платформа?"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "А всё тем же: продолжает не отвечать на прямые вопросы студентов в официальных чатах, продавать курсы, которых на самом деле ещё нет. Разумеется, не забывают устраивать аттракционы неслыханной щедрости в виде скидочных кампаний."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Один единственный раз за все 8+ месяцев устроила созвон менеджер Аня, на который мы, естественно, собрались, чтобы высказать свою боль."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Знаете, какой был результат этого общения? Абсолютно никакого! Сразу после общения Аня пропала, и никакой больше реакции мы не дождались."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Кстати, скидки — особая тема. Во-первых, они всех студентов уже порядком достали. Мы по нескольку уведомлений на дню можем видеть неотключаемые уведомления о скидках (ну, можно, конечно, совсем отключить уведомления…), в то время как ответы на вопросы по курсу или объявления стримов могут не приходить по нескольку дней или даже недель."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Во-вторых, основной целью таких скидок является "
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D0%BD%D0%B4%D1%80%D0%BE%D0%BC_%D1%83%D0%BF%D1%83%D1%89%D0%B5%D0%BD%D0%BD%D0%BE%D0%B9_%D0%B2%D1%8B%D0%B3%D0%BE%D0%B4%D1%8B",
-                "target": "_blank",
-                "rel": "nofollow noreferrer noopener",
-                "class": null
-              }
-            }
-          ],
-          "text": "использование синдрома упущенной выгоды"
-        },
-        {
-          "type": "text",
-          "text": ". У вас просто искусственно вызывают страх: «а вдруг я опоздаю, не сэкономлю?» Хотя если даже немного поискать, можно найти множество аналогичных готовых курсов, не уступающих в качестве материала — но с ценником как минимум на порядок ниже."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Ну а последней каплей в нашем море терпения стало уже упомянутое выше "
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "https://media-xyz.com/ru/articles/1952-vypuskniki-xyz-iz-diplomatov-v-programmisty-i",
-                "target": "_blank",
-                "rel": "nofollow noreferrer noopener",
-                "class": null
-              }
-            }
-          ],
-          "text": "интервью с «бывшими студентами»"
-        },
-        {
-          "type": "text",
-          "text": ". На фоне молчания администрации на задаваемые студентами вопросы, интервью, преподносящее курс как завершенный, было многими воспринято как плевок в душу."
-        }
-      ]
-    },
-    {
-      "type": "heading",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false,
-        "level": 2
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Так что же это, курс ненастоящий?!"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Да нет, вроде бы настоящий. Но реально мы видим продажу доступа к курсам, находящимся в раннем доступе, за цену, на порядок превышающую аналогичные курсы на альтернативных платформах."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Кто-то поспорит, мол, ну есть же Kickstarter — там тоже берут деньги за неготовый продукт, который возможно выйдет? Всё верно, за одним исключением: там явно раскрывается тот факт, что продукта ещё нет. В нашем случае сроки четко были обозначены, и все ожидали, что они будут соблюдены хотя бы близко, ведь качество материала в большинстве своем всем нравится."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Мы пообщались с ребятами с нескольких других курсов, в частности, "
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "https://www.school-xyz.com/environment-art",
-                "target": "_blank",
-                "rel": "nofollow noreferrer noopener",
-                "class": null
-              }
-            }
-          ],
-          "text": "Environment Art"
-        },
-        {
-          "type": "text",
-          "text": " и "
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "https://www.school-xyz.com/gamedesign",
-                "target": "_blank",
-                "rel": "nofollow noreferrer noopener",
-                "class": null
-              }
-            }
-          ],
-          "text": "Game Design"
-        },
-        {
-          "type": "text",
-          "text": ". Оказалось, у них те же проблемы: изначально материалов нет никаких, курс выходит в «живом» формате, даты выхода очередного материала и окончания курса переносятся, нет внятных комментариев со стороны администрации."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Что касается нас, многие студенты (особенно, которые попали на курс в более поздних потоках) до сих пор надеются на выход материала в указанные сроки. Есть те, кто уже в это не верит, но все ещё готов ждать (чаще всего, люди, не очень активные в чате и на платформе, которые взяли курс «по скидке» на будущее). Много тех, кто просто перестал заниматься, махнул на всё рукой и бросил курс."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "К сожалению, есть среди нас и люди, по которым неоправданные задержки курса очень больно ударили. Кто-то поставил себе целью сменить профессию. Кто-то, уже работая в геймдеве, пошёл на этот курс с целью переквалификации. Некоторые из этих людей оставили свою работу, чтобы с головой погрузиться в курс… но погрузиться удалось только в море «завтраков»."
-        }
-      ]
-    },
-    {
-      "type": "heading",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false,
-        "level": 2
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Что говорят студенты"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Несколько из нас согласились высказать свои мысли о сложившейся ситуации."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "bold"
-            }
-          ],
-          "text": "Виталий, 1 поток (1 октября 2020 — ???):"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Я честно ждал, всё надеялся, что, после пробуксовки на старте, курс наконец-то наберет обороты, но тщетно. Искренне старался помочь курсу и преподавателю — как технически, так и оказывал помощь другим студентам."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Всё это очень обидно, конечно, потому что сам материал довольно неплохой, да и «прямой доступ» к знаниям преподавателя, возможность задать ему вопрос по курсу и обсудить возникающие проблемы — для меня очень важно. Но какие задавать вопросы, если материал не выходит?"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "bold"
-            }
-          ],
-          "text": "Лола, 1 поток (1 октября 2020 — ???):"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "«Пора расти дальше» — сказала я себе и решила уволиться с позиции middle (я не из этих ваших сеньоров-помидоров) геймплей-разработчика мобильных игр, чтобы переквалифицироваться в AAA-разработчика."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Сказано — сделано!"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Финансовая подушка, само собой, была готова, но кто знал, что на ней придется плыть по морю «завтраков»?"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Одним из факторов, подкупивших меня взять этот курс, была возможность непосредственного общения с преподавателем, который не понаслышке знаком с AAA-разработкой. Я, конечно же, не поленилась еще раз уточнить программу курса перед покупкой, и ее описание и сроки "
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "italic"
-            }
-          ],
-          "text": "на тот момент"
-        },
-        {
-          "type": "text",
-          "text": " меня вполне устраивали."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "В первый же месяц случились задержки контента. Сказать что это ударило по моим планам — ничего не сказать, так как я выстраивала свой план непосредственно вокруг лекций. Материал по геймплею, который мы получили за 3 месяца, вряд ли потянул хотя бы на небольшой туториал."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Также я была одна их тех, кто ждали креш-курса по Лин.Алгебре. На протяжении 4-х месяцев я лично уточняла сроки креш-курса и получала ответы об их переносе, считаю, это неприемлемым поведением со стороны руководства."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Также меня удивило отношение руководства к проведению самого курса. Переносы выхода нового контента, отмена стримов без объяснения причин стали для нас обыденным явлением."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "К сожалению, к июню я не увидела и четверти контента. В ответ на мой вопрос, я опять получила смешную причину переноса объявленного за месяц стрима."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "В этот момент я решила, что ждать больше не могу. После всего, я настороженно отношусь к возврату средств XYZ School, но, надеюсь, что хоть в этом они меня не подведут!"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "bold"
-            }
-          ],
-          "text": "Андрей, 4 поток (1 февраля 2021 — ???):"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Закончив обучение в ВУЗ-е, я решил начать исполнять свою давнюю мечту — стать разработчиком на Unreal."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Я начал «обучение» в феврале 2021, через 4 месяца со старта первого потока, а сейчас на 18 июня 2021 по курсу доступны только 2.5 раздела из 8! То есть «школа» (в документах написано сервис) зная о проблемах, все равно рекламирует курсы и делает вид, что все нормально. Идет новый набор на август (см скрин)."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Также добавлю, что когда мой поток только начался, стримы были почти регулярно, но они были объединены с другими потоками, и, по словами ребят, у первого потока стримов на тот момент не было больше месяца. И вновь всё умерло, и за 2 последних месяца их почти не было. Сегодня, кстати, будет один, но никак не связанный с тематикой курса."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Поговорим немного про ДЗ. Проверяют его не быстро, ну то есть совсем-совсем не быстро для денег, заплаченных за курс. ДЗ на пару десятков строк может по 1-2 недели быть на «проверке», ответ или комментарии зачем-то пишутся на странице ДЗ, а не в Swarm, что вроде логичнее (можно понять, к какому блоку кода они относятся)."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Резюмируя, хотелось бы сказать, что сам материал неплохой, как и его подача, но ПОЛНОЕ игнорирование людей в дискорде, как со стороны «администрации» так и со стороны преподавателя (надеюсь, он занят разработкой курса) — это какой-то кошмар. Напомню, что за год на курс записалось более 200 человек, а неравнодушных оказалось только с десяток."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "bold"
-            }
-          ],
-          "text": "Евгений, 1 поток (1 октября 2020 - ???):"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Курсы… такая популярная тема в наше время. У меня есть некий опыт в этом деле: закончил геймдизайн в Нетологии, курс Game Developer Pro Level в "
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "http://Games.Education",
-                "target": "_blank",
-                "rel": "noopener noreferrer nofollow",
-                "class": null
-              }
-            }
-          ],
-          "text": "Games.Education"
-        },
-        {
-          "type": "text",
-          "text": " и еще пяток курсов в Udemy (про ютюб даже упоминать не буду)."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Многие скажут, что это не круто, тру-девелоперы курят доку, а не всякие там онлайн курсы! Пожалуй, соглашусь, но у меня хорошее восприятие видео и аудио контента, мне интересно общение и опыт преподавателей, почему не воспользоваться этим для экономии времени и получения лучшего результата?"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "А также 10 лет назад я сам занимался предаваем Web-технологий, поэтому понимаю приблизительно что к чему."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Ладно-ладно, давайте же к курсам XYZ. Я обратил внимание на их деятельность еще несколько лет назад, тогда и записался на курс Draft Punk, который вёл энергичный и забавный Игорец (один из сооснователей школы). На тот момент действительно всё было классно и лампово. Я был вдохновлен деятельностью XYZ и Игорьцом в частности, мне нравилась его подача, неформальное общение, игра на гитаре и я хотел чтобы так продолжалось, но, увы, пришёл бизнес и всё сломалось..."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Тем не менее, я записался на первый поток курса по левел дизайну OutBlock. И вот тут начались первые звоночки. Вместо заявленных 5 месяцев курс длился около одного года. Но гости и автор курса всё это время были со студентами: стримы, разборы и даже игровые сессии делали своё дело. Такой опыт общения с разработчиками и менторами компенсировал растянутость курса во времени."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Затем я записался на GameCode… и вот тут деградация «школы» набрала максимальный пик. Мало того что за 8+ месяцев нет и четверти контента, так еще и нет стримов, нет ответов от администрации школы, но регулярно получаешь уведомления в чате «Купи курс», «Стань профессионалом игровой индустрии», «Ставки на спорт»… а не, это из другой темы…"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Но знаете, что больше всего поражает..? Полное игнорирование проблемы Администрацией XYZ. Кроме Ани (см. выше), которая пропала сразу после стрима, больше никто не пытался с нами выйти на связь и прояснить ситуацию. В итоге, спустя почти 9 месяцев, мы имеем меньше четверти курса, «мёртвые» стримы раз в месяц, отсутствие гостей и неопределенность... Такого я ожидал?"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Ко всему прочему, постоянное отсутствие в чате и невозможность задать вопросы в дневное время наталкивают на основание полагать, что курсы - всего лишь подработка для преподавателей, проверяющих и авторов курса…"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Конечно, можно возразить мол сам виноват, кому-то казино, кому-то фри-ту-плей а кому-то курсы. И, опять таки, мне нечем возразить, действительно, я сам, своими руками поддерживаю сиё действие, и, хочу заметить, не маленькими суммами:"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Ну да ладно, не в деньгах счастье! А что, если помечтать: XYZ (и прочие) делает курсы уровня их роликов на ютюбе, действительно составляет программы с педагогами и опытными специалистами, которые позволяют экономить время и взращивать настоящих специалистов, способных «поднять индустрию с колен»..."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Да, да, да, я маленький и в сказки верю…"
-        }
-      ]
-    },
-    {
-      "type": "heading",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false,
-        "level": 2
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "А что дальше?"
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Еще раз хотим подчеркнуть, что целью данной статьи является обратить внимание руководства ООО «Икс Вай Зет Нетворк» на сложившиеся системные проблемы, игнорируемые администрацией, преподавателями и авторами курсов."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "Хочется верить, что сложившаяся ситуация была скорее исключением (хотя опыт параллельных курсов не обнадеживает). Надеемся, что будущие студенты XYZ School получат лучший сервис, чем был предоставлен нам."
-        }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "attrs": {
-        "pinned": false,
-        "spoiler": false
-      },
-      "content": [
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "https://dtf.ru/tag/xyz",
-                "target": "_blank",
-                "rel": "noopener noreferrer nofollow",
-                "class": null
-              }
-            }
-          ],
-          "text": "#xyz"
-        },
-        {
-          "type": "text",
-          "text": " "
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "https://dtf.ru/tag/xyzschool",
-                "target": "_blank",
-                "rel": "noopener noreferrer nofollow",
-                "class": null
-              }
-            }
-          ],
-          "text": "#xyzschool"
-        },
-        {
-          "type": "text",
-          "text": " "
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "https://dtf.ru/tag/gamedev",
-                "target": "_blank",
-                "rel": "noopener noreferrer nofollow",
-                "class": null
-              }
-            }
-          ],
-          "text": "#gamedev"
-        },
-        {
-          "type": "text",
-          "text": " "
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "https://dtf.ru/tag/unrealengine",
-                "target": "_blank",
-                "rel": "noopener noreferrer nofollow",
-                "class": null
-              }
-            }
-          ],
-          "text": "#unrealengine"
-        }
-      ]
-    }
-  ]
+    ]
 }
 
-const editorDialogClasses = computed(() => 'fixed inset-0 h-full max-w-[780px] max-h-[800px]')
+const editorDialogClasses = computed(() => 'fixed inset-0 w-full h-full max-w-[780px] max-h-[800px]')
 </script>

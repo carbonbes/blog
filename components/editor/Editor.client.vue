@@ -3,11 +3,13 @@
     <EditorContent :editor class="editor" />
   </ScrollArea>
   <EditorInlineToolsPopover />
+  <EditorNodeControls />
 </template>
 
 <script lang="ts" setup>
 import { EditorContent } from '@tiptap/vue-3'
 import type { ArticleContent } from '~/types'
+import EditorNodeControls from '~/components/editor/node-controls/EditorNodeControls.vue'
 
 const props = defineProps<{ data?: ArticleContent }>()
 

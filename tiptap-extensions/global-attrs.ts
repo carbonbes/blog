@@ -25,7 +25,7 @@ const globalAttrs = Extension.create<GlobalAttrsOptions>({
 
   addOptions() {
     return {
-      types: ['heading', 'paragraph', 'orderedList', 'bulletList'],
+      types: ['heading', 'paragraph', 'orderedList', 'bulletList', 'gallery', 'socialNetworkEmbed'],
     }
   },
 

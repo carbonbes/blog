@@ -42,3 +42,14 @@ export type CDNMedia = UploadApiResponse
 export type SVGIcon = FunctionalComponent<SVGAttributes, {}, any, {}>
 
 export type ArticleContent = JSONContent
+
+export type DropdownItem = {
+  icon?: SVGIcon
+  label?: string
+  action?: () => void
+  active?: boolean
+  disabled?: boolean
+  hide?: boolean
+  separator?: boolean
+  subitems?: DropdownItem[]
+}

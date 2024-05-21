@@ -12,7 +12,7 @@
       <template v-for="mark in marks">
         <Flex
           tag="button"
-          class="p-1 rounded-lg hover:bg-gray-200 [&.active]:bg-blue-100 [&.active]:text-blue-500"
+          class="p-1 rounded-lg hover:bg-gray-200 [&.active]:bg-blue-100 [&.active]:text-blue-500 transition-colors"
           :class="{ active: mark.active }"
           @click="mark.action"
           v-if="!mark.disabled"
@@ -42,7 +42,7 @@ import EyeOff from '~icons/tabler/eye-off'
 import type { SVGIcon } from '~/types'
 import type Popover from '~/components/global/Popover.vue'
 
-const popoverRef = ref<typeof Popover>()
+const popoverRef = ref<InstanceType<typeof Popover>>()
 
 const { editor, selectionIsEmpty, selectionRect } = useEditor()
 

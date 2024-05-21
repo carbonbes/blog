@@ -23,7 +23,7 @@ const emit = defineEmits<{
   close: any
 }>()
 
-const dialogRef = ref<typeof Dialog>()
+const dialogRef = ref<InstanceType<typeof Dialog>>()
 
 const link = ref('')
 
