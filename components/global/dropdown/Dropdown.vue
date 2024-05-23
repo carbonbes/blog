@@ -1,5 +1,5 @@
 <template>
-  <DropdownMenuRoot :modal v-model:open="open">
+  <DropdownMenuRoot :modal v-model:open="isOpen">
     <DropdownMenuTrigger asChild>
       <slot />
     </DropdownMenuTrigger>
@@ -35,9 +35,15 @@ const emits = defineEmits<DropdownMenuContentEmits & {
 
 const forwarded = useForwardPropsEmits(props, emits)
 
-const open = ref(false)
+const isOpen = ref(false)
 
-watch(open, (v) => {
+watch(isOpen, (v) => {
   emits('isOpen', v)
 })
+
+function setOpen(value: boolean) {
+  isOpen.value = value
+}
+
+defineExpose({ setOpen })
 </script>

@@ -6,6 +6,7 @@
 
 <script lang="ts" setup>
 import type { DropdownItem, NodeType } from '~/types'
+import type { JSONContent } from '@tiptap/vue-3'
 import Paragraph from '~icons/tabler/letter-case'
 import Heading from '~icons/tabler/heading'
 import List from '~icons/tabler/list'
@@ -13,7 +14,7 @@ import Photo from '~icons/tabler/photo'
 import Heading2 from '~icons/tabler/h2'
 import Heading3 from '~icons/tabler/h3'
 import ListNumbers from '~icons/tabler/list-numbers'
-import type { JSONContent } from '@tiptap/vue-3'
+import Divider from '~icons/tabler/divide'
 
 const props = defineProps<{
   selectedNode?: any
@@ -56,13 +57,13 @@ const nodesList = computed<DropdownItem[]>(() => [
     subitems: [
       {
         icon: Heading2,
-        label: '2 уровня',
-        action: () => insertNode({ type: 'heading', level: 2 }),
+        label: '1 уровня',
+        action: () => insertNode({ type: 'heading', level: 1 }),
       },
       {
         icon: Heading3,
-        label: '3 уровня',
-        action: () => insertNode({ type: 'heading', level: 3 }),
+        label: '2 уровня',
+        action: () => insertNode({ type: 'heading', level: 2 }),
       },
     ],
   },
@@ -85,9 +86,12 @@ const nodesList = computed<DropdownItem[]>(() => [
   },
   {
     icon: Photo,
-    type: 'gallery',
     label: 'Картинка / Галерея',
     action: () => insertNode({ type: 'gallery' }),
   },
+  {
+    icon: Divider,
+    label: 'Разделитель'
+  }
 ])
 </script>

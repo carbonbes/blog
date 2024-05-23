@@ -19,6 +19,8 @@ import InlineSpoiler from '~/tiptap-extensions/inline-spoiler'
 import GlobalAttrs from '~/tiptap-extensions/global-attrs'
 import Gallery from '~/tiptap-extensions/gallery'
 import TrailingNode from '~/tiptap-extensions/trailing-node'
+import Delimiter from '@tiptap/extension-horizontal-rule'
+import { NodeSelection } from '@tiptap/pm/state'
 
 const extensions: Extensions = [
   Document,
@@ -58,7 +60,8 @@ const extensions: Extensions = [
   InlineSpoiler,
   GlobalAttrs,
   Gallery,
-  TrailingNode
+  TrailingNode,
+  Delimiter,
 ]
 
 export default function useEditor() {
@@ -82,12 +85,11 @@ export default function useEditor() {
 
       onSelectionUpdate({
         editor: {
-          state: {
-            selection: { empty },
-          },
+          state: { selection },
         },
       }) {
-        selectionIsEmpty.value = !empty
+        selectionIsEmpty.value =
+          !selection.empty && !(selection instanceof NodeSelection)
 
         selectionRect.value = {
           getBoundingClientRect() {

@@ -36,6 +36,7 @@ export type NodeType =
   | 'orderedList'
   | 'gallery'
   | 'socialNetworkEmbed'
+  | 'delimiter'
 
 export type CDNMedia = UploadApiResponse
 

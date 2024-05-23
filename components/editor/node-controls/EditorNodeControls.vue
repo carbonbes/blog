@@ -1,13 +1,12 @@
 <template>
   <Teleport to=".editor">
     <FadeTransition>
-      <div
-        :style="floatingStyles"
-        ref="nodeControlsRef"
-        v-if="state.controlsIsShow"
-      >
-        <Flex itemsCenter>
-          <EditorNodeActionsButton @is-open="(value) => state.actionsDropdownIsOpen = value" />
+      <div v-if="state.controlsIsShow" :style="floatingStyles" ref="nodeControlsRef">
+        <Flex itemsCenter class="gap-1">
+          <EditorNodeActionsButton
+            :selected-node="selectedNode"
+            @isOpen="onNodeActionsOpen"
+          />
         </Flex>
       </div>
     </FadeTransition>
@@ -16,8 +15,8 @@
 
 <script lang="ts" setup>
 import { autoUpdate, flip, limitShift, offset, shift, useFloating } from '@floating-ui/vue'
-import EditorNodeActionsButton from './EditorNodeActionsButton.vue'
-import EditorNodesListButton from './EditorNodesListButton.vue'
+import EditorNodeActionsButton from '~/components/editor/node-controls/EditorNodeActionsButton.vue'
+import EditorNodesListButton from '~/components/editor/node-controls/EditorNodesListButton.vue'
 
 const state: {
   controlsIsShow: boolean
@@ -36,8 +35,6 @@ function nodeDOMAtCoords(coords: { x: number, y: number }) {
 }
 
 const nodeControlsRef = ref()
-const hoveredNodeRect = ref()
-const selectedNode = ref()
 const floatingRect = ref<{
   getBoundingClientRect(): {
     x: number
@@ -57,6 +54,22 @@ const { floatingStyles } = useFloating(floatingRect, nodeControlsRef, {
   whileElementsMounted: autoUpdate
 })
 
+const hoveredNodeRect = ref<DOMRect>()
+const selectedNode = ref<Node['pmViewDesc']>()
+
+const { editor } = useEditor()
+
+function onNodeActionsOpen(value: boolean) {
+  state.actionsDropdownIsOpen = value
+
+  if (value) {
+    selectedNode.value = nodeDOMAtCoords({
+      x: hoveredNodeRect.value!.x,
+      y: hoveredNodeRect.value!.y
+    })?.pmViewDesc
+  } else selectedNode.value = undefined
+}
+
 onMounted(async () => {
   await nextTick()
 
@@ -68,9 +81,7 @@ onMounted(async () => {
       y: e.clientY
     })
 
-    const nodeRect = node?.getBoundingClientRect()
-
-    hoveredNodeRect.value = nodeRect
+    hoveredNodeRect.value = node?.getBoundingClientRect()
 
     state.controlsIsShow = !!node
 
