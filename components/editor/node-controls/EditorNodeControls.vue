@@ -4,7 +4,7 @@
       <div v-if="state.controlsIsShow" :style="floatingStyles" ref="nodeControlsRef">
         <Flex itemsCenter class="gap-1">
           <EditorNodeActionsButton
-            :selected-node="selectedNode"
+            :selectedNode="selectedNode"
             @isOpen="onNodeActionsOpen"
           />
         </Flex>
@@ -14,7 +14,9 @@
 </template>
 
 <script lang="ts" setup>
-import { autoUpdate, flip, limitShift, offset, shift, useFloating } from '@floating-ui/vue'
+import { autoUpdate, offset, useFloating } from '@floating-ui/vue'
+import type { Node } from '@tiptap/pm/model'
+import type { NodeSelection } from '@tiptap/pm/state'
 import EditorNodeActionsButton from '~/components/editor/node-controls/EditorNodeActionsButton.vue'
 import EditorNodesListButton from '~/components/editor/node-controls/EditorNodesListButton.vue'
 
@@ -50,28 +52,30 @@ const floatingRect = ref<{
 
 const { floatingStyles } = useFloating(floatingRect, nodeControlsRef, {
   placement: 'left-start',
-  middleware: [shift({ padding: { top: 0 }, limiter: limitShift() }), flip(), offset(15)],
+  middleware: [offset(15)],
   whileElementsMounted: autoUpdate
 })
 
 const hoveredNodeRect = ref<DOMRect>()
-const selectedNode = ref<Node['pmViewDesc']>()
+const selectedNode = ref<Node>()
 
 const { editor } = useEditor()
 
 function onNodeActionsOpen(value: boolean) {
   state.actionsDropdownIsOpen = value
-  state.controlsIsShow = value
 
   if (value) {
-    selectedNode.value = nodeDOMAtCoords({
+    const pos = nodeDOMAtCoords({
       x: hoveredNodeRect.value!.x,
       y: hoveredNodeRect.value!.y
-    })?.pmViewDesc
-    editor.value?.commands.setNodeSelection(selectedNode.value?.posAtStart! - 1)
+    })?.pmViewDesc?.posAtStart! - 1
+
+    editor.value?.commands.setNodeSelection(pos)
+    const selection = editor.value?.state.selection as NodeSelection
+    selectedNode.value = selection.node
   } else {
-    selectedNode.value = undefined
     editor.value?.commands.setTextSelection(0)
+    selectedNode.value = undefined
   }
 }
 

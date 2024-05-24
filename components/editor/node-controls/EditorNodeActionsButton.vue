@@ -10,6 +10,7 @@
 </template>
 
 <script lang="ts" setup>
+import type { Node } from '@tiptap/pm/model'
 import type Dropdown from '~/components/global/dropdown/Dropdown.vue'
 import type { DropdownItem, NodeType } from '~/types'
 import Paragraph from '~icons/tabler/letter-case'
@@ -26,7 +27,7 @@ import ListNumbers from '~icons/tabler/list-numbers'
 import Trash from '~icons/tabler/trash'
 
 const props = defineProps<{
-  selectedNode?: Node['pmViewDesc']
+  selectedNode?: Node
 }>()
 
 const emit = defineEmits<{
@@ -37,11 +38,9 @@ const dropdownRef = ref<InstanceType<typeof Dropdown>>()
 
 const isOpen = ref(false)
 
-const selectedNodeType = computed(() => props.selectedNode && props.selectedNode.node?.type.name)
-const selectedNodeIsPinned = computed(() => props.selectedNode && props.selectedNode.node?.attrs.pin)
-const selectedNodeIsSpoiler = computed(() => props.selectedNode && props.selectedNode.node?.attrs.spoiler)
-const selectedNodeStartPos = computed(() => props.selectedNode?.posAtStart)
-const selectedNodeEndPos = computed(() => props.selectedNode?.posAtEnd)
+const selectedNodeType = computed(() => props.selectedNode && props.selectedNode.type.name)
+const selectedNodeIsPinned = computed(() => props.selectedNode && props.selectedNode.attrs.pin)
+const selectedNodeIsSpoiler = computed(() => props.selectedNode && props.selectedNode.attrs.spoiler)
 const previousNode = computed(() => {
   const currentNodeSelected = editor.value?.state.selection
 
@@ -49,18 +48,16 @@ const previousNode = computed(() => {
 
   if (currentNodeSelected?.from! - 1 <= 0) return null
 
-  const $resolvedPos = editor.value?.state.doc.resolve(currentNodeSelected?.from! - 1)
-
-  return editor.value?.state.doc.nodeAt($resolvedPos?.pos! - $resolvedPos?.parentOffset! - $resolvedPos?.depth!)
+  return editor.value?.state.doc.resolve(currentNodeSelected?.from! - 1)?.nodeBefore
 })
 const nextNode = computed(() => {
   const currentNodeSelected = editor.value?.state.selection
 
   if (!currentNodeSelected) return null
 
-  const $resolvedPos = editor.value?.state.doc.resolve(currentNodeSelected?.to! + 1)
-  
-  return editor.value?.state.doc.nodeAt($resolvedPos?.pos! - $resolvedPos?.depth!)
+  if (currentNodeSelected?.to! + 1 >= editor.value?.state.doc.nodeSize!) return null
+
+  return editor.value?.state.doc.resolve(currentNodeSelected?.to! + 1)?.nodeAfter
 })
 
 function onOpen(value: boolean) {
@@ -73,6 +70,7 @@ const { editor } = useEditor()
 function moveNode(dir: 'up' | 'down') {
   if (dir === 'up') {
     if (!previousNode.value) return
+
 
   } else {
     if (!nextNode.value) return
@@ -91,38 +89,32 @@ function transformNode({
 
   if (type === 'heading')
     editor.value?.chain()
-      .focus()
       .toggleHeading({ level })
       .run()
 
   if (type === 'paragraph') {
     if (editor.value?.isActive('bulletList')) {
       editor.value?.chain()
-        .focus()
         .toggleBulletList()
         .run()
     } else if (editor.value?.isActive('orderedList')) {
       editor.value?.chain()
-        .focus()
         .toggleOrderedList()
         .run()
     }
 
     editor.value?.chain()
-      .focus()
       .setParagraph()
       .run()
   }
 
   if (type === 'bulletList')
     editor.value?.chain()
-      .focus()
       .toggleBulletList()
       .run()
 
   if (type === 'orderedList')
     editor.value?.chain()
-      .focus()
       .toggleOrderedList()
       .run()
 }
@@ -132,12 +124,12 @@ function toggleAttrubite(attr: string) {
 
   if (attr === 'pin') {
     editor.value?.chain()
-      .focus()
       .togglePin()
       .run()
-  } else if (attr === 'spoiler') {
+  }
+  
+  if (attr === 'spoiler') {
     editor.value?.chain()
-      .focus()
       .toggleSpoiler()
       .run()
   }
@@ -196,13 +188,13 @@ const nodeActions = computed<DropdownItem[]>(() => [
             icon: Heading1,
             label: '1 уровня',
             action: () => transformNode({ type: 'heading', level: 1 }),
-            hide: props.selectedNode?.node?.attrs.level === 1,
+            hide: props.selectedNode?.attrs.level === 1,
           },
           {
             icon: Heading2,
             label: '2 уровня',
             action: () => transformNode({ type: 'heading', level: 2 }),
-            hide: props.selectedNode?.node?.attrs.level === 2,
+            hide: props.selectedNode?.attrs.level === 2,
           },
         ],
       },
@@ -210,7 +202,7 @@ const nodeActions = computed<DropdownItem[]>(() => [
         icon: Paragraph,
         label: 'Текст',
         action: () => transformNode({ type: 'paragraph' }),
-        hide: props.selectedNode?.node?.type.name === 'paragraph',
+        hide: props.selectedNode?.type.name === 'paragraph',
       },
       {
         icon: List,
@@ -221,13 +213,13 @@ const nodeActions = computed<DropdownItem[]>(() => [
             icon: List,
             label: 'Маркированный',
             action: () => transformNode({ type: 'bulletList' }),
-            hide: props.selectedNode?.node?.type.name === 'bulletList',
+            hide: props.selectedNode?.type.name === 'bulletList',
           },
           {
             icon: ListNumbers,
             label: 'Нумерованный',
             action: () => transformNode({ type: 'orderedList' }),
-            hide: props.selectedNode?.node?.type.name === 'orderedList',
+            hide: props.selectedNode?.type.name === 'orderedList',
           },
         ],
       },

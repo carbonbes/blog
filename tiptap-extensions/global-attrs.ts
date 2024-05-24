@@ -45,7 +45,7 @@ const globalAttrs = Extension.create<GlobalAttrsOptions>({
             default: false,
             keepOnSplit: false,
             renderHTML: (attributes) => {
-              if (!attributes.pinned) return {}
+              if (!attributes.pin) return {}
 
               return { 'data-pin': 'true' }
             },
@@ -88,9 +88,7 @@ const globalAttrs = Extension.create<GlobalAttrsOptions>({
 
           if (value && this.storage.pinned === 2) return false
 
-          node.attrs.pin = value
-
-          tr.replaceWith(selection.from, selection.to, node)
+          tr.setNodeAttribute(selection.from, 'pin', value)
           view.dispatch(tr)
 
           if (value) this.storage.pinned += 1
@@ -108,9 +106,7 @@ const globalAttrs = Extension.create<GlobalAttrsOptions>({
 
           const node = nodeSelection.node
 
-          node.attrs.spoiler = !node.attrs.spoiler
-
-          tr.replaceWith(selection.from, selection.to, node)
+          tr.setNodeAttribute(selection.from, 'spoiler', !node.attrs.sloiler)
           view.dispatch(tr)
 
           return true

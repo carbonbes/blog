@@ -38,6 +38,11 @@ watch(data, () => emit('update', data.value!))
 
     > *
       position: relative
+      background-color: transparent
+      transition: background-color .25s
+
+      &.ProseMirror-selectednode
+        background-color: theme('backgroundColor.blue.100')
 
       .indicators
         position: absolute
