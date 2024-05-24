@@ -61,13 +61,18 @@ const { editor } = useEditor()
 
 function onNodeActionsOpen(value: boolean) {
   state.actionsDropdownIsOpen = value
+  state.controlsIsShow = value
 
   if (value) {
     selectedNode.value = nodeDOMAtCoords({
       x: hoveredNodeRect.value!.x,
       y: hoveredNodeRect.value!.y
     })?.pmViewDesc
-  } else selectedNode.value = undefined
+    editor.value?.commands.setNodeSelection(selectedNode.value?.posAtStart! - 1)
+  } else {
+    selectedNode.value = undefined
+    editor.value?.commands.setTextSelection(0)
+  }
 }
 
 onMounted(async () => {

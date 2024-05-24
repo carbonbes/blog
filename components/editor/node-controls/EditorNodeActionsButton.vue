@@ -42,19 +42,25 @@ const selectedNodeIsPinned = computed(() => props.selectedNode && props.selected
 const selectedNodeIsSpoiler = computed(() => props.selectedNode && props.selectedNode.node?.attrs.spoiler)
 const selectedNodeStartPos = computed(() => props.selectedNode?.posAtStart)
 const selectedNodeEndPos = computed(() => props.selectedNode?.posAtEnd)
-const nodeBefore = computed(() => {
-  try {
-    return editor.value?.$pos(props.selectedNode?.posAtStart!).before
-  } catch (error) {
-    return null
-  }
+const previousNode = computed(() => {
+  const currentNodeSelected = editor.value?.state.selection
+
+  if (!currentNodeSelected) return null
+
+  if (currentNodeSelected?.from! - 1 <= 0) return null
+
+  const $resolvedPos = editor.value?.state.doc.resolve(currentNodeSelected?.from! - 1)
+
+  return editor.value?.state.doc.nodeAt($resolvedPos?.pos! - $resolvedPos?.parentOffset! - $resolvedPos?.depth!)
 })
-const nodeAfter = computed(() => {
-  try {
-    return editor.value?.$pos(props.selectedNode?.posAtStart!).after
-  } catch (error) {
-    return null
-  }
+const nextNode = computed(() => {
+  const currentNodeSelected = editor.value?.state.selection
+
+  if (!currentNodeSelected) return null
+
+  const $resolvedPos = editor.value?.state.doc.resolve(currentNodeSelected?.to! + 1)
+  
+  return editor.value?.state.doc.nodeAt($resolvedPos?.pos! - $resolvedPos?.depth!)
 })
 
 function onOpen(value: boolean) {
@@ -66,15 +72,11 @@ const { editor } = useEditor()
 
 function moveNode(dir: 'up' | 'down') {
   if (dir === 'up') {
-    if (!nodeBefore.value) return
-
-    editor.value?.chain()
-      .focus(selectedNodeStartPos.value)
-      .deleteNode(selectedNodeType.value as NodeType)
-      .run()
+    if (!previousNode.value) return
 
   } else {
-    if (!nodeAfter.value) return
+    if (!nextNode.value) return
+    
   }
 }
 
@@ -89,38 +91,38 @@ function transformNode({
 
   if (type === 'heading')
     editor.value?.chain()
-      .focus(selectedNodeStartPos.value)
+      .focus()
       .toggleHeading({ level })
       .run()
 
   if (type === 'paragraph') {
     if (editor.value?.isActive('bulletList')) {
       editor.value?.chain()
-        .focus(selectedNodeStartPos.value)
+        .focus()
         .toggleBulletList()
         .run()
     } else if (editor.value?.isActive('orderedList')) {
       editor.value?.chain()
-        .focus(selectedNodeStartPos.value)
+        .focus()
         .toggleOrderedList()
         .run()
     }
 
     editor.value?.chain()
-      .focus(selectedNodeStartPos.value)
+      .focus()
       .setParagraph()
       .run()
   }
 
   if (type === 'bulletList')
     editor.value?.chain()
-      .focus(selectedNodeStartPos.value)
+      .focus()
       .toggleBulletList()
       .run()
 
   if (type === 'orderedList')
     editor.value?.chain()
-      .focus(selectedNodeStartPos.value)
+      .focus()
       .toggleOrderedList()
       .run()
 }
@@ -130,22 +132,19 @@ function toggleAttrubite(attr: string) {
 
   if (attr === 'pin') {
     editor.value?.chain()
-      .focus(selectedNodeStartPos.value!)
+      .focus()
       .togglePin()
       .run()
   } else if (attr === 'spoiler') {
     editor.value?.chain()
-      .focus(selectedNodeStartPos.value!)
+      .focus()
       .toggleSpoiler()
       .run()
   }
 }
 
 function removeNode() {
-  editor.value?.chain()
-    .focus(selectedNodeStartPos.value)
-    .deleteNode(selectedNodeType.value as NodeType)
-    .run()
+  editor.value?.commands.deleteSelection()
 
   dropdownRef.value?.setOpen(false)
   emit('isOpen', false)
@@ -157,6 +156,7 @@ const nodeActions = computed<DropdownItem[]>(() => [
     label: selectedNodeIsPinned.value ? 'Выводится в карточке' : 'Вывести в карточке',
     action: () => toggleAttrubite('pin'),
     active: selectedNodeIsPinned.value,
+    disabled: !selectedNodeIsPinned.value && editor.value?.storage.globalAttrs.pinned === 2
   },
   {
     icon: EyeOff,
@@ -171,13 +171,13 @@ const nodeActions = computed<DropdownItem[]>(() => [
     icon: ArrowUp,
     label: 'Вверх',
     action: () => moveNode('up'),
-    disabled: !!!nodeBefore.value
+    disabled: !previousNode.value
   },
   {
     icon: ArrowDown,
     label: 'Вниз',
     action: () => moveNode('down'),
-    disabled: !!!nodeAfter.value
+    disabled: !nextNode.value
   },
   {
     separator: true,

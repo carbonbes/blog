@@ -1,5 +1,5 @@
 import { Extension } from '@tiptap/core'
-import { Plugin, PluginKey } from '@tiptap/pm/state'
+import { NodeSelection, Plugin, PluginKey } from '@tiptap/pm/state'
 import { Decoration, DecorationSet } from '@tiptap/pm/view'
 import type { NodeType } from '~/types'
 import Pin from '~icons/tabler/pin?raw'
@@ -12,11 +12,7 @@ export interface GlobalAttrsOptions {
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     textAlign: {
-      pin: () => ReturnType
-      unpin: () => ReturnType
       togglePin: () => ReturnType
-      setSpoiler: () => ReturnType
-      unsetSpoiler: () => ReturnType
       toggleSpoiler: () => ReturnType
     }
   }
@@ -74,129 +70,48 @@ const globalAttrs = Extension.create<GlobalAttrsOptions>({
   addStorage() {
     return {
       pinned: 0,
-      spoilered: 0,
     }
   },
 
   addCommands() {
     return {
-      pin:
-        () =>
-        ({ editor, tr, state }) => {
-          const { anchor } = state.selection
-
-          const node = tr.doc.nodeAt(anchor)
-
-          if (!node) return false
-
-          const attrs = {
-            ...node.attrs,
-            pin: true,
-          }
-
-          tr.setNodeMarkup(anchor, undefined, attrs)
-          editor.view.dispatch(tr)
-
-          return true
-        },
-
-      unpin:
-        () =>
-        ({ editor, tr, state }) => {
-          const { anchor } = state.selection
-
-          const node = tr.doc.nodeAt(anchor)
-
-          if (!node) return false
-
-          const attrs = {
-            ...node.attrs,
-            pin: false,
-          }
-
-          tr.setNodeMarkup(anchor, undefined, attrs)
-          editor.view.dispatch(tr)
-
-          return true
-        },
-
       togglePin:
         () =>
-        ({ commands, editor, tr, state }) => {
-          // const { anchor } = state.selection
+        ({ tr, state: { selection }, editor: { view } }) => {
+          const nodeSelection = selection as NodeSelection | null
 
-          // const node = tr.doc.nodeAt(anchor - 1)
+          if (!nodeSelection) return false
 
-          // if (!node) return false
+          const node = nodeSelection.node
 
-          // return editor.chain()
-          //   .focus()
-          //   .updateAttributes({
-          //     pin: true
-          //   })
-          //   .run()
+          const value = node.attrs.pin ? false : true
 
-          return this.options.types.every((type) =>
-            commands.updateAttributes(type, { pin: true })
-          )
-        },
+          if (value && this.storage.pinned === 2) return false
 
-      setSpoiler:
-        () =>
-        ({ editor, tr, state }) => {
-          const { anchor } = state.selection
+          node.attrs.pin = value
 
-          const node = tr.doc.nodeAt(anchor)
+          tr.replaceWith(selection.from, selection.to, node)
+          view.dispatch(tr)
 
-          if (!node) return false
-
-          const attrs = {
-            ...node.attrs,
-            spoiler: true,
-          }
-
-          tr.setNodeMarkup(anchor, undefined, attrs)
-          editor.view.dispatch(tr)
-
-          return true
-        },
-
-      unsetSpoiler:
-        () =>
-        ({ editor, tr, state }) => {
-          const { anchor } = state.selection
-
-          const node = tr.doc.nodeAt(anchor)
-
-          if (!node) return false
-
-          const attrs = {
-            ...node.attrs,
-            spoiler: false,
-          }
-
-          tr.setNodeMarkup(anchor, undefined, attrs)
-          editor.view.dispatch(tr)
+          if (value) this.storage.pinned += 1
+          else this.storage.pinned -= 1
 
           return true
         },
 
       toggleSpoiler:
         () =>
-        ({ editor, tr, state }) => {
-          const { anchor } = state.selection
+        ({ tr, state: { selection }, editor: { view } }) => {
+          const nodeSelection = selection as NodeSelection | null
 
-          const node = tr.doc.nodeAt(anchor)
+          if (!nodeSelection) return false
 
-          if (!node) return false
+          const node = nodeSelection.node
 
-          const attrs = {
-            ...node.attrs,
-            spoiler: !node.attrs.spoiler,
-          }
+          node.attrs.spoiler = !node.attrs.spoiler
 
-          tr.setNodeMarkup(anchor, undefined, attrs)
-          editor.view.dispatch(tr)
+          tr.replaceWith(selection.from, selection.to, node)
+          view.dispatch(tr)
 
           return true
         },
@@ -214,7 +129,7 @@ const globalAttrs = Extension.create<GlobalAttrsOptions>({
           decorations(state) {
             const decorations: Decoration[] = []
 
-            state.doc.descendants((node) => {
+            state.doc.descendants((node, pos) => {
               if (node.attrs.pin || node.attrs.spoiler) {
                 const indicators = document.createElement('div')
                 indicators.className = 'indicators'
@@ -231,7 +146,7 @@ const globalAttrs = Extension.create<GlobalAttrsOptions>({
                   indicators.appendChild(container.firstElementChild as Node)
                 }
 
-                const decos = Decoration.widget(node.nodeSize - 1, () => {
+                const decos = Decoration.widget(pos + 1, () => {
                   return indicators
                 })
 
