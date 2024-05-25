@@ -1,3 +1,5 @@
+const plugin = require('tailwindcss/plugin')
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [],
@@ -39,6 +41,11 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function({ addVariant }) {
+      addVariant('not-first', '&:not(:first-child)')
+      addVariant('not-last', '&:not(:last-child)')
+    })
+  ],
 }
 

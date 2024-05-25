@@ -1,5 +1,6 @@
 import { Editor, type Extensions, type JSONContent } from '@tiptap/vue-3'
 import Document from '~/tiptap-extensions/document'
+import RootNode from '~/tiptap-extensions/root-node'
 import Heading from '@tiptap/extension-heading'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
@@ -24,6 +25,7 @@ import { NodeSelection } from '@tiptap/pm/state'
 
 const extensions: Extensions = [
   Document,
+  RootNode,
   Heading.extend({
     levels: [1, 2],
     marks: 'italic underline strike link inlineSpoiler',
