@@ -7,14 +7,14 @@
     </PopoverTrigger>
 
     <PopoverPortal>
-      <FadeTransition>
+      <FadeInOpacityTransition>
         <PopoverContent
           v-bind="{ ...forwarded, ...$attrs }"
           asChild
         >
           <slot />
         </PopoverContent>
-      </FadeTransition>
+      </FadeInOpacityTransition>
     </PopoverPortal>
   </PopoverRoot>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <Bottomsheet class="h-full max-h-[75vh]" ref="bottomsheetRef">
+  <Bottomsheet class="!bg-gray-100" ref="bottomsheetRef">
     <ScrollArea>
       <Flex col class="pb-[25vh] !flex gap-4">
         <UIButton
@@ -7,7 +7,7 @@
           :key="i"
           variant="secondary"
           size="l"
-          class="flex items-center gap-3 border-1 border-gray-50 shadow rounded-xl"
+          class="flex items-center gap-3"
         >
           <Component :is="button.icon" />
           {{ button.label }}

@@ -2,6 +2,9 @@ const plugin = require('tailwindcss/plugin')
 
 /** @type {import('tailwindcss').Config} */
 export default {
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   content: [],
   theme: {
     extend: {
@@ -24,7 +27,27 @@ export default {
           '0%': { opacity: 0, transform: 'translateX(100%)' },
           '70%': { transform: 'translateX(-5%)' },
           '100%': { opacity: 1, transform: 'translateX(0)' }
-        }
+        },
+        'fade-in-top-side': {
+          '0%': { transform: 'translateY(-100%)' },
+          '70%': { transform: 'translateY(5%)' },
+          '100%': { transform: 'translateY(0)' }
+        },
+        'fade-in-right-side': {
+          '0%': { transform: 'translateX(100%)' },
+          '70%': { transform: 'translateX(-5%)' },
+          '100%': { transform: 'translateX(0)' }
+        },
+        'fade-in-bottom-side': {
+          '0%': { transform: 'translateY(100%)' },
+          '70%': { transform: 'translateY(-5%)' },
+          '100%': { transform: 'translateY(0)' }
+        },
+        'fade-in-left-side': {
+          '0%': { transform: 'translateX(-100%)' },
+          '70%': { transform: 'translateX(5%)' },
+          '100%': { transform: 'translateX(0)' }
+        },
       },
 
       animation: {
@@ -34,6 +57,10 @@ export default {
         previous: 'previous .25s',
         'previous-reverse': 'previous reverse .25s',
         notification: 'notification .25s ease',
+        'fade-in-top-side': 'fade-in-top-side .25s',
+        'fade-in-right-side': 'fade-in-right-side .25s',
+        'fade-in-bottom-side': 'fade-in-bottom-side .25s',
+        'fade-in-left-side': 'fade-in-left-side .25s',
       },
 
       fontFamily: {

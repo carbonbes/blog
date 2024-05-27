@@ -5,11 +5,11 @@
     </DropdownMenuTrigger>
 
     <DropdownMenuPortal>
-      <FadeTransition>
+      <FadeInOpacityTransition>
         <DropdownMenuContent v-bind="forwarded" asChild>
           <DropdownBody :items="items" :maxHeight />
         </DropdownMenuContent>
-      </FadeTransition>
+      </FadeInOpacityTransition>
     </DropdownMenuPortal>
   </DropdownMenuRoot>
 </template>

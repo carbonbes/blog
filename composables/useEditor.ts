@@ -1,4 +1,5 @@
 import { Editor, type Extensions, type JSONContent } from '@tiptap/vue-3'
+import { NodeSelection } from '@tiptap/pm/state'
 import Document from '~/tiptap-extensions/document'
 import RootNode from '~/tiptap-extensions/root-node'
 import Heading from '@tiptap/extension-heading'
@@ -17,11 +18,9 @@ import History from '@tiptap/extension-history'
 import Placeholder from '@tiptap/extension-placeholder'
 import Dropcursor from '@tiptap/extension-dropcursor'
 import InlineSpoiler from '~/tiptap-extensions/inline-spoiler'
-import GlobalAttrs from '~/tiptap-extensions/global-attrs'
 import Gallery from '~/tiptap-extensions/gallery'
 import TrailingNode from '~/tiptap-extensions/trailing-node'
 import Delimiter from '@tiptap/extension-horizontal-rule'
-import { NodeSelection } from '@tiptap/pm/state'
 
 const extensions: Extensions = [
   Document,
@@ -60,7 +59,6 @@ const extensions: Extensions = [
   }),
   Dropcursor,
   InlineSpoiler,
-  GlobalAttrs,
   Gallery,
   TrailingNode,
   Delimiter,
@@ -87,11 +85,10 @@ export default function useEditor() {
 
       onSelectionUpdate({
         editor: {
-          state: { selection },
+          state: { selection, selection: { from, to } },
         },
       }) {
-        selectionIsEmpty.value =
-          !selection.empty && !(selection instanceof NodeSelection)
+        selectionIsEmpty.value = from === to && !(selection instanceof NodeSelection)
 
         selectionRect.value = {
           getBoundingClientRect() {

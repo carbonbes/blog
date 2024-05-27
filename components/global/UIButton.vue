@@ -22,7 +22,7 @@ const props = withDefaults(
   }>(),
   {
     variant: 'primary',
-    size: 'm'
+    size: 'm',
   }
 )
 
@@ -30,8 +30,8 @@ const nuxtLink = defineNuxtLink({})
 
 const classes = computed(() => ({
   'rounded-lg border-2 border-transparent whitespace-nowrap disabled:opacity-25 disabled:pointer-events-none transition': true,
-  'bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white': props.variant === 'primary',
-  'bg-white hover:bg-gray-200 active:bg-gray-300 text-black': props.variant === 'secondary',
+  'bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white shadow-md': props.variant === 'primary',
+  'bg-white ring-1 ring-gray-100 hover:bg-gray-200 hover:ring-gray-200 active:bg-gray-300 text-black shadow-md': props.variant === 'secondary',
   'py-1 px-1 text-sm': props.size === 's',
   'py-1.5 px-2 text-md': props.size === 'm',
   'p-2 px-3 text-lg': props.size === 'l',

@@ -1,7 +1,7 @@
 import Dialog from '~/components/global/Dialog.vue'
 
 export default function useEditorDialog(dialogRef?: Ref<InstanceType<typeof Dialog>>) {
-  const nodeIsSwiping = useState('node-is-swiping', () => false)
+  const scrollIsLocked = useState('scroll-is-locked', () => false)
 
   const router = useRouter()
   const route = useRoute()
@@ -24,9 +24,11 @@ export default function useEditorDialog(dialogRef?: Ref<InstanceType<typeof Dial
   }
 
   watchEffect(() => {
-    if (route.query.dialog === 'editor') dialogRef?.value?.setOpen(true)
-    else dialogRef?.value?.setOpen(false)
+    if (!dialogRef?.value) return
+
+    if (route.query.dialog === 'editor') dialogRef.value?.setOpen(true)
+    else dialogRef.value?.setOpen(false)
   })
 
-  return { setOpen, nodeIsSwiping }
+  return { setOpen, scrollIsLocked }
 }

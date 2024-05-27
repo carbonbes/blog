@@ -1,4 +1,5 @@
 import { Node, mergeAttributes } from '@tiptap/core'
+import type { NodeSelection } from '@tiptap/pm/state'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import RootNode from '~/components/editor/nodes/root-node/RootNode.vue'
 
@@ -6,6 +7,8 @@ declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     rootNode: {
       setRootNode: (pos?: number) => ReturnType
+      moveUp: () => ReturnType
+      moveDown: () => ReturnType
     }
   }
 }
@@ -29,6 +32,32 @@ const rootNode = Node.create({
     }
   },
 
+  addAttributes() {
+    return {
+      pin: {
+        default: false,
+        keepOnSplit: false,
+        parseHTML: (element) => element.getAttribute('data-pin'),
+        renderHTML: (attributes) => {
+          if (!attributes.pin) return
+
+          return { 'data-pin': 'true' }
+        }
+      },
+
+      spoiler: {
+        default: false,
+        keepOnSplit: false,
+        parseHTML: (element) => element.getAttribute('data-spoiler'),
+        renderHTML: (attributes) => {
+          if (!attributes.spoiler) return
+
+          return { 'data-spoiler': 'true' }
+        }
+      },
+    }
+  },
+
   parseHTML() {
     return [
       {
@@ -39,6 +68,12 @@ const rootNode = Node.create({
 
   renderHTML({ HTMLAttributes }) {
     return ['div', mergeAttributes(HTMLAttributes), 0]
+  },
+
+  addStorage() {
+    return {
+      pinned: 0,
+    }
   },
 
   addCommands() {
@@ -63,6 +98,18 @@ const rootNode = Node.create({
             })
             .focus(position + 2)
             .run()
+        },
+
+      moveUp:
+        () =>
+        () => {
+
+        },
+
+      moveDown:
+        () =>
+        () => {
+
         },
     }
   },

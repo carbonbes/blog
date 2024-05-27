@@ -38,14 +38,14 @@
             </DropdownMenuSubTrigger>
 
             <DropdownMenuPortal>
-              <FadeTransition>
+              <FadeInOpacityTransition>
                 <DropdownMenuSubContent
                   :side-offset="5"
                   asChild
                 >
                   <DropdownBody :items="item.subitems!" />
                 </DropdownMenuSubContent>
-              </FadeTransition>
+              </FadeInOpacityTransition>
             </DropdownMenuPortal>
           </DropdownMenuSub>
         </template>

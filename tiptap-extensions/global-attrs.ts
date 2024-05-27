@@ -11,7 +11,7 @@ export interface GlobalAttrsOptions {
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
-    textAlign: {
+    GlobalAttrs: {
       togglePin: () => ReturnType
       toggleSpoiler: () => ReturnType
     }

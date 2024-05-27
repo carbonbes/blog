@@ -47,7 +47,7 @@ const popoverRef = ref<InstanceType<typeof Popover>>()
 const { editor, selectionIsEmpty, selectionRect } = useEditor()
 
 watch(selectionIsEmpty, (v) => {
-  popoverRef.value?.setOpen(v)
+  popoverRef.value?.setOpen(!v)
 })
 
 const boldActive = computed(() => !!editor.value?.isActive('bold'))

@@ -1,7 +1,5 @@
 <template>
-  <ScrollArea :ignoreScroll="nodeIsSwiping" v-bind="$attrs">
-    <EditorContent :editor class="editor" />
-  </ScrollArea>
+  <EditorContent :editor class="editor" />
   <EditorInlineToolsPopover />
 </template>
 
@@ -16,7 +14,6 @@ const emit = defineEmits<{
 }>()
 
 const { initEditor, destroyEditor, editor, data } = useEditor()
-const { nodeIsSwiping } = useEditorDialog()
 
 onMounted(() => initEditor(props.data))
 onUnmounted(destroyEditor)

@@ -1,6 +1,6 @@
 <template>
   <Teleport to=".editor">
-    <FadeTransition>
+    <FadeInOpacityTransition>
       <div v-if="state.controlsIsShow" :style="floatingStyles" ref="nodeControlsRef">
         <Flex itemsCenter class="gap-1">
           <EditorNodeActionsButton
@@ -9,7 +9,7 @@
           />
         </Flex>
       </div>
-    </FadeTransition>
+    </FadeInOpacityTransition>
   </Teleport>
 </template>
 

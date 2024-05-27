@@ -1,14 +1,14 @@
 <template>
   <DialogRoot v-model:open="isOpen">
     <DialogPortal>
-      <FadeTransition>
+      <FadeInOpacityTransition>
         <DialogOverlay class="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-      </FadeTransition>
+      </FadeInOpacityTransition>
 
       <FadeInSideTransition>
         <DialogContent
           aria-describedby=""
-          class="fixed bottom-0 p-4 w-full flex flex-col bg-white rounded-t-xl"
+          class="fixed bottom-0 p-4 w-full max-h-[75vh] flex flex-col bg-white rounded-t-xl"
           v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
         >
           <VisuallyHidden>
