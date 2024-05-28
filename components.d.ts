@@ -10,6 +10,7 @@ declare module 'vue' {
     ITablerArrowBackUp: typeof import('~icons/tabler/arrow-back-up')['default']
     ITablerArrowDown: typeof import('~icons/tabler/arrow-down')['default']
     ITablerArrowForwardUp: typeof import('~icons/tabler/arrow-forward-up')['default']
+    ITablerArrowLeft: typeof import('~icons/tabler/arrow-left')['default']
     ITablerArrowsDiagonal: typeof import('~icons/tabler/arrows-diagonal')['default']
     ITablerArrowUp: typeof import('~icons/tabler/arrow-up')['default']
     ITablerChevronRight: typeof import('~icons/tabler/chevron-right')['default']

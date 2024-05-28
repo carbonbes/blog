@@ -1,5 +1,8 @@
 <template>
-  <EditorContent :editor class="editor" />
+  <ScrollArea :disableScroll>
+    <EditorContent :editor class="editor" />
+  </ScrollArea>
+
   <EditorInlineToolsPopover />
 </template>
 
@@ -7,7 +10,10 @@
 import { EditorContent } from '@tiptap/vue-3'
 import type { ArticleContent } from '~/types'
 
-const props = defineProps<{ data?: ArticleContent }>()
+const props = defineProps<{
+  data?: ArticleContent
+  disableScroll?: boolean
+}>()
 
 const emit = defineEmits<{
   update: [body: ArticleContent]

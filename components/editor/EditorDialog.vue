@@ -1,8 +1,6 @@
 <template>
   <Dialog :class="editorDialogClasses" @close="setOpen(false)" ref="dialogRef">
-    <ScrollArea :disable-scroll="scrollIsLocked" v-bind="$attrs">
-      <Editor :data />
-    </ScrollArea>
+    <Editor :data :disableScroll="scrollIsLocked"/>
 
     <template #footer>
       <EditorPanel />
@@ -279,5 +277,5 @@ const data = {
   ]
 }
 
-const editorDialogClasses = computed(() => 'fixed inset-0 w-full h-full max-w-[780px] max-h-[800px] rounded-[unset] min-[780px]:rounded-xl')
+const editorDialogClasses = computed(() => 'fixed inset-0 w-full h-full max-w-[780px] max-h-[800px]')
 </script>

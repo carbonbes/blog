@@ -8,7 +8,7 @@
       <FadeInScaleTransition>
         <DialogContent
           aria-describedby=""
-          class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 flex flex-col bg-white rounded-xl"
+          class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 flex flex-col bg-white sm:rounded-xl"
           v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
         >
           <VisuallyHidden>

@@ -8,7 +8,7 @@
       <FadeInSideTransition>
         <DialogContent
           aria-describedby=""
-          class="fixed bottom-0 p-4 w-full max-h-[75vh] flex flex-col bg-white rounded-t-xl"
+          class="fixed bottom-0 p-4 w-full h-full max-h-[75vh] flex flex-col bg-white rounded-t-xl"
           v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
         >
           <VisuallyHidden>

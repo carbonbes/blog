@@ -46,7 +46,7 @@
         </UIButton>
       </Flex>
 
-      <Flex col class="absolute top-0 right-0 gap-2">
+      <Flex col class="absolute top-0 right-0 gap-2 sm:hidden">
         <UIButton
           v-if="nodeIsPinned"
           size="s"
@@ -84,8 +84,13 @@
     </Flex>
 
     <NodesListBottomsheet ref="nodesListBSRef" />
+
     <NodeActionsBottomsheet
-      @toggleAttribute="toggleAttribute"
+      :update-attributes="updateAttributes"
+      :nodeIsPinned
+      :nodeIsSpoilered
+      :nodeType
+      @close="onClose"
       ref="nodeActionsBSRef"
     />
   </NodeViewWrapper>
@@ -103,6 +108,7 @@ import X from '~icons/tabler/x'
 
 const props = defineProps<NodeViewProps>()
 
+const nodeType = computed(() => props.node.type.name)
 const nodeIsPinned = computed<boolean>(() => props.node.attrs.pin)
 const nodeIsSpoilered = computed<boolean>(() => props.node.attrs.spoiler)
 
@@ -165,10 +171,7 @@ const nodeQuickActions = markRaw([
   }
 ])
 
-function toggleAttribute(attribute: 'pin' | 'spoiler') {
-  if (attribute === 'pin') props.updateAttributes({ pin: !nodeIsPinned.value })
-  if (attribute === 'spoiler') props.updateAttributes({ spoiler: !nodeIsSpoilered.value })
-
+function onClose() {
   props.editor.commands.blur()
   resetTransformX()
 }

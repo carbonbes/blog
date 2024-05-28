@@ -1,5 +1,5 @@
 <template>
-  <Bottomsheet class="!bg-gray-100" ref="bottomsheetRef">
+  <Bottomsheet class="!bg-gray-100" @close="emit('close')" ref="bottomsheetRef">
     <ScrollArea>
       <Flex col class="pb-[25vh] !flex gap-4">
         <UIButton
@@ -27,6 +27,10 @@ import List from '~icons/tabler/list'
 import Photo from '~icons/tabler/photo'
 import Link from '~icons/tabler/link'
 import Divider from '~icons/tabler/divide'
+
+const emit = defineEmits<{
+  close: any
+}>()
 
 const buttons = markRaw([
   {
