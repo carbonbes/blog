@@ -16,6 +16,8 @@
           </VisuallyHidden>
 
           <Flex itemsCenter class="pb-4">
+            <slot name="header" />
+
             <DialogClose class="ml-auto">
               <ITablerX class="hover:opacity-50 transition-opacity" />
             </DialogClose>
