@@ -87,6 +87,7 @@
 
     <NodeActionsBottomsheet
       :update-attributes="updateAttributes"
+      :change-node-type
       :nodeIsPinned
       :nodeIsSpoilered
       :nodeType
@@ -105,9 +106,11 @@ import ArrowDown from '~icons/tabler/arrow-down'
 import Trash from '~icons/tabler/trash'
 import Dots from '~icons/tabler/dots'
 import X from '~icons/tabler/x'
+import type { NodeType } from '~/types'
 
 const props = defineProps<NodeViewProps>()
 
+const nodePos = computed(() => props.getPos())
 const nodeType = computed(() => props.node.type.name)
 const nodeIsPinned = computed<boolean>(() => props.node.attrs.pin)
 const nodeIsSpoilered = computed<boolean>(() => props.node.attrs.spoiler)
@@ -170,6 +173,33 @@ const nodeQuickActions = markRaw([
     }
   }
 ])
+
+function changeNodeType({
+  type,
+  level = 2,
+}: {
+  type: NodeType
+  level?: 1 | 2
+}) {
+  if (type === 'heading')
+    props.editor.chain().focus(nodePos.value).toggleHeading({ level }).run()
+
+  else if (type === 'paragraph') {
+    if (props.editor.isActive('bulletList'))
+      props.editor.chain().focus(nodePos.value).toggleBulletList().run()
+    
+    else if (props.editor.isActive('orderedList'))
+      props.editor.chain().focus(nodePos.value).toggleOrderedList().run()
+
+    else props.editor.chain().focus(nodePos.value).setParagraph().run()
+  }
+
+  else if (type === 'bulletList')
+    props.editor.chain().focus(nodePos.value).toggleBulletList().run()
+
+  else if (type === 'orderedList')
+    props.editor.chain().focus(nodePos.value).toggleOrderedList().run()
+}
 
 function onClose() {
   props.editor.commands.blur()

@@ -22,8 +22,6 @@ const rootNode = Node.create({
 
   content: 'block',
 
-  selectable: true,
-
   draggable: true,
 
   addOptions() {

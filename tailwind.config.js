@@ -48,6 +48,11 @@ export default {
           '70%': { transform: 'translateX(5%)' },
           '100%': { transform: 'translateX(0)' }
         },
+        'fade-in-side': {
+          '0%': { height: 0 },
+          '70%': { height: '80vh' },
+          '100%': { height: '75vh' }
+        }
       },
 
       animation: {
@@ -61,6 +66,7 @@ export default {
         'fade-in-right-side': 'fade-in-right-side .25s',
         'fade-in-bottom-side': 'fade-in-bottom-side .25s',
         'fade-in-left-side': 'fade-in-left-side .25s',
+        'fade-in-side': 'fade-in-side .25s'
       },
 
       fontFamily: {

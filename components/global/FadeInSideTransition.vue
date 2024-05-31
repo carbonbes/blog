@@ -19,11 +19,11 @@ const props = withDefaults(defineProps<{
 const enterActiveClass = computed(() => {
   if (props.side === 'top') return 'animate-fade-in-top-side origin-top'
   if (props.side === 'right') return 'animate-fade-in-right-side origin-right'
-  if (props.side === 'bottom') return 'animate-fade-in-bottom-side origin-bottom'
+  if (props.side === 'bottom') return 'animate-fade-in-side origin-bottom'
   if (props.side === 'left') return 'animate-fade-in-left-side origin-left'
 })
 const leaveActiveClass = computed(() => 'transition-transform')
-const enterFromClass = computed(() => 'transition-transform')
+const enterFromClass = computed(() => '!transition-[height]')
 const leaveToClass = computed(() => {
   if (props.side === 'top') return '-translate-y-full'
   if (props.side === 'right') return 'translate-x-full'

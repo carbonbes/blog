@@ -6,6 +6,9 @@
     <ScrollAreaViewport
       class="w-full h-full"
       :class="{ '!overflow-hidden': disableScroll }"
+      @scrollstart="(e: Event) => emit('onScrollStart', e)"
+      @scroll="(e: Event) => emit('onScroll', e)"
+      @scrollend="(e: Event) => emit('onScrollEnd', e)"
       asChild
     >
       <slot />
@@ -44,4 +47,10 @@ withDefaults(defineProps<{
   direction: 'vertical',
   disableScroll: false
 })
+
+const emit = defineEmits<{
+  onScrollStart: [Event]
+  onScroll: [Event]
+  onScrollEnd: [Event]
+}>()
 </script>

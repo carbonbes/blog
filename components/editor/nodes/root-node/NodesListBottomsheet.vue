@@ -1,19 +1,17 @@
 <template>
   <Bottomsheet class="!bg-gray-100" @close="emit('close')" ref="bottomsheetRef">
-    <ScrollArea>
-      <Flex col class="pb-[25vh] !flex gap-4">
-        <UIButton
-          v-for="(button, i) in buttons"
-          :key="i"
-          variant="secondary"
-          size="l"
-          class="flex items-center gap-3"
-        >
-          <Component :is="button.icon" />
-          {{ button.label }}
-        </UIButton>
-      </Flex>
-    </ScrollArea>
+    <Flex col class="pb-[25vh] !flex gap-4">
+      <UIButton
+        v-for="(button, i) in buttons"
+        :key="i"
+        variant="secondary"
+        size="l"
+        class="flex items-center gap-3"
+      >
+        <Component :is="button.icon" />
+        {{ button.label }}
+      </UIButton>
+    </Flex>
   </Bottomsheet>
 </template>
 

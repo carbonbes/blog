@@ -7,7 +7,13 @@ import { FileSystemIconLoader } from 'unplugin-icons/loaders'
 const env = { ...process.env, ...loadEnv('', process.cwd()) }
 
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true,
+    },
+  },
 
   runtimeConfig: {
     supabaseUrl: env.NUXT_SUPABASE_URL,

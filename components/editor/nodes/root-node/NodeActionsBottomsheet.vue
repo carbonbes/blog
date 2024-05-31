@@ -8,44 +8,44 @@
       </FadeInOpacityTransition>
     </template>
 
-    <ScrollArea>
-      <SlideTransition :initialIndex="state.view">
-        <Flex v-if="state.view === 1" col class="pb-[25vh] !flex gap-4">
-          <UIButton
-            v-for="(action, i) in actions"
-            :key="i"
-            variant="secondary"
-            size="l"
-            class="flex items-center gap-3"
-            :class="{ 'text-blue-500': action.active }"
-            @click="action.action"
-          >
-            <Component :is="action.icon" />
-            {{ action.label }}
-            <ITablerChevronRight v-if="action.additional" class="ml-auto" />
-          </UIButton>
-        </Flex>
+    <SlideTransition :initialIndex="state.view">
+      <Flex v-if="state.view === 1" col class="pb-[25vh] !flex gap-4">
+        <UIButton
+          v-for="(button, i) in mainButtons"
+          :key="i"
+          variant="secondary"
+          size="l"
+          class="flex items-center gap-3"
+          :class="{ 'text-blue-500': button.active }"
+          @click="button.action"
+        >
+          <Component :is="button.icon" />
+          {{ button.label }}
+          <ITablerChevronRight v-if="button.additional" class="ml-auto" />
+        </UIButton>
+      </Flex>
 
-        <Flex v-else col class="pb-[25vh] !flex gap-4">
-          <UIButton
-            v-for="(action, i) in nodeTypesActions"
-            :key="i"
-            variant="secondary"
-            size="l"
-            class="flex items-center gap-3"
-            @click="action.action"
-          >
-            <Component :is="action.icon" />
-            {{ action.label }}
-          </UIButton>
-        </Flex>
-      </SlideTransition>
-    </ScrollArea>
+      <Flex v-else col class="pb-[25vh] !flex gap-4">
+        <UIButton
+          v-for="(button, i) in changeNodeTypeButtons"
+          :key="i"
+          variant="secondary"
+          size="l"
+          class="flex items-center gap-3"
+          @click="button.action"
+        >
+          <Component :is="button.icon" />
+          {{ button.label }}
+        </UIButton>
+      </Flex>
+    </SlideTransition>
   </Bottomsheet>
 </template>
 
 <script lang="ts" setup>
 import type Bottomsheet from '~/components/global/Bottomsheet.vue'
+import type { Editor } from '@tiptap/core'
+import type { NodeType } from '~/types'
 import Pin from '~icons/tabler/pin'
 import EyeOff from '~icons/tabler/eye-off'
 import Refresh from '~icons/tabler/refresh'
@@ -57,6 +57,7 @@ import ListNumbers from '~icons/tabler/list-numbers'
 
 const props = defineProps<{
   updateAttributes: (attributes: Record<string, any>) => void
+  changeNodeType: ({ type, level }: { type: NodeType, level?: 1 | 2 }) => void
   nodeIsPinned: boolean
   nodeIsSpoilered: boolean
   nodeType: string
@@ -77,7 +78,7 @@ function onClose() {
   state.view = 1
 }
 
-const actions = computed(() => [
+const mainButtons = computed(() => [
   {
     icon: Pin,
     label: !props.nodeIsPinned ? 'Вывести в карточке' : 'Выводится в карточке',
@@ -106,12 +107,12 @@ const actions = computed(() => [
   },
 ])
 
-const nodeTypesActions = computed(() => [
+const changeNodeTypeButtons = computed(() => [
   {
     icon: Heading1,
     label: 'Заголовок 1',
     action: () => {
-      
+      props.changeNodeType({ type: 'heading', level: 1 })
       setOpen(false)
     }
   },
@@ -119,7 +120,7 @@ const nodeTypesActions = computed(() => [
     icon: Heading2,
     label: 'Заголовок 2',
     action: () => {
-      
+      props.changeNodeType({ type: 'heading', level: 2 })
       setOpen(false)
     }
   },
@@ -127,7 +128,7 @@ const nodeTypesActions = computed(() => [
     icon: Paragraph,
     label: 'Текст',
     action: () => {
-      
+      props.changeNodeType({ type: 'paragraph' })
       setOpen(false)
     }
   },
@@ -135,7 +136,7 @@ const nodeTypesActions = computed(() => [
     icon: ListNumbers,
     label: 'Нумерованный список',
     action: () => {
-      
+      props.changeNodeType({ type: 'orderedList' })
       setOpen(false)
     }
   },
@@ -143,7 +144,7 @@ const nodeTypesActions = computed(() => [
     icon: List,
     label: 'Маркированный список',
     action: () => {
-      
+      props.changeNodeType({ type: 'bulletList' })
       setOpen(false)
     }
   },
