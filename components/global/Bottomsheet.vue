@@ -8,15 +8,15 @@
       <FadeInSideTransition>
         <DialogContent
           aria-describedby=""
-          class="fixed bottom-0 p-4 w-full h-[75vh] flex flex-col bg-white rounded-t-2xl"
-          :class="{ 'transition-[height]': !state.isSwiping }"
+          class="fixed bottom-0 p-4 w-full h-[75vh] max-h-full flex flex-col bg-white rounded-t-2xl"
+          :class="{ 'transition-[height]': !state.isSwiping && isOpen }"
           v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
           @touchstart="onTouchStart"
           @touchmove="onTouchMove"
           @touchend="onTouchEnd"
           ref="dialogContentRef"
         >
-          <div class="absolute left-1/2 -translate-x-1/2 w-8 h-1 bg-gray-400 rounded-full" />
+          <div class="absolute left-1/2 -translate-x-1/2 w-10 h-1 bg-gray-400 rounded-full" />
 
           <VisuallyHidden>
             <DialogTitle />
@@ -27,7 +27,8 @@
           </Flex>
 
           <ScrollArea
-            @onScrollStart="onScrollStart"
+            :disableScroll="state.isSwiping"
+            ref="scrollAreaRef"
             @onScroll="onScroll"
             @onScrollEnd="onScrollEnd"
           >
@@ -46,6 +47,7 @@ import {
   type DialogContentEmits,
   type DialogContentProps
 } from 'radix-vue'
+import type ScrollArea from '~/components/global/ScrollArea.vue'
 
 const props = defineProps<DialogContentProps & {
   class?: string
@@ -57,10 +59,9 @@ const emits = defineEmits<DialogContentEmits & {
 
 const emitsAsProps = useEmitAsProps(emits)
 
-const dialogContentRef = ref<InstanceType<typeof DialogContent>>()
-
 const state: {
   isScrolling: boolean
+  scrollTop: number
   isSwiping: boolean
   touchStartY: number
   touchEndY: number
@@ -68,6 +69,7 @@ const state: {
   elInitialHeight: number
 } = reactive({
   isScrolling: false,
+  scrollTop: 0,
   isSwiping: false,
   touchStartY: 0,
   touchEndY: 0,
@@ -75,49 +77,64 @@ const state: {
   elInitialHeight: 0
 })
 
-function onTouchStart(e: TouchEvent) {
-  if (state.isScrolling) return
+const dialogContentRef = ref<InstanceType<typeof DialogContent>>()
+const scrollAreaRef = ref<InstanceType<typeof ScrollArea>>()
 
+const isScrollable = computed(() => {
+  const el = scrollAreaRef.value?.$el as HTMLElement
+  const parentEl = el.parentNode as HTMLElement
+
+  return el.scrollHeight > parentEl.clientHeight
+})
+
+function onTouchStart(e: TouchEvent) {
   const el = dialogContentRef.value?.$el as HTMLElement
 
-  state.isSwiping = true
   state.touchStartY = e.touches[0].clientY
   state.elInitialHeight = el.clientHeight
 }
 
 function onTouchMove(e: TouchEvent) {
-  if (state.isScrolling) return
+  const direction = Math.abs(e.touches[0].clientY) - Math.abs(state.touchStartY) > 0 ? 'down' : 'up'
 
+  if ((isScrollable.value && state.scrollTop >= 0 && direction === 'up') || state.isScrolling) return
+
+  state.isSwiping = true
   state.touchDeltaY = state.touchStartY - e.touches[0].clientY
+  state.touchEndY = e.touches[0].clientY
 
-  const el = dialogContentRef.value?.$el as HTMLElement
-  el.style.height = `${state.elInitialHeight - (state.touchDeltaY * -1)}px`
+  const dialogEl = dialogContentRef.value?.$el as HTMLElement
+  dialogEl.style.height = `${state.elInitialHeight - (state.touchDeltaY * -1)}px`
 }
 
-function onTouchEnd(e: TouchEvent) {
+function onTouchEnd() {
   state.isSwiping = false
 
-  if (Math.abs(state.touchDeltaY) <= 100) {
-    const el = dialogContentRef.value?.$el as HTMLElement
-    el.style.height = `${state.elInitialHeight}px`
+  const direction = Math.abs(state.touchEndY) - Math.abs(state.touchStartY) > 0 ? 'down' : 'up'
+
+  if (direction === 'down') {
+    if (Math.abs(state.touchDeltaY) <= 150) {
+      const dialogEl = dialogContentRef.value?.$el as HTMLElement
+      dialogEl.style.height = ''
+    } else {
+      setOpen(false)
+    }
   } else {
-    setOpen(false)
+    const dialogEl = dialogContentRef.value?.$el as HTMLElement
+    dialogEl.style.height = ''
   }
 }
 
-function onScrollStart(e: Event) {
-  const target = e.target as HTMLElement
-  
-  state.isScrolling = target.scrollTop === 0 ? false : true
-}
-
 function onScroll(e: Event) {
-  const target = e.target as HTMLElement
+  if (state.isSwiping) return
 
-  state.isScrolling = target.scrollTop === 0 ? false : true
+  state.isScrolling = true
+
+  const target = e.target as HTMLElement
+  state.scrollTop = target.scrollTop
 }
 
-function onScrollEnd(e: Event) {
+function onScrollEnd() {
   state.isScrolling = false
 }
 

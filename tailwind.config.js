@@ -5,7 +5,9 @@ export default {
   future: {
     hoverOnlyWhenSupported: true,
   },
+
   content: [],
+
   theme: {
     extend: {
       keyframes: {
@@ -74,6 +76,7 @@ export default {
       },
     },
   },
+
   plugins: [
     plugin(function({ addVariant }) {
       addVariant('not-first', '&:not(:first-child)')

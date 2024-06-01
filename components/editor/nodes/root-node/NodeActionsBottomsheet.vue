@@ -1,5 +1,5 @@
 <template>
-  <Bottomsheet class="!bg-gray-100" @close="onClose" ref="bottomsheetRef">
+  <BottomSheet class="!bg-gray-100" @close="onClose" ref="bottomsheetRef">
     <template #header>
       <FadeInOpacityTransition>
         <button v-if="state.view === 2" @click="state.view = 1">
@@ -39,11 +39,11 @@
         </UIButton>
       </Flex>
     </SlideTransition>
-  </Bottomsheet>
+  </BottomSheet>
 </template>
 
 <script lang="ts" setup>
-import type Bottomsheet from '~/components/global/Bottomsheet.vue'
+import type BottomSheet from '~/components/global/BottomSheet.vue'
 import type { Editor } from '@tiptap/core'
 import type { NodeType } from '~/types'
 import Pin from '~icons/tabler/pin'
@@ -150,7 +150,7 @@ const changeNodeTypeButtons = computed(() => [
   },
 ])
 
-const bottomsheetRef = ref<InstanceType<typeof Bottomsheet>>()
+const bottomsheetRef = ref<InstanceType<typeof BottomSheet>>()
 
 function setOpen(value: boolean) {
   bottomsheetRef.value?.setOpen(value)

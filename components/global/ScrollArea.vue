@@ -6,9 +6,9 @@
     <ScrollAreaViewport
       class="w-full h-full"
       :class="{ '!overflow-hidden': disableScroll }"
-      @scrollstart="(e: Event) => emit('onScrollStart', e)"
       @scroll="(e: Event) => emit('onScroll', e)"
       @scrollend="(e: Event) => emit('onScrollEnd', e)"
+      :ref="forwardRef"
       asChild
     >
       <slot />
@@ -39,6 +39,9 @@
 </template>
 
 <script lang="ts" setup>
+import { useForwardExpose } from 'radix-vue'
+import { scrollend } from 'scrollyfills'
+
 withDefaults(defineProps<{
   direction?: 'horizontal' | 'vertical'
   class?: string
@@ -49,8 +52,9 @@ withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{
-  onScrollStart: [Event]
   onScroll: [Event]
   onScrollEnd: [Event]
 }>()
+
+const { forwardRef } = useForwardExpose()
 </script>

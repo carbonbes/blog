@@ -1,5 +1,5 @@
 <template>
-  <Bottomsheet class="!bg-gray-100" @close="emit('close')" ref="bottomsheetRef">
+  <BottomSheet class="!bg-gray-100" @close="emit('close')" ref="bottomsheetRef">
     <Flex col class="pb-[25vh] !flex gap-4">
       <UIButton
         v-for="(button, i) in buttons"
@@ -12,11 +12,11 @@
         {{ button.label }}
       </UIButton>
     </Flex>
-  </Bottomsheet>
+  </BottomSheet>
 </template>
 
 <script lang="ts" setup>
-import type Bottomsheet from '~/components/global/Bottomsheet.vue'
+import type BottomSheet from '~/components/global/BottomSheet.vue'
 import Heading1 from '~icons/tabler/h1'
 import Heading2 from '~icons/tabler/h2'
 import Paragraph from '~icons/tabler/letter-case'
@@ -65,7 +65,7 @@ const buttons = markRaw([
   },
 ])
 
-const bottomsheetRef = ref<InstanceType<typeof Bottomsheet>>()
+const bottomsheetRef = ref<InstanceType<typeof BottomSheet>>()
 
 function setOpen(value: boolean) {
   bottomsheetRef.value?.setOpen(value)
