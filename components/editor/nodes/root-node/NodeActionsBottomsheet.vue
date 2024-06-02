@@ -1,5 +1,5 @@
 <template>
-  <BottomSheet class="!bg-gray-100" @close="onClose" ref="bottomsheetRef">
+  <BottomSheet class="!bg-gray-100 after:!bg-gray-100" @close="onClose" ref="bottomsheetRef">
     <template #header>
       <FadeInOpacityTransition>
         <button v-if="state.view === 2" @click="state.view = 1">

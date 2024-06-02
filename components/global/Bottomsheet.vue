@@ -8,8 +8,8 @@
       <FadeInSideTransition>
         <DialogContent
           aria-describedby=""
-          class="fixed bottom-0 p-4 w-full h-[75vh] max-h-full flex flex-col bg-white rounded-t-2xl"
-          :class="{ 'transition-[height]': !state.isSwiping && isOpen }"
+          class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen p-4 w-full h-[75vh] max-h-full flex flex-col bg-white rounded-t-2xl"
+          :class="{ 'transition-transform': !state.isSwiping }"
           v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
           @touchstart="onTouchStart"
           @touchmove="onTouchMove"
@@ -59,7 +59,7 @@ const emits = defineEmits<DialogContentEmits & {
 
 const emitsAsProps = useEmitAsProps(emits)
 
-const state: {
+let state: {
   isScrolling: boolean
   scrollTop: number
   isSwiping: boolean
@@ -77,6 +77,18 @@ const state: {
   elInitialHeight: 0
 })
 
+function resetState() {
+  state = {
+    isScrolling: false,
+    scrollTop: 0,
+    isSwiping: false,
+    touchStartY: 0,
+    touchEndY: 0,
+    touchDeltaY: 0,
+    elInitialHeight: 0
+  }
+}
+
 const dialogContentRef = ref<InstanceType<typeof DialogContent>>()
 const scrollAreaRef = ref<InstanceType<typeof ScrollArea>>()
 
@@ -88,23 +100,28 @@ const isScrollable = computed(() => {
 })
 
 function onTouchStart(e: TouchEvent) {
-  const el = dialogContentRef.value?.$el as HTMLElement
+  if (state.isScrolling) return
 
   state.touchStartY = e.touches[0].clientY
+  
+  const el = dialogContentRef.value?.$el as HTMLElement
   state.elInitialHeight = el.clientHeight
 }
 
 function onTouchMove(e: TouchEvent) {
   const direction = Math.abs(e.touches[0].clientY) - Math.abs(state.touchStartY) > 0 ? 'down' : 'up'
 
-  if ((isScrollable.value && state.scrollTop >= 0 && direction === 'up') || state.isScrolling) return
+  if ((isScrollable.value && state.scrollTop === 0 && direction === 'up') ||
+    (isScrollable.value && state.scrollTop > 0 && direction === 'down') ||
+    state.isScrolling
+  ) return
 
   state.isSwiping = true
   state.touchDeltaY = state.touchStartY - e.touches[0].clientY
   state.touchEndY = e.touches[0].clientY
 
   const dialogEl = dialogContentRef.value?.$el as HTMLElement
-  dialogEl.style.height = `${state.elInitialHeight - (state.touchDeltaY * -1)}px`
+  dialogEl.style.transform = `translateY(${state.touchDeltaY * -1}px)`
 }
 
 function onTouchEnd() {
@@ -115,13 +132,13 @@ function onTouchEnd() {
   if (direction === 'down') {
     if (Math.abs(state.touchDeltaY) <= 150) {
       const dialogEl = dialogContentRef.value?.$el as HTMLElement
-      dialogEl.style.height = ''
+      dialogEl.style.transform = ''
     } else {
       setOpen(false)
     }
   } else {
     const dialogEl = dialogContentRef.value?.$el as HTMLElement
-    dialogEl.style.height = ''
+    dialogEl.style.transform = ''
   }
 }
 
@@ -148,7 +165,12 @@ function toggleOpen() {
   isOpen.value = !isOpen.value
 }
 
-watch(isOpen, (v) => !v && emits('close'))
+watch(isOpen, (v) => {
+  if (!v) {
+    emits('close')
+    resetState()
+  }
+})
 
 defineExpose({ setOpen, toggleOpen })
 </script>
