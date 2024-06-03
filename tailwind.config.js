@@ -19,37 +19,37 @@ export default {
         },
         next: {
           '0%': { opacity: 0, transform: 'translateX(100%)' },
-          '100%': { opacity: 1, transform: 'translateX(0)' }
+          '100%': { opacity: 1, transform: 'translateX(0)' },
         },
         previous: {
           '0%': { opacity: 1, transform: 'translateX(0)' },
-          '100%': { opacity: 0, transform: 'translateX(-100%)' }
+          '100%': { opacity: 0, transform: 'translateX(-100%)' },
         },
         notification: {
           '0%': { opacity: 0, transform: 'translateX(100%)' },
           '70%': { transform: 'translateX(-5%)' },
-          '100%': { opacity: 1, transform: 'translateX(0)' }
+          '100%': { opacity: 1, transform: 'translateX(0)' },
         },
         'fade-in-top-side': {
           '0%': { transform: 'translateY(-100%)' },
           '70%': { transform: 'translateY(5%)' },
-          '100%': { transform: 'translateY(0)' }
+          '100%': { transform: 'translateY(0)' },
         },
         'fade-in-right-side': {
           '0%': { transform: 'translateX(100%)' },
           '70%': { transform: 'translateX(-5%)' },
-          '100%': { transform: 'translateX(0)' }
+          '100%': { transform: 'translateX(0)' },
         },
         'fade-in-bottom-side': {
           '0%': { transform: 'translateY(100%)' },
           '70%': { transform: 'translateY(-5%)' },
-          '100%': { transform: 'translateY(0)' }
+          '100%': { transform: 'translateY(0)' },
         },
         'fade-in-left-side': {
           '0%': { transform: 'translateX(-100%)' },
           '70%': { transform: 'translateX(5%)' },
-          '100%': { transform: 'translateX(0)' }
-        }
+          '100%': { transform: 'translateX(0)' },
+        },
       },
 
       animation: {
@@ -66,16 +66,31 @@ export default {
       },
 
       fontFamily: {
-        sans: ['Roboto, sans-serif']
+        sans: ['Roboto, sans-serif'],
       },
     },
   },
 
   plugins: [
-    plugin(function({ addVariant }) {
-      addVariant('not-first', '&:not(:first-child)')
-      addVariant('not-last', '&:not(:last-child)')
-    })
+    plugin(
+      function ({ addVariant }) {
+        addVariant('not-first', '&:not(:first-child)')
+        addVariant('not-last', '&:not(:last-child)')
+      },
+
+      function ({ addUtilities }) {
+        const noScrollbarUtil = {
+          '.no-scrollbar': {
+            '-ms-overflow-style': 'none',
+            'scrollbar-width': 'none',
+          },
+          '.no-scrollbar::-webkit-scrollbar': {
+            display: 'none',
+          },
+        }
+
+        addUtilities(noScrollbarUtil)
+      }
+    ),
   ],
 }
-

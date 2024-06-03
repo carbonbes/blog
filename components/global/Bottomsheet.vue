@@ -10,6 +10,7 @@
           aria-describedby=""
           class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen p-4 w-full h-[75vh] max-h-full flex flex-col bg-white rounded-t-2xl"
           :class="{ 'transition-transform': !state.isSwiping }"
+          :style="{ transform: state.translateY }"
           v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
           @touchstart="onTouchStart"
           @touchmove="onTouchMove"
@@ -59,7 +60,7 @@ const emits = defineEmits<DialogContentEmits & {
 
 const emitsAsProps = useEmitAsProps(emits)
 
-let state: {
+const state: {
   isScrolling: boolean
   scrollTop: number
   isSwiping: boolean
@@ -67,6 +68,7 @@ let state: {
   touchEndY: number
   touchDeltaY: number
   elInitialHeight: number
+  translateY: string
 } = reactive({
   isScrolling: false,
   scrollTop: 0,
@@ -74,19 +76,18 @@ let state: {
   touchStartY: 0,
   touchEndY: 0,
   touchDeltaY: 0,
-  elInitialHeight: 0
+  elInitialHeight: 0,
+  translateY: ''
 })
 
 function resetState() {
-  state = {
-    isScrolling: false,
-    scrollTop: 0,
-    isSwiping: false,
-    touchStartY: 0,
-    touchEndY: 0,
-    touchDeltaY: 0,
-    elInitialHeight: 0
-  }
+  state.isScrolling = false
+  state.scrollTop = 0
+  state.isSwiping = false
+  state.touchStartY = 0
+  state.touchEndY = 0
+  state.touchDeltaY = 0
+  state.elInitialHeight = 0
 }
 
 const dialogContentRef = ref<InstanceType<typeof DialogContent>>()
@@ -120,8 +121,7 @@ function onTouchMove(e: TouchEvent) {
   state.touchDeltaY = state.touchStartY - e.touches[0].clientY
   state.touchEndY = e.touches[0].clientY
 
-  const dialogEl = dialogContentRef.value?.$el as HTMLElement
-  dialogEl.style.transform = `translateY(${state.touchDeltaY * -1}px)`
+  state.translateY = `translateY(${state.touchDeltaY * -1}px)`
 }
 
 function onTouchEnd() {
@@ -131,14 +131,13 @@ function onTouchEnd() {
 
   if (direction === 'down') {
     if (Math.abs(state.touchDeltaY) <= 150) {
-      const dialogEl = dialogContentRef.value?.$el as HTMLElement
-      dialogEl.style.transform = ''
+      state.translateY = ''
     } else {
       setOpen(false)
+      state.translateY = ''
     }
   } else {
-    const dialogEl = dialogContentRef.value?.$el as HTMLElement
-    dialogEl.style.transform = ''
+    state.translateY = ''
   }
 }
 
