@@ -6,9 +6,9 @@
     <ScrollAreaViewport
       class="w-full h-full"
       :class="{ '!overflow-hidden': disableScroll }"
-      @scroll="(e: Event) => emit('onScroll', e)"
-      @scrollend="(e: Event) => emit('onScrollEnd', e)"
-      :ref="forwardRef"
+      @scroll.passive="onScroll"
+      @scrollcancel="onScrollCancel"
+      ref="scrollAreaViewportRef"
       asChild
     >
       <slot />
@@ -39,8 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useForwardExpose } from 'radix-vue'
-import { scrollend } from 'scrollyfills'
+import { ScrollAreaViewport } from 'radix-vue'
 
 withDefaults(defineProps<{
   direction?: 'horizontal' | 'vertical'
@@ -53,8 +52,39 @@ withDefaults(defineProps<{
 
 const emit = defineEmits<{
   onScroll: [Event]
-  onScrollEnd: [Event]
+  onScrollEnd: [void]
+  onScrollCancel: [Event]
+  isScrollable: [boolean]
+  scrollTop: [number]
 }>()
 
-const { forwardRef } = useForwardExpose()
+function onScroll(e: Event) {
+  emit('onScroll', e)
+
+  onScrollEnd()
+
+  const { scrollTop } = e.target as HTMLElement
+  emit('scrollTop', scrollTop)
+}
+
+const onScrollEnd = useDebounceFn(() => {
+  emit('onScrollEnd')
+}, 100)
+
+function onScrollCancel(e: Event) {
+  emit('onScrollCancel', e)
+}
+
+const scrollAreaViewportRef = ref<InstanceType<typeof ScrollAreaViewport>>()
+
+const isScrollable = computed(() => {
+  const el = scrollAreaViewportRef.value?.$el as HTMLElement | undefined
+  const parentEl = el?.parentNode as HTMLElement | undefined
+
+  if (!(el && parentEl)) return false
+
+  return el.scrollHeight > parentEl.clientHeight
+})
+
+watch(isScrollable, (v) => emit('isScrollable', v))
 </script>
