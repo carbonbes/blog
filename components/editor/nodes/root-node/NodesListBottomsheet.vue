@@ -7,6 +7,7 @@
         variant="secondary"
         size="l"
         class="flex items-center gap-3"
+        @click="button.action"
       >
         <Component :is="button.icon" />
         {{ button.label }}
@@ -25,43 +26,53 @@ import List from '~icons/tabler/list'
 import Photo from '~icons/tabler/photo'
 import Link from '~icons/tabler/link'
 import Divider from '~icons/tabler/divide'
+import type { HeadingLevel, NodeType } from '~/types'
 
 const emit = defineEmits<{
   close: any
+  insertNode: [type: NodeType, level?: HeadingLevel]
 }>()
 
 const buttons = markRaw([
   {
     icon: Heading1,
-    label: 'Заголовок 1'
+    label: 'Заголовок 1',
+    action: () => emit('insertNode', 'heading', 1)
   },
   {
     icon: Heading2,
-    label: 'Заголовок 2'
+    label: 'Заголовок 2',
+    action: () => emit('insertNode', 'heading', 2)
   },
   {
     icon: Paragraph,
-    label: 'Текст'
+    label: 'Текст',
+    action: () => emit('insertNode', 'paragraph')
   },
   {
     icon: ListNumbers,
-    label: 'Нумерованный список'
+    label: 'Нумерованный список',
+    action: () => emit('insertNode', 'orderedList')
   },
   {
     icon: List,
-    label: 'Маркированный список'
+    label: 'Маркированный список',
+    action: () => emit('insertNode', 'bulletList')
   },
   {
     icon: Photo,
-    label: 'Картинка / Галерея'
+    label: 'Картинка / Галерея',
+    action: () => emit('insertNode', 'gallery')
   },
   {
     icon: Link,
-    label: 'Ссылка'
+    label: 'Ссылка',
+    action: () => emit('insertNode', 'link')
   },
   {
     icon: Divider,
-    label: 'Разделитель'
+    label: 'Разделитель',
+    action: () => emit('insertNode', 'delimiter')
   },
 ])
 

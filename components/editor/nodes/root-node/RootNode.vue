@@ -22,7 +22,7 @@
       <Flex
         itemsCenter
         justifyEnd
-        class="absolute right-full pr-4 w-full h-full bg-gray-100 gap-2 sm:hidden text-base font-normal"
+        class="absolute right-full mr-4 pr-4 w-full h-full bg-gray-100 gap-2 sm:hidden rounded-r-xl text-base font-normal"
       >
         <ITablerPlus />
         Новый блок
@@ -32,7 +32,7 @@
 
       <Flex
         itemsCenter
-        class="absolute left-full pl-4 w-full h-full bg-gray-100 gap-2 sm:hidden"
+        class="absolute left-full ml-4 pl-4 w-full h-full bg-gray-100 gap-2 sm:hidden rounded-l-xl"
       >
         <UIButton
           v-for="(button, i) in nodeQuickActions"
@@ -83,7 +83,7 @@
       </UIButton>
     </Flex>
 
-    <NodesListBottomsheet ref="nodesListBSRef" />
+    <NodesListBottomsheet @insertNode="insertNode" ref="nodesListBSRef" />
 
     <NodeActionsBottomsheet
       :update-attributes="updateAttributes"
@@ -98,7 +98,7 @@
 </template>
 
 <script lang="ts" setup>
-import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from '@tiptap/vue-3'
+import { NodeViewWrapper, NodeViewContent, type NodeViewProps, type JSONContent } from '@tiptap/vue-3'
 import NodesListBottomsheet from '~/components/editor/nodes/root-node/NodesListBottomsheet.vue'
 import NodeActionsBottomsheet from '~/components/editor/nodes/root-node/NodeActionsBottomsheet.vue'
 import ArrowUp from '~icons/tabler/arrow-up'
@@ -106,11 +106,12 @@ import ArrowDown from '~icons/tabler/arrow-down'
 import Trash from '~icons/tabler/trash'
 import Dots from '~icons/tabler/dots'
 import X from '~icons/tabler/x'
-import type { NodeType } from '~/types'
+import type { HeadingLevel, NodeType } from '~/types'
 
 const props = defineProps<NodeViewProps>()
 
-const nodePos = computed(() => props.getPos())
+const nodeStartPos = computed(() => props.getPos())
+const nodeEndPos = computed(() => props.getPos() + props.node.nodeSize)
 const nodeType = computed(() => props.node.type.name)
 const nodeIsPinned = computed<boolean>(() => props.node.attrs.pin)
 const nodeIsSpoilered = computed<boolean>(() => props.node.attrs.spoiler)
@@ -155,6 +156,7 @@ const nodeQuickActions = markRaw([
     icon: Trash,
     action: () => {
       props.deleteNode()
+      resetTransformX()
       props.editor.commands.blur()
     }
   },
@@ -174,6 +176,18 @@ const nodeQuickActions = markRaw([
   }
 ])
 
+function insertNode(type: NodeType, level?: HeadingLevel) {
+  let content: JSONContent[] | undefined
+
+  if (['bulletList', 'orderedList'].includes(type)) {
+    content = [{ type: 'listItem', content: [{ type: 'paragraph', content: [] }] }]
+  }
+
+  props.editor.chain().insertContentAt(nodeEndPos.value, { type, attrs: { level }, content }).focus().run()
+
+  nodesListBSRef.value?.setOpen(false)
+}
+
 function changeNodeType({
   type,
   level = 2,
@@ -181,24 +195,33 @@ function changeNodeType({
   type: NodeType
   level?: 1 | 2
 }) {
-  if (type === 'heading')
-    props.editor.chain().focus(nodePos.value).toggleHeading({ level }).run()
+  if (type === 'heading') {
+    props.editor.chain().focus(nodeStartPos.value + 3).toggleHeading({ level }).run()
+  } else if (type === 'paragraph') {
+    props.editor.commands.focus(nodeStartPos.value + 3)
 
-  else if (type === 'paragraph') {
-    if (props.editor.isActive('bulletList'))
-      props.editor.chain().focus(nodePos.value).toggleBulletList().run()
-    
-    else if (props.editor.isActive('orderedList'))
-      props.editor.chain().focus(nodePos.value).toggleOrderedList().run()
+    if (props.editor.isActive('bulletList') || props.editor.isActive('orderedList')) {
+      const { state } = props.editor
+      const { doc } = state
+      const resolvedPos = doc.resolve(nodeStartPos.value + 1)
 
-    else props.editor.chain().focus(nodePos.value).setParagraph().run()
+      resolvedPos.nodeAfter?.descendants((node) => {
+        if (node.type.name === 'listItem') {
+          props.editor.chain().focus().liftListItem('listItem').run()
+        }
+
+        return false
+      })
+    } else {
+      props.editor.chain().focus(nodeStartPos.value + 3).setParagraph().run()
+    }
   }
 
   else if (type === 'bulletList')
-    props.editor.chain().focus(nodePos.value).toggleBulletList().run()
+    props.editor.chain().focus(nodeStartPos.value + 3).toggleBulletList().run()
 
   else if (type === 'orderedList')
-    props.editor.chain().focus(nodePos.value).toggleOrderedList().run()
+    props.editor.chain().focus(nodeStartPos.value + 3).toggleOrderedList().run()
 }
 
 function onClose() {
