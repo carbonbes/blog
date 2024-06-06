@@ -44,8 +44,7 @@
 
 <script lang="ts" setup>
 import type BottomSheet from '~/components/global/BottomSheet.vue'
-import type { Editor } from '@tiptap/core'
-import type { NodeType } from '~/types'
+import type { HeadingLevel, NodeType } from '~/types'
 import Pin from '~icons/tabler/pin'
 import EyeOff from '~icons/tabler/eye-off'
 import Refresh from '~icons/tabler/refresh'
@@ -56,15 +55,15 @@ import List from '~icons/tabler/list'
 import ListNumbers from '~icons/tabler/list-numbers'
 
 const props = defineProps<{
-  updateAttributes: (attributes: Record<string, any>) => void
-  changeNodeType: ({ type, level }: { type: NodeType, level?: 1 | 2 }) => void
   nodeIsPinned: boolean
   nodeIsSpoilered: boolean
-  nodeType: string
+  nodeType: NodeType
 }>()
 
 const emit = defineEmits<{
   close: any
+  changeNodeType: [type: NodeType, level?: HeadingLevel]
+  updateAttribute: [attr: 'pin' | 'spoiler', value: boolean]
 }>()
 
 const state: {
@@ -84,7 +83,7 @@ const mainButtons = computed(() => [
     label: !props.nodeIsPinned ? 'Вывести в карточке' : 'Выводится в карточке',
     active: props.nodeIsPinned,
     action: () => {
-      props.updateAttributes({ pin: !props.nodeIsPinned })
+      emit('updateAttribute', 'pin', !props.nodeIsPinned)
       setOpen(false)
     }
   },
@@ -93,7 +92,7 @@ const mainButtons = computed(() => [
     label: !props.nodeIsSpoilered ? 'Скрыть' : 'Скрывается',
     active: props.nodeIsSpoilered,
     action: () => {
-      props.updateAttributes({ spoiler: !props.nodeIsSpoilered })
+      emit('updateAttribute', 'spoiler', !props.nodeIsSpoilered)
       setOpen(false)
     }
   },
@@ -112,7 +111,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: Heading1,
     label: 'Заголовок 1',
     action: () => {
-      props.changeNodeType({ type: 'heading', level: 1 })
+      emit('changeNodeType', 'heading', 1)
       setOpen(false)
     }
   },
@@ -120,7 +119,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: Heading2,
     label: 'Заголовок 2',
     action: () => {
-      props.changeNodeType({ type: 'heading', level: 2 })
+      emit('changeNodeType', 'heading', 2)
       setOpen(false)
     }
   },
@@ -128,7 +127,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: Paragraph,
     label: 'Текст',
     action: () => {
-      props.changeNodeType({ type: 'paragraph' })
+      emit('changeNodeType', 'paragraph')
       setOpen(false)
     }
   },
@@ -136,7 +135,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: ListNumbers,
     label: 'Нумерованный список',
     action: () => {
-      props.changeNodeType({ type: 'orderedList' })
+      emit('changeNodeType', 'orderedList')
       setOpen(false)
     }
   },
@@ -144,7 +143,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: List,
     label: 'Маркированный список',
     action: () => {
-      props.changeNodeType({ type: 'bulletList' })
+      emit('changeNodeType', 'bulletList')
       setOpen(false)
     }
   },

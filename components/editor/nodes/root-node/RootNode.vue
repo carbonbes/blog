@@ -1,38 +1,47 @@
 <template>
   <NodeViewWrapper :class="nodeClasses" data-type="root-node">
-    <Flex :class="nodeDesktopLeftControlsClasses" contentEditable="false">
+    <Flex
+      class="sm:items-center gap-1 self-start hidden sm:flex sm:[&>button]:opacity-0 sm:group-hover/node:[&>button]:opacity-100 [&>button]:transition-opacity"
+      contentEditable="false"
+    >
       <UIButton size="s" variant="secondary">
         <ITablerPlus class="!size-4" />
       </UIButton>
 
-      <UIButton
-        size="s"
-        variant="secondary"
-        draggable
-        data-drag-handle>
-        <ITablerGripVertical class="!size-4" />
-      </UIButton>
+      <NodeActionsButton
+        :editor
+        :nodeIsPinned
+        :nodeIsSpoilered
+        :nodeType
+        @isOpen="(value) => state.nodeActionsIsOpen = value"
+        @changeNodeType="changeNodeType"
+        @updateAttribute="updateAttribute"
+        @removeNode="deleteNode"
+      />
     </Flex>
 
     <Flex
-      :class="nodeContentWrapperClasses"
+      class="relative w-full"
+      :class="{ 'transition-transform': !isSwiping }"
       :style="{ transform: transformX }"
       ref="nodeContentRef"
     >
       <Flex
         itemsCenter
         justifyEnd
-        class="absolute right-full mr-4 pr-4 w-full h-full bg-gray-100 gap-2 sm:hidden rounded-r-xl text-base font-normal"
+        class="absolute right-full mr-4 pr-4 w-full h-full bg-blue-400 gap-2 sm:hidden rounded-r-xl text-base font-normal text-white"
       >
         <ITablerPlus />
-        Новый блок
+        Новый узел
       </Flex>
 
-      <NodeViewContent :class="nodeContentClasses" />
+      <NodeViewContent
+        class="w-full [&_ol]:pl-4 [&_ul]:pl-4 not-first:[&_ul_>_li]:mt-2 not-first:[&_ol_>_li]:mt-2 [&_ol]:list-decimal [&_ul]:list-disc outline-none"
+      />
 
       <Flex
         itemsCenter
-        class="absolute left-full ml-4 pl-4 w-full h-full bg-gray-100 gap-2 sm:hidden rounded-l-xl"
+        class="absolute top-1/2 left-full -translate-y-1/2 ml-4 pl-4 py-4 w-full h-full bg-gray-100 gap-2 sm:hidden rounded-l-xl"
       >
         <UIButton
           v-for="(button, i) in nodeQuickActions"
@@ -65,7 +74,10 @@
       </Flex>
     </Flex>
 
-    <Flex :class="nodeDesktopRightControlsClasses" contentEditable="false">
+    <Flex
+      class="sm:items-center gap-1 self-start hidden sm:flex sm:[&>button]:opacity-0 sm:group-hover/node:[&>button]:opacity-100 [&>button]:transition-opacity"
+      contentEditable="false"
+    >
       <UIButton
         size="s"
         variant="secondary"
@@ -86,12 +98,12 @@
     <NodesListBottomsheet @insertNode="insertNode" ref="nodesListBSRef" />
 
     <NodeActionsBottomsheet
-      :update-attributes="updateAttributes"
-      :change-node-type
       :nodeIsPinned
       :nodeIsSpoilered
       :nodeType
       @close="onClose"
+      @changeNodeType="changeNodeType"
+      @updateAttribute="updateAttribute"
       ref="nodeActionsBSRef"
     />
   </NodeViewWrapper>
@@ -99,6 +111,7 @@
 
 <script lang="ts" setup>
 import { NodeViewWrapper, NodeViewContent, type NodeViewProps, type JSONContent } from '@tiptap/vue-3'
+import NodeActionsButton from '~/components/editor/nodes/root-node/NodeActionsButton.vue'
 import NodesListBottomsheet from '~/components/editor/nodes/root-node/NodesListBottomsheet.vue'
 import NodeActionsBottomsheet from '~/components/editor/nodes/root-node/NodeActionsBottomsheet.vue'
 import ArrowUp from '~icons/tabler/arrow-up'
@@ -110,35 +123,22 @@ import type { HeadingLevel, NodeType } from '~/types'
 
 const props = defineProps<NodeViewProps>()
 
+const state = reactive({
+  nodeActionsIsOpen: false
+})
+
 const nodeStartPos = computed(() => props.getPos())
 const nodeEndPos = computed(() => props.getPos() + props.node.nodeSize)
-const nodeType = computed(() => props.node.type.name)
+const nodeType = computed(() => props.node.type.name as NodeType)
 const nodeIsPinned = computed<boolean>(() => props.node.attrs.pin)
 const nodeIsSpoilered = computed<boolean>(() => props.node.attrs.spoiler)
 
 const { selectionIsEmpty } = useEditor()
 
 const nodeClasses = computed(() => ({
-  'relative flex gap-4 [&.heading-1]:text-2xl [&.heading-1]:font-bold [&.heading-2]:text-xl [&.heading-2]:font-bold not-first:[&.paragraph]:mt-4 not-first:[&.orderedList]:mt-4 not-first:[&.bulletList]:mt-4 not-first:[&.heading]:mt-6 group/node': true,
+  'relative flex gap-4 [&.heading-1]:text-2xl [&.heading-1]:font-bold [&.heading-2]:text-xl [&.heading-2]:font-bold not-first:[&.paragraph]:mt-6 not-first:[&.orderedList]:mt-6 not-first:[&.bulletList]:mt-6 not-first:[&.heading]:mt-8 group/node': true,
   [props.node.content.content[0].type.name]: true,
   ['heading-' + props.node.content.content[0].attrs.level]: props.node.content.content[0].type.name === 'heading',
-}))
-
-const nodeDesktopLeftControlsClasses = computed(() => ({
-  'sm:items-center gap-1 self-start hidden sm:flex sm:[&>button]:opacity-0 sm:group-hover/node:[&>button]:opacity-100 [&>button]:transition-opacity': true,
-}))
-
-const nodeContentWrapperClasses = computed(() => ({
-  'relative w-full': true,
-  'transition-transform': !isSwiping.value
-}))
-
-const nodeContentClasses = computed(() => ({
-  'w-full [&_ol]:pl-4 [&_ul]:pl-4 [&_ol]:list-decimal [&_ul]:list-disc outline-none': true,
-}))
-
-const nodeDesktopRightControlsClasses = computed(() => ({
-  'sm:items-center gap-1 self-start hidden sm:flex sm:[&>button]:opacity-0 sm:group-hover/node:[&>button]:opacity-100 [&>button]:transition-opacity': true,
 }))
 
 const nodeContentRef = ref<HTMLDivElement>()
@@ -193,11 +193,12 @@ function changeNodeType({
   level = 2,
 }: {
   type: NodeType
-  level?: 1 | 2
+  level?: HeadingLevel
 }) {
-  if (type === 'heading') {
+  if (type === 'heading')
     props.editor.chain().focus(nodeStartPos.value + 3).toggleHeading({ level }).run()
-  } else if (type === 'paragraph') {
+  
+  else if (type === 'paragraph') {
     props.editor.commands.focus(nodeStartPos.value + 3)
 
     if (props.editor.isActive('bulletList') || props.editor.isActive('orderedList')) {
@@ -222,6 +223,10 @@ function changeNodeType({
 
   else if (type === 'orderedList')
     props.editor.chain().focus(nodeStartPos.value + 3).toggleOrderedList().run()
+}
+
+function updateAttribute(attr: 'pin' | 'spoiler', value: boolean) {
+  props.updateAttributes({ attr, value })
 }
 
 function onClose() {

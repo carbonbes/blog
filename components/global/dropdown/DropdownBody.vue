@@ -1,7 +1,7 @@
 <template>
-   <div class="p-1 bg-white ring-1 ring-gray-200 shadow-lg rounded-xl">
+   <div class="p-1 bg-white ring-1 ring-gray-100 shadow-lg rounded-xl">
     <ScrollArea>
-      <Flex col class="gap-1" :style="{ maxHeight }">
+      <Flex col class="!flex gap-1" :style="{ maxHeight }">
         <template v-for="item in items">
           <Flex
             tag="button"

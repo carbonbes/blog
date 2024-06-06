@@ -3,6 +3,7 @@
     <UIButton
       size="s"
       variant="secondary"
+      :class="{ '!bg-gray-100 !opacity-100': isOpen }"
       draggable
       data-drag-handle
     >
@@ -14,7 +15,7 @@
 <script lang="ts" setup>
 import type Dropdown from '~/components/global/dropdown/Dropdown.vue'
 import type { Editor } from '@tiptap/core'
-import type { DropdownItem, NodeType } from '~/types'
+import type { HeadingLevel, NodeType } from '~/types'
 import Paragraph from '~icons/tabler/letter-case'
 import Heading from '~icons/tabler/heading'
 import List from '~icons/tabler/list'
@@ -31,15 +32,26 @@ import type { NodeSelection } from '@tiptap/pm/state'
 
 const props = defineProps<{
   editor: Editor
+  nodeIsPinned: boolean
+  nodeIsSpoilered: boolean
+  nodeType: NodeType
 }>()
 
 const emit = defineEmits<{
   isOpen: [boolean]
+  changeNodeType: [type: NodeType, level?: HeadingLevel]
+  updateAttribute: [attr: 'pin' | 'spoiler', value: boolean]
+  removeNode: [void]
 }>()
 
 const dropdownRef = ref<InstanceType<typeof Dropdown>>()
 
 const isOpen = ref(false)
+
+function onOpen(value: boolean) {
+  emit('isOpen', value)
+  isOpen.value = value
+}
 
 const previousNode = computed(() => {
   const currentNodeSelected = props.editor.state.selection as NodeSelection | undefined
@@ -61,99 +73,49 @@ const nextNode = computed(() => {
   return props.editor.state.doc.resolve(currentNodeSelected?.to! + 1)?.nodeAfter
 })
 
-function onOpen(value: boolean) {
-  emit('isOpen', value)
-  isOpen.value = value
-}
-
 function moveNode(dir: 'up' | 'down') {
   if (dir === 'up') {
     if (!previousNode.value) return
-
-
   } else {
     if (!nextNode.value) return
-    
   }
 }
 
 function transformNode({
   type,
-  level = 2,
+  level = 1,
 }: {
   type: NodeType
-  level?: 1 | 2
+  level?: HeadingLevel
 }) {
-  if (!props.selectedNode) return
-
-  if (type === 'heading')
-    editor.value?.chain()
-      .toggleHeading({ level })
-      .run()
-
-  if (type === 'paragraph') {
-    if (editor.value?.isActive('bulletList')) {
-      editor.value?.chain()
-        .toggleBulletList()
-        .run()
-    } else if (editor.value?.isActive('orderedList')) {
-      editor.value?.chain()
-        .toggleOrderedList()
-        .run()
-    }
-
-    editor.value?.chain()
-      .setParagraph()
-      .run()
-  }
-
-  if (type === 'bulletList')
-    editor.value?.chain()
-      .toggleBulletList()
-      .run()
-
-  if (type === 'orderedList')
-    editor.value?.chain()
-      .toggleOrderedList()
-      .run()
+  emit('changeNodeType', type, level)
 }
 
 function toggleAttrubite(attr: string) {
-  if (!props.selectedNode) return
-
-  if (attr === 'pin') {
-    editor.value?.chain()
-      .togglePin()
-      .run()
-  }
-  
-  if (attr === 'spoiler') {
-    editor.value?.chain()
-      .toggleSpoiler()
-      .run()
-  }
+  if (attr === 'pin') emit('updateAttribute', 'pin', !props.nodeIsPinned)
+  if (attr === 'spoiler') emit('updateAttribute', 'spoiler', !props.nodeIsSpoilered)
 }
 
 function removeNode() {
-  editor.value?.commands.deleteSelection()
+  emit('removeNode')
 
   dropdownRef.value?.setOpen(false)
   emit('isOpen', false)
 }
 
-const nodeActions = computed<DropdownItem[]>(() => [
+const nodeActions = computed(() => [
   {
     icon: Pin,
-    label: selectedNodeIsPinned.value ? 'Выводится в карточке' : 'Вывести в карточке',
+    label: props.nodeIsPinned ? 'Выводится в карточке' : 'Вывести в карточке',
     action: () => toggleAttrubite('pin'),
-    active: selectedNodeIsPinned.value,
-    disabled: !selectedNodeIsPinned.value && editor.value?.storage.globalAttrs.pinned === 2
+    active: props.nodeIsPinned,
+    // disabled: !props.nodeIsPinned
   },
   {
     icon: EyeOff,
-    label: selectedNodeIsSpoiler.value ? 'Скрывается' : 'Скрыть',
+    label: props.nodeIsSpoilered ? 'Скрывается' : 'Скрыть',
     action: () => toggleAttrubite('spoiler'),
-    active: selectedNodeIsSpoiler.value,
+    active: props.nodeIsSpoilered,
   },
   {
     separator: true,
@@ -187,13 +149,13 @@ const nodeActions = computed<DropdownItem[]>(() => [
             icon: Heading1,
             label: '1 уровня',
             action: () => transformNode({ type: 'heading', level: 1 }),
-            hide: props.selectedNode?.attrs.level === 1,
+            // hide: props.selectedNode?.attrs.level === 1,
           },
           {
             icon: Heading2,
             label: '2 уровня',
             action: () => transformNode({ type: 'heading', level: 2 }),
-            hide: props.selectedNode?.attrs.level === 2,
+            // hide: props.selectedNode?.attrs.level === 2,
           },
         ],
       },
@@ -201,7 +163,7 @@ const nodeActions = computed<DropdownItem[]>(() => [
         icon: Paragraph,
         label: 'Текст',
         action: () => transformNode({ type: 'paragraph' }),
-        hide: props.selectedNode?.type.name === 'paragraph',
+        // hide: props.selectedNode?.type.name === 'paragraph',
       },
       {
         icon: List,
@@ -212,13 +174,13 @@ const nodeActions = computed<DropdownItem[]>(() => [
             icon: List,
             label: 'Маркированный',
             action: () => transformNode({ type: 'bulletList' }),
-            hide: props.selectedNode?.type.name === 'bulletList',
+            // hide: props.selectedNode?.type.name === 'bulletList',
           },
           {
             icon: ListNumbers,
             label: 'Нумерованный',
             action: () => transformNode({ type: 'orderedList' }),
-            hide: props.selectedNode?.type.name === 'orderedList',
+            // hide: props.selectedNode?.type.name === 'orderedList',
           },
         ],
       },
