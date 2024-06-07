@@ -1,7 +1,7 @@
 <template>
   <NodeViewWrapper :class="nodeClasses" data-type="root-node">
     <Flex
-      class="sm:items-center gap-1 self-start hidden sm:flex sm:[&>button]:opacity-0 sm:group-hover/node:[&>button]:opacity-100 [&>button]:transition-opacity"
+      class="pt-3 sm:items-center gap-1 self-start hidden sm:flex sm:[&>button]:opacity-0 sm:group-hover/node:[&>button]:opacity-100 [&>button]:transition-opacity"
       contentEditable="false"
     >
       <UIButton size="s" variant="secondary">
@@ -13,9 +13,13 @@
         :nodeIsPinned
         :nodeIsSpoilered
         :nodeType
-        @isOpen="(value) => state.nodeActionsIsOpen = value"
+        :nodeAttrs
+        :previousNode
+        :nextNode
+        @isOpen="(value) => value ? editor.commands.setNodeSelection(nodeStartPos) : editor.commands.setTextSelection(0)"
         @changeNodeType="changeNodeType"
         @updateAttribute="updateAttribute"
+        @moveNode="moveNode"
         @removeNode="deleteNode"
       />
     </Flex>
@@ -29,14 +33,15 @@
       <Flex
         itemsCenter
         justifyEnd
-        class="absolute right-full mr-4 pr-4 w-full h-full bg-blue-400 gap-2 sm:hidden rounded-r-xl text-base font-normal text-white"
+        class="absolute right-full mr-4 pr-4 w-full h-full bg-blue-500 gap-2 sm:hidden rounded-r-xl text-base font-normal text-white"
       >
         <ITablerPlus />
         Новый узел
       </Flex>
 
       <NodeViewContent
-        class="w-full [&_ol]:pl-4 [&_ul]:pl-4 not-first:[&_ul_>_li]:mt-2 not-first:[&_ol_>_li]:mt-2 [&_ol]:list-decimal [&_ul]:list-disc outline-none"
+        class="sm:py-2 sm:px-3 rounded-xl w-full [&_ol]:pl-4 [&_ul]:pl-4 not-first:[&_ul_>_li]:mt-2 not-first:[&_ol_>_li]:mt-2 [&_ol]:list-decimal [&_ul]:list-disc outline-none transition-colors"
+        :class="{ 'bg-blue-100/50': selected }"
       />
 
       <Flex
@@ -75,7 +80,7 @@
     </Flex>
 
     <Flex
-      class="sm:items-center gap-1 self-start hidden sm:flex sm:[&>button]:opacity-0 sm:group-hover/node:[&>button]:opacity-100 [&>button]:transition-opacity"
+      class="pt-3 sm:items-center gap-1 self-start hidden sm:flex sm:[&>button]:opacity-0 sm:group-hover/node:[&>button]:opacity-100 [&>button]:transition-opacity"
       contentEditable="false"
     >
       <UIButton
@@ -120,23 +125,34 @@ import Trash from '~icons/tabler/trash'
 import Dots from '~icons/tabler/dots'
 import X from '~icons/tabler/x'
 import type { HeadingLevel, NodeType } from '~/types'
+import type { NodeSelection } from '@tiptap/pm/state'
 
 const props = defineProps<NodeViewProps>()
 
-const state = reactive({
-  nodeActionsIsOpen: false
-})
-
 const nodeStartPos = computed(() => props.getPos())
 const nodeEndPos = computed(() => props.getPos() + props.node.nodeSize)
-const nodeType = computed(() => props.node.type.name as NodeType)
+const nodeType = computed(() => props.node.content.content[0].type.name as NodeType)
+const nodeAttrs = computed(() => props.node.content.content[0].attrs)
 const nodeIsPinned = computed<boolean>(() => props.node.attrs.pin)
 const nodeIsSpoilered = computed<boolean>(() => props.node.attrs.spoiler)
+const selectedNode = computed(() => props.editor.state.selection as NodeSelection | undefined)
+
+const previousNode = computed(() => {
+  if (!selectedNode.value) return null
+
+  return props.editor.state.doc.resolve(selectedNode.value.from).nodeBefore
+})
+
+const nextNode = computed(() => {
+  if (!selectedNode.value) return null
+
+  return props.editor.state.doc.resolve(selectedNode.value.to).nodeAfter
+})
 
 const { selectionIsEmpty } = useEditor()
 
 const nodeClasses = computed(() => ({
-  'relative flex gap-4 [&.heading-1]:text-2xl [&.heading-1]:font-bold [&.heading-2]:text-xl [&.heading-2]:font-bold not-first:[&.paragraph]:mt-6 not-first:[&.orderedList]:mt-6 not-first:[&.bulletList]:mt-6 not-first:[&.heading]:mt-8 group/node': true,
+  'relative flex gap-4 [&.heading-1]:text-2xl [&.heading-1]:font-bold [&.heading-2]:text-xl [&.heading-2]:font-bold not-first:[&.paragraph]:mt-6 not-first:[&.orderedList]:mt-6 not-first:[&.bulletList]:mt-6 not-first:[&.heading]:mt-8 sm:not-first:[&.paragraph]:mt-2 sm:not-first:[&.orderedList]:mt-2 sm:not-first:[&.bulletList]:mt-2 sm:not-first:[&.heading]:mt-4 group/node': true,
   [props.node.content.content[0].type.name]: true,
   ['heading-' + props.node.content.content[0].attrs.level]: props.node.content.content[0].type.name === 'heading',
 }))
@@ -225,8 +241,12 @@ function changeNodeType({
     props.editor.chain().focus(nodeStartPos.value + 3).toggleOrderedList().run()
 }
 
+function moveNode(dir: 'up' | 'down') {
+
+}
+
 function updateAttribute(attr: 'pin' | 'spoiler', value: boolean) {
-  props.updateAttributes({ attr, value })
+  props.updateAttributes({ [attr]: value })
 }
 
 function onClose() {

@@ -88,7 +88,7 @@ export default function useEditor() {
           state: { selection, selection: { from, to } },
         },
       }) {
-        selectionIsEmpty.value = from === to && !(selection instanceof NodeSelection)
+        selectionIsEmpty.value = from === to || selection instanceof NodeSelection
 
         selectionRect.value = {
           getBoundingClientRect() {

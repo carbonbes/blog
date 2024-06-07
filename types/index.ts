@@ -41,6 +41,8 @@ export type NodeType =
 
 export type HeadingLevel = 1 | 2
 
+export type NodeAttrs = Record<string, any>
+
 export type CDNMedia = UploadApiResponse
 
 export type SVGIcon = FunctionalComponent<SVGAttributes, {}, any, {}>
