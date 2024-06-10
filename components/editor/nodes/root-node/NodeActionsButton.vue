@@ -42,8 +42,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   isOpen: [boolean]
-  changeNodeType: [type: NodeType, level?: HeadingLevel]
-  updateAttribute: [attr: 'pin' | 'spoiler', value: boolean]
+  changeNodeType: [{ type: NodeType, level?: HeadingLevel }]
+  toggleAttribute: [attr: 'pin' | 'spoiler']
   moveNode: [dir: 'up' | 'down']
   removeNode: [void]
 }>()
@@ -65,21 +65,6 @@ function moveNode(dir: 'up' | 'down') {
   }
 }
 
-function changeNodeType({
-  type,
-  level = 1,
-}: {
-  type: NodeType
-  level?: HeadingLevel
-}) {
-  emit('changeNodeType', type, level)
-}
-
-function toggleAttrubite(attr: string) {
-  if (attr === 'pin') emit('updateAttribute', 'pin', !props.nodeIsPinned)
-  if (attr === 'spoiler') emit('updateAttribute', 'spoiler', !props.nodeIsSpoilered)
-}
-
 function removeNode() {
   emit('removeNode')
 
@@ -91,14 +76,14 @@ const nodeActions = computed(() => [
   {
     icon: Pin,
     label: props.nodeIsPinned ? 'Выводится в карточке' : 'Вывести в карточке',
-    action: () => toggleAttrubite('pin'),
+    action: () => emit('toggleAttribute', 'pin'),
     active: props.nodeIsPinned,
-    // disabled: !props.nodeIsPinned
+    // disabled: !props.nodeIsPinned && props.editor.extensionStorage.rootNode.pinned === 2
   },
   {
     icon: EyeOff,
     label: props.nodeIsSpoilered ? 'Скрывается' : 'Скрыть',
-    action: () => toggleAttrubite('spoiler'),
+    action: () => emit('toggleAttribute', 'spoiler'),
     active: props.nodeIsSpoilered,
   },
   {
@@ -127,18 +112,18 @@ const nodeActions = computed(() => [
         icon: Heading,
         label: 'Заголовок',
         hide: ['bulletList', 'orderedList'].includes(props.nodeType),
-        action: () => changeNodeType({ type: 'heading', level: 2 }),
+        action: () => emit('changeNodeType', { type: 'heading', level: 2 }),
         subitems: [
           {
             icon: Heading1,
             label: '1 уровня',
-            action: () => changeNodeType({ type: 'heading', level: 1 }),
+            action: () => emit('changeNodeType', { type: 'heading', level: 1 }),
             hide: props.nodeAttrs.level === 1,
           },
           {
             icon: Heading2,
             label: '2 уровня',
-            action: () => changeNodeType({ type: 'heading', level: 2 }),
+            action: () => emit('changeNodeType', { type: 'heading', level: 2 }),
             hide: props.nodeAttrs.level === 2,
           },
         ],
@@ -146,24 +131,24 @@ const nodeActions = computed(() => [
       {
         icon: Paragraph,
         label: 'Текст',
-        action: () => changeNodeType({ type: 'paragraph' }),
+        action: () => emit('changeNodeType', { type: 'paragraph' }),
         hide: props.nodeType === 'paragraph',
       },
       {
         icon: List,
         label: 'Список',
-        action: () => changeNodeType({ type: 'bulletList' }),
+        action: () => emit('changeNodeType', { type: 'bulletList' }),
         subitems: [
           {
             icon: List,
             label: 'Маркированный',
-            action: () => changeNodeType({ type: 'bulletList' }),
+            action: () => emit('changeNodeType', { type: 'bulletList' }),
             hide: props.nodeType === 'bulletList',
           },
           {
             icon: ListNumbers,
             label: 'Нумерованный',
-            action: () => changeNodeType({ type: 'orderedList' }),
+            action: () => emit('changeNodeType', { type: 'orderedList' }),
             hide: props.nodeType === 'orderedList',
           },
         ],

@@ -62,8 +62,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: any
-  changeNodeType: [type: NodeType, level?: HeadingLevel]
-  updateAttribute: [attr: 'pin' | 'spoiler', value: boolean]
+  changeNodeType: [{ type: NodeType, level?: HeadingLevel }]
+  toggleAttribute: [attr: 'pin' | 'spoiler']
 }>()
 
 const state: {
@@ -83,7 +83,7 @@ const mainButtons = computed(() => [
     label: !props.nodeIsPinned ? 'Вывести в карточке' : 'Выводится в карточке',
     active: props.nodeIsPinned,
     action: () => {
-      emit('updateAttribute', 'pin', !props.nodeIsPinned)
+      emit('toggleAttribute', 'pin')
       setOpen(false)
     }
   },
@@ -92,7 +92,7 @@ const mainButtons = computed(() => [
     label: !props.nodeIsSpoilered ? 'Скрыть' : 'Скрывается',
     active: props.nodeIsSpoilered,
     action: () => {
-      emit('updateAttribute', 'spoiler', !props.nodeIsSpoilered)
+      emit('toggleAttribute', 'spoiler')
       setOpen(false)
     }
   },
@@ -111,7 +111,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: Heading1,
     label: 'Заголовок 1',
     action: () => {
-      emit('changeNodeType', 'heading', 1)
+      emit('changeNodeType', { type: 'heading', level: 1 })
       setOpen(false)
     }
   },
@@ -119,7 +119,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: Heading2,
     label: 'Заголовок 2',
     action: () => {
-      emit('changeNodeType', 'heading', 2)
+      emit('changeNodeType', { type: 'heading', level: 2 })
       setOpen(false)
     }
   },
@@ -127,7 +127,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: Paragraph,
     label: 'Текст',
     action: () => {
-      emit('changeNodeType', 'paragraph')
+      emit('changeNodeType', { type: 'paragraph' })
       setOpen(false)
     }
   },
@@ -135,7 +135,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: ListNumbers,
     label: 'Нумерованный список',
     action: () => {
-      emit('changeNodeType', 'orderedList')
+      emit('changeNodeType', { type: 'orderedList' })
       setOpen(false)
     }
   },
@@ -143,7 +143,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: List,
     label: 'Маркированный список',
     action: () => {
-      emit('changeNodeType', 'bulletList')
+      emit('changeNodeType', { type: 'bulletList' })
       setOpen(false)
     }
   },
