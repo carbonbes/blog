@@ -2,7 +2,7 @@ import { Node, mergeAttributes } from '@tiptap/core'
 import { NodeSelection, Plugin, PluginKey } from '@tiptap/pm/state'
 import type { EditorView } from '@tiptap/pm/view'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
-import Gallery from '~/components/editor/nodes/Gallery.vue'
+import Gallery from '~/components/editor/nodes/gallery/Gallery.vue'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -21,8 +21,6 @@ const GalleryNode = Node.create({
 
   content: 'block*',
 
-  selectable: false,
-
   draggable: true,
 
   atom: true,
@@ -33,7 +31,7 @@ const GalleryNode = Node.create({
         default: [],
       },
 
-      needToDownload: {
+      forUpload: {
         default: [],
       },
     }
@@ -42,7 +40,7 @@ const GalleryNode = Node.create({
   parseHTML() {
     return [
       {
-        tag: 'div.gallery',
+        tag: 'div[data-type="gallery"]',
       },
     ]
   },
@@ -63,7 +61,7 @@ const GalleryNode = Node.create({
           return commands.insertContent({
             type: this.name,
             attrs: {
-              needToDownload: images,
+              forUpload: images,
             },
           })
         },
@@ -73,7 +71,7 @@ const GalleryNode = Node.create({
   addProseMirrorPlugins() {
     function createGallery(view: EditorView, files: File[] | string) {
       const node = view.state.schema.nodes.gallery.create({
-        needToDownload: files,
+        forUpload: files,
       })
 
       const pos =
