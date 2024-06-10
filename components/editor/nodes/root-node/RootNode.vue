@@ -18,7 +18,7 @@
         :nextNode
         @isOpen="(value) => value ? editor.commands.setNodeSelection(nodeStartPos) : editor.commands.setTextSelection(0)"
         @changeNodeType="changeNodeType"
-        @updateAttribute="updateAttribute"
+        @toggleAttribute="toggleAttribute"
         @moveNode="moveNode"
         @removeNode="deleteNode"
       />
@@ -87,6 +87,7 @@
         size="s"
         variant="secondary"
         :class="{ '!opacity-100': nodeIsPinned }"
+        @click="toggleAttribute('pin')"
       >
         <ITablerPin class="!size-4" :class="{ 'text-blue-700': nodeIsPinned }" />
       </UIButton>
@@ -95,6 +96,7 @@
         size="s"
         variant="secondary"
         :class="{ '!opacity-100': nodeIsSpoilered }"
+        @click="toggleAttribute('spoiler')"
       >
         <ITablerEyeOff class="!size-4" :class="{ 'text-blue-700': nodeIsSpoilered }" />
       </UIButton>
@@ -108,7 +110,7 @@
       :nodeType
       @close="onClose"
       @changeNodeType="changeNodeType"
-      @updateAttribute="updateAttribute"
+      @toggleAttribute="toggleAttribute"
       ref="nodeActionsBSRef"
     />
   </NodeViewWrapper>
@@ -239,14 +241,17 @@ function changeNodeType({
 
   else if (type === 'orderedList')
     props.editor.chain().focus(nodeStartPos.value + 3).toggleOrderedList().run()
+
+  props.editor.commands.blur()
 }
 
 function moveNode(dir: 'up' | 'down') {
 
 }
 
-function updateAttribute(attr: 'pin' | 'spoiler', value: boolean) {
-  props.updateAttributes({ [attr]: value })
+function toggleAttribute(attr: 'pin' | 'spoiler') {
+  const value = props.node.attrs[attr]
+  props.updateAttributes({ [attr]: !value })
 }
 
 function onClose() {

@@ -21,7 +21,7 @@
             v-else-if="item.separator"
           />
 
-          <DropdownMenuSub v-else-if="item.subitems || !item.hide">
+          <DropdownMenuSub v-else-if="item.subitems && !item.hide">
             <DropdownMenuSubTrigger asChild>
               <Flex
                 tag="button"
