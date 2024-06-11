@@ -23,6 +23,7 @@ declare module 'vue' {
     ITablerH1: typeof import('~icons/tabler/h1')['default']
     ITablerH2: typeof import('~icons/tabler/h2')['default']
     ITablerLetterCase: typeof import('~icons/tabler/letter-case')['default']
+    ITablerLink: typeof import('~icons/tabler/link')['default']
     ITablerList: typeof import('~icons/tabler/list')['default']
     ITablerListNumbers: typeof import('~icons/tabler/list-numbers')['default']
     ITablerPencil: typeof import('~icons/tabler/pencil')['default']
