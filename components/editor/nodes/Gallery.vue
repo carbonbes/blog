@@ -5,7 +5,7 @@
     data-type="gallery"
     contenteditable="false"
   >
-    <Flex col class="relative">
+    <Flex col>
       <Flex v-if="isEmpty" col itemsCenter class="gap-8">
         <ITablerPhoto class="!size-10" />
         
@@ -22,26 +22,59 @@
 
       <Flex
         v-else
-        class="relative"
-        :class="{ 'gap-4 flex-wrap': !isSingle }"
+        class="relative gap-4 flex-wrap"
       >
-        <div v-for="(image, i) in images" :key="i" class="relative">
+        <div
+          v-for="(image, i) in images"
+          :key="i"
+          class="relative"
+          :class="{ 'w-full bg-gray-100 rounded-xl overflow-hidden': isSingle }"
+        >
           <Image
             :src="image.src"
             zoomable
-            class="w-full max-h-80 bg-gray-200 rounded-lg overflow-hidden"
-            :class="{ 'w-20 h-full max-h-20 flex justify-center shadow-lg [&_>img]:h-full': !isSingle }"
+            class="mx-auto w-full h-full max-h-80 block bg-gray-200 [&_>img]:h-full"
+            :class="{ 'max-w-fit': isSingle, 'max-w-20 !max-h-20 flex justify-center shadow-lg rounded-xl [&_>img]:object-contain': isGallery, 'opacity-50': image.loading }"
           />
           <button
+            v-if="isGallery && !image.loading"
             class="absolute top-[-10px] right-[-10px] p-1 bg-white border border-gray-100 rounded-full group/remove-btn"
             @click="remove(i)"
           >
             <ITablerX class="!size-3 group-hover/remove-btn:text-red-500 transition-colors" />
           </button>
+
+          <Flex
+            v-if="isSingle"
+            justifyBetween
+            class="p-2 absolute left-0 bottom-0 w-full"
+          >
+            <Flex class="gap-2">
+              <UIButton size="s" @click="open" :disabled="image.loading">
+                <ITablerPlus />
+              </UIButton>
+
+              <UIButton size="s" @click="dialogRef?.setOpen(true)" :disabled="image.loading">
+                <ITablerLink />
+              </UIButton>
+            </Flex>
+
+            <UIButton
+              size="s"
+              class="!bg-red-500 hover:!bg-red-700"
+              @click="remove(i)"
+              :disabled="image.loading"
+              >
+              <ITablerTrash />
+            </UIButton>
+          </Flex>
         </div>
       </Flex>
 
-      <Flex class="gap-2" :class="{ 'mt-10': isMany, 'absolute left-0 bottom-0': isSingle }">
+      <Flex
+        v-if="isGallery"
+        class="mt-10 gap-2"
+      >
         <UIButton size="s" @click="open">
           <ITablerPlus />
         </UIButton>
@@ -53,8 +86,11 @@
     </Flex>
   </NodeViewWrapper>
 
-  <Dialog ref="dialogRef">
-    <UITextArea autofocus placeholder="Ссылка" v-model="imageUrl" />
+  <Dialog class="w-full max-w-80" @close="imageUrl = ''" ref="dialogRef">
+    <UITextArea autofocus
+      placeholder="Ссылка на картинку"
+      v-model="imageUrl"
+    />
   </Dialog>
 </template>
 
@@ -66,7 +102,7 @@ const props = defineProps<NodeViewProps>()
 
 const isEmpty = computed(() => !props.node.attrs.images.length)
 const isSingle = computed(() => props.node.attrs.images.length === 1)
-const isMany = computed(() => props.node.attrs.images.length > 1)
+const isGallery = computed(() => props.node.attrs.images.length > 1)
 
 const FILE_MAX_SIZE = 1024 * 1024 * 10
 
@@ -89,7 +125,7 @@ watch(imageUrl, async (v) => {
 })
 
 const { reset, open, onChange } = useFileDialog({
-  accept: 'image/png, image/webp, image/jpg, image/jpeg, image/heic, image/gif',
+  accept: 'image/png, image/webp, image/jpg, image/jpeg, image/gif',
 })
 
 const { add } = useNotifications()

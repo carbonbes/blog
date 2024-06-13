@@ -2,7 +2,7 @@ import { Node, mergeAttributes } from '@tiptap/core'
 import { NodeSelection, Plugin, PluginKey } from '@tiptap/pm/state'
 import type { EditorView } from '@tiptap/pm/view'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
-import Gallery from '~/components/editor/nodes/gallery/Gallery.vue'
+import Gallery from '~/components/editor/nodes/Gallery.vue'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -103,7 +103,6 @@ const GalleryNode = Node.create({
                 'image/webp',
                 'image/jpg',
                 'image/jpeg',
-                'image/heic',
                 'image/gif',
               ]
 
@@ -117,9 +116,7 @@ const GalleryNode = Node.create({
             } else if (hasText) {
               const text = event.clipboardData?.getData('text')
 
-              if (!text) return false
-
-              if (!isValidImageURL(text)) return false
+              if (!(text || isValidImageURL(text))) return false
 
               createGallery(view, text)
             }
