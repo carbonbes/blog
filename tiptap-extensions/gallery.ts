@@ -12,6 +12,23 @@ declare module '@tiptap/core' {
   }
 }
 
+function createGallery(view: EditorView, files: File[] | string) {
+  const node = view.state.schema.nodes.gallery.create({
+    forUpload: files,
+  })
+
+  const pos =
+    view.state.tr.selection.$anchor.pos -
+    view.state.tr.selection.$anchor.depth
+
+  const resolvedPos = view.state.tr.doc.resolve(pos)
+
+  new NodeSelection(resolvedPos)
+
+  const tr = view.state.tr.replaceSelectionWith(node)
+  view.dispatch(tr)
+}
+
 const GalleryNode = Node.create({
   name: 'gallery',
 
@@ -69,23 +86,6 @@ const GalleryNode = Node.create({
   },
 
   addProseMirrorPlugins() {
-    function createGallery(view: EditorView, files: File[] | string) {
-      const node = view.state.schema.nodes.gallery.create({
-        forUpload: files,
-      })
-
-      const pos =
-        view.state.tr.selection.$anchor.pos -
-        view.state.tr.selection.$anchor.depth
-
-      const resolvedPos = view.state.tr.doc.resolve(pos)
-
-      new NodeSelection(resolvedPos)
-
-      const tr = view.state.tr.replaceSelectionWith(node)
-      view.dispatch(tr)
-    }
-
     return [
       new Plugin({
         key: new PluginKey('imagePasteHandler'),

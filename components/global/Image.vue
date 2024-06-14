@@ -34,6 +34,12 @@ const props = withDefaults(
   }
 )
 
+const emit = defineEmits<{
+  isOpen: [boolean]
+}>()
+
+const { setPreviewOpen } = useImagePreview()
+
 const imgWrapperRef = ref()
 const imgRef = ref<InstanceType<typeof NuxtImg>>()
 const lightbox = ref<PhotoSwipeLightbox>()
@@ -47,6 +53,17 @@ function initPhotoswipe() {
       ? [...imgWrapperRef.value.parentNode.children]
       : undefined,
     pswpModule: () => import('photoswipe'),
+    mainClass: 'pointer-events-auto'
+  })
+
+  lightbox.value?.on('beforeOpen', () => {
+    emit('isOpen', true)
+    setPreviewOpen(true)
+  })
+
+  lightbox.value?.on('close', () => {
+    emit('isOpen', false)
+    setPreviewOpen(false)
   })
 
   lightbox.value.init()

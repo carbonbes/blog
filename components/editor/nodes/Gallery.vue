@@ -20,22 +20,25 @@
         </Flex>
       </Flex>
 
-      <Flex
-        v-else
-        class="relative gap-4 flex-wrap"
-      >
+      <Flex v-else class="gap-4 flex-wrap">
         <div
           v-for="(image, i) in images"
           :key="i"
           class="relative"
-          :class="{ 'w-full bg-gray-100 rounded-xl overflow-hidden': isSingle }"
+          :class="{ 'w-full h-full bg-gray-100 rounded-xl': isSingle, 'w-20 h-20 bg-white shadow-lg rounded-xl': isGallery }"
         >
-          <Image
-            :src="image.src"
-            zoomable
-            class="mx-auto w-full h-full max-h-80 block bg-gray-200 [&_>img]:h-full"
-            :class="{ 'max-w-fit': isSingle, 'max-w-20 !max-h-20 flex justify-center shadow-lg rounded-xl [&_>img]:object-contain': isGallery, 'opacity-50': image.loading }"
-          />
+          <Flex
+            :justifyCenter="isSingle"
+            :center="isGallery"
+            class="w-full h-full rounded-xl overflow-hidden"
+          >
+            <Image
+              :src="image.src"
+              zoomable
+              class="w-fit h-fit block [&_>img]:h-full"
+              :class="{ '[&_>img]:max-h-80': isSingle, '[&_>img]:max-w-20 [&_>img]:max-h-20': isGallery, 'opacity-50': image.loading }"
+            />
+          </Flex>
           <button
             v-if="isGallery && !image.loading"
             class="absolute top-[-10px] right-[-10px] p-1 bg-white border border-gray-100 rounded-full group/remove-btn"
@@ -109,6 +112,8 @@ const FILE_MAX_SIZE = 1024 * 1024 * 10
 const images = ref<{
   id?: string
   src?: string
+  width?: number
+  height?: number
   loading?: boolean
 }[]>(props.node.attrs.images)
 
@@ -168,12 +173,14 @@ async function uploadImages(files: File[]) {
 
       try {
         const {
-          data: { secure_url },
+          data: { secure_url, width, height },
         } = await uploadMediaByFile(file)
 
         const i = images.value.findIndex((image) => image.id === id)
 
         images.value[i].src = secure_url
+        images.value[i].width = width
+        images.value[i].height = height
 
         delete images.value[i].id
         delete images.value[i].loading
@@ -209,12 +216,14 @@ async function uploadImage(imageUrl: string) {
 
   try {
     const {
-      data: { secure_url },
+      data: { secure_url, width, height },
     } = await uploadMediaByUrl(imageUrl)
 
     const i = images.value.findIndex((image) => image.id === id)
 
     images.value[i].src = secure_url
+    images.value[i].width = width
+    images.value[i].height = height
 
     delete images.value[i].id
     delete images.value[i].loading
