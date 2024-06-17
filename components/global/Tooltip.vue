@@ -1,28 +1,39 @@
 <template>
   <TooltipProvider>
-    <TooltipRoot>
-      <TooltipTrigger
-        v-if="$slots.trigger"
-        class="text-grass11 shadow-blackA7 hover:bg-green3 inline-flex h-[35px] w-[35px] items-center justify-center rounded-full bg-white shadow-[0_2px_10px] outline-none focus:shadow-[0_0_0_2px] focus:shadow-black"
-      >
+    <TooltipRoot v-bind="forward">
+      <TooltipTrigger asChild>
         <slot />
       </TooltipTrigger>
-
+      
       <TooltipPortal>
-        <TooltipContent
-          class="data-[state=delayed-open]:data-[side=top]:animate-slideDownAndFade data-[state=delayed-open]:data-[side=right]:animate-slideLeftAndFade data-[state=delayed-open]:data-[side=left]:animate-slideRightAndFade data-[state=delayed-open]:data-[side=bottom]:animate-slideUpAndFade text-grass11 select-none rounded-[4px] bg-white px-[15px] py-[10px] text-[15px] leading-none shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] will-change-[transform,opacity]"
-          :side-offset="5"
-        >
-          {{ tooltip }}
-          <TooltipArrow class="fill-white" :width="8" />
-        </TooltipContent>
+        <FadeInOpacityTransition>
+          <TooltipContent
+            class="px-[15px] py-[10px] bg-black text-white text-[15px] leading-none select-none rounded-lg will-change-[opacity]"
+            :side-offset="5"
+          >
+            {{ tooltip }}
+            <TooltipArrow class="fill-black" :width="8" />
+          </TooltipContent>
+        </FadeInOpacityTransition>
       </TooltipPortal>
     </TooltipRoot>
   </TooltipProvider>
 </template>
 
 <script lang="ts" setup>
-const props = defineProps<{
-  tooltip: string
-}>()
+import {
+  useForwardPropsEmits,
+  type TooltipRootEmits,
+  type TooltipRootProps,
+} from 'radix-vue'
+
+const props = defineProps<
+  TooltipRootProps & {
+    tooltip?: string
+    class?: string
+  }
+>()
+const emits = defineEmits<TooltipRootEmits>()
+
+const forward = useForwardPropsEmits(props, emits)
 </script>

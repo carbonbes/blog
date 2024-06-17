@@ -154,7 +154,7 @@ const nextNode = computed(() => {
 const { selectionIsEmpty } = useEditor()
 
 const nodeClasses = computed(() => ({
-  'relative flex gap-4 [&.heading-1]:text-2xl [&.heading-1]:font-bold [&.heading-2]:text-xl [&.heading-2]:font-bold not-first:[&.paragraph]:mt-6 not-first:[&.orderedList]:mt-6 not-first:[&.bulletList]:mt-6 not-first:[&.heading]:mt-8 sm:not-first:[&.paragraph]:mt-2 sm:not-first:[&.orderedList]:mt-2 sm:not-first:[&.bulletList]:mt-2 sm:not-first:[&.heading]:mt-4 group/node': true,
+  'relative flex gap-4 [&.heading-1]:text-2xl [&.heading-1]:font-bold [&.heading-2]:text-xl [&.heading-2]:font-bold not-first:[&.paragraph]:mt-6 not-first:[&.orderedList]:mt-6 not-first:[&.bulletList]:mt-6 not-first:[&.heading]:mt-8 not-first:[&.gallery]:mt-2 sm:not-first:[&.paragraph]:mt-2 sm:not-first:[&.orderedList]:mt-2 sm:not-first:[&.bulletList]:mt-2 sm:not-first:[&.heading]:mt-4 group/node': true,
   [props.node.content.content[0].type.name]: true,
   ['heading-' + props.node.content.content[0].attrs.level]: props.node.content.content[0].type.name === 'heading',
 }))

@@ -18,7 +18,6 @@ const props = withDefaults(
     variant?: 'primary' | 'secondary'
     size?: 's' | 'm' | 'l'
     disabled?: boolean
-    tooltip?: string
   }>(),
   {
     variant: 'primary',
