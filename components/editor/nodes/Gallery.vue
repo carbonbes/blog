@@ -2,7 +2,6 @@
   <NodeViewWrapper
     class="flex flex-col"
     :class="{ 'p-2 sm:p-4 bg-gray-100 rounded-xl': isEmpty || !isSingle }"
-    data-type="gallery"
     contenteditable="false"
   >
     <Flex col>
@@ -115,7 +114,7 @@ const images = ref<{
   width?: number
   height?: number
   loading?: boolean
-}[]>(props.node.attrs.images)
+}[]>(Object.assign([], props.node.attrs.images))
 
 const dialogRef = ref<InstanceType<typeof Dialog>>()
 
@@ -168,6 +167,10 @@ async function uploadImages(files: File[]) {
           id,
           src: fileReader.result as string,
           loading: true,
+        })
+
+        props.updateAttributes({
+          images: images.value,
         })
       }
 

@@ -1,32 +1,23 @@
-import { Node, mergeAttributes } from '@tiptap/core'
+import { Node, mergeAttributes, nodePasteRule } from '@tiptap/core'
 import { NodeSelection, Plugin, PluginKey } from '@tiptap/pm/state'
 import type { EditorView } from '@tiptap/pm/view'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import Gallery from '~/components/editor/nodes/Gallery.vue'
 
-declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    gallery: {
-      setGallery: (images: File[]) => ReturnType
-    }
-  }
-}
-
 function createGallery(view: EditorView, files: File[] | string) {
-  const node = view.state.schema.nodes.gallery.create({
+  const galleryNode = view.state.schema.nodes.gallery.create({
     forUpload: files,
   })
+
+  const rootNode = view.state.schema.nodes.rootNode.create(null, galleryNode)
 
   const pos =
     view.state.tr.selection.$anchor.pos -
     view.state.tr.selection.$anchor.depth
 
-  const resolvedPos = view.state.tr.doc.resolve(pos)
+  NodeSelection.create(view.state.doc, pos)
 
-  new NodeSelection(resolvedPos)
-
-  const tr = view.state.tr.replaceSelectionWith(node)
-  view.dispatch(tr)
+  view.dispatch(view.state.tr.replaceSelectionWith(rootNode))
 }
 
 const GalleryNode = Node.create({
@@ -37,8 +28,6 @@ const GalleryNode = Node.create({
   group: 'block',
 
   content: 'block*',
-
-  draggable: true,
 
   atom: true,
 
@@ -63,26 +52,23 @@ const GalleryNode = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes), 0]
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'gallery' }), 0]
+  },
+
+  addPasteRules() {
+    return [
+      nodePasteRule({
+        find: /https?:\/\/.*\.(?:png|jpe?g|gif|webp)/gi,
+        type: this.type,
+        getAttributes: (match) => {
+          return { forUpload: match[0] }
+        },
+      }),
+    ]
   },
 
   addNodeView() {
     return VueNodeViewRenderer(Gallery)
-  },
-
-  addCommands() {
-    return {
-      setGallery:
-        (images) =>
-        ({ commands }) => {
-          return commands.insertContent({
-            type: this.name,
-            attrs: {
-              forUpload: images,
-            },
-          })
-        },
-    }
   },
 
   addProseMirrorPlugins() {
@@ -92,45 +78,24 @@ const GalleryNode = Node.create({
 
         props: {
           handlePaste(view, event) {
-            const hasFiles = !!event.clipboardData?.files.length
-            const hasText = !!event.clipboardData?.getData('text')
+            if (!event.clipboardData?.files) return false
 
-            if (!(hasFiles || hasText)) return false
+            const images = Array.from(event.clipboardData.files).filter(
+              (file) => isAllowedImgFormat(file.type)
+            )
 
-            if (hasFiles) {
-              const allowedFormats = [
-                'image/png',
-                'image/webp',
-                'image/jpg',
-                'image/jpeg',
-                'image/gif',
-              ]
+            if (!images.length) return false
 
-              const images = Array.from(event.clipboardData.files).filter(
-                (file) => allowedFormats.includes(file.type)
-              )
-
-              if (!images.length) return false
-
-              createGallery(view, images)
-            } else if (hasText) {
-              const text = event.clipboardData?.getData('text')
-
-              if (!(text || isValidImageURL(text))) return false
-
-              createGallery(view, text)
-            }
+            createGallery(view, images)
 
             return true
           },
 
           handleDrop(view, event) {
-            const hasFiles = event.dataTransfer?.files.length
+            if (!event.dataTransfer?.files) return false
 
-            if (!hasFiles) return false
-
-            const images = Array.from(event.dataTransfer.files).filter((file) =>
-              /image/i.test(file.type)
+            const images = Array.from(event.dataTransfer.files).filter(
+              (file) => isAllowedImgFormat(file.type)
             )
 
             if (!images.length) return false
