@@ -59,3 +59,287 @@ export type DropdownItem = {
   separator?: boolean
   subitems?: DropdownItem[]
 }
+
+export type EmbedType = 'youtube' | 'twitter' | 'telegram' | undefined
+
+export type TwitterApiTweetResponse = {
+  data: {
+    tweetResult: {
+      result: {
+        __typename: string
+        rest_id: string
+        core: {
+          user_results: {
+            result: {
+              __typename: string
+              id: string
+              rest_id: string
+              affiliates_highlighted_label: {}
+              is_blue_verified: boolean
+              profile_image_shape: string
+              legacy: {
+                created_at: string
+                default_profile: boolean
+                default_profile_image: boolean
+                description: string
+                entities: {
+                  description: {
+                    urls: Array<any>
+                  }
+                }
+                fast_followers_count: number
+                favourites_count: number
+                followers_count: number
+                friends_count: number
+                has_custom_timelines: boolean
+                is_translator: boolean
+                listed_count: number
+                location: string
+                media_count: number
+                name: string
+                normal_followers_count: number
+                pinned_tweet_ids_str: Array<string>
+                possibly_sensitive: boolean
+                profile_banner_url: string
+                profile_image_url_https: string
+                profile_interstitial_type: string
+                screen_name: string
+                statuses_count: number
+                translator_type: string
+                verified: boolean
+                withheld_in_countries: Array<any>
+              }
+              tipjar_settings: {
+                is_enabled: boolean
+                bandcamp_handle: string
+                bitcoin_handle: string
+                cash_app_handle: string
+                ethereum_handle: string
+                gofundme_handle: string
+                patreon_handle: string
+                pay_pal_handle: string
+                venmo_handle: string
+              }
+            }
+          }
+        }
+        unmention_data: {}
+        edit_control: {
+          edit_tweet_ids: Array<string>
+          editable_until_msecs: string
+          is_edit_eligible: boolean
+          edits_remaining: string
+        }
+        is_translatable: boolean
+        views: {
+          count: string
+          state: string
+        }
+        source: string
+        legacy: {
+          bookmark_count: number
+          bookmarked: boolean
+          created_at: string
+          conversation_id_str: string
+          display_text_range: Array<number>
+          entities: {
+            hashtags: Array<any>
+            media: Array<{
+              display_url: string
+              expanded_url: string
+              id_str: string
+              indices: Array<number>
+              media_key: string
+              media_url_https: string
+              type: 'photo' | 'video'
+              url: string
+              ext_media_availability: {
+                status: string
+              }
+              features: {
+                large: {
+                  faces: Array<{
+                    x: number
+                    y: number
+                    h: number
+                    w: number
+                  }>
+                }
+                medium: {
+                  faces: Array<{
+                    x: number
+                    y: number
+                    h: number
+                    w: number
+                  }>
+                }
+                small: {
+                  faces: Array<{
+                    x: number
+                    y: number
+                    h: number
+                    w: number
+                  }>
+                }
+                orig: {
+                  faces: Array<{
+                    x: number
+                    y: number
+                    h: number
+                    w: number
+                  }>
+                }
+              }
+              sizes: {
+                large: {
+                  h: number
+                  w: number
+                  resize: string
+                }
+                medium: {
+                  h: number
+                  w: number
+                  resize: string
+                }
+                small: {
+                  h: number
+                  w: number
+                  resize: string
+                }
+                thumb: {
+                  h: number
+                  w: number
+                  resize: string
+                }
+              }
+              original_info: {
+                height: number
+                width: number
+                focus_rects: Array<{
+                  x: number
+                  y: number
+                  w: number
+                  h: number
+                }>
+              }
+              allow_download_status: {
+                allow_download: boolean
+              }
+              media_results: {
+                result: {
+                  media_key: string
+                }
+              }
+            }>
+            symbols: Array<any>
+            timestamps: Array<any>
+            urls: Array<any>
+            user_mentions: Array<any>
+          }
+          extended_entities: {
+            media: Array<{
+              display_url: string
+              expanded_url: string
+              id_str: string
+              indices: Array<number>
+              media_key: string
+              media_url_https: string
+              type: string
+              url: string
+              ext_media_availability: {
+                status: string
+              }
+              features: {
+                large: {
+                  faces: Array<{
+                    x: number
+                    y: number
+                    h: number
+                    w: number
+                  }>
+                }
+                medium: {
+                  faces: Array<{
+                    x: number
+                    y: number
+                    h: number
+                    w: number
+                  }>
+                }
+                small: {
+                  faces: Array<{
+                    x: number
+                    y: number
+                    h: number
+                    w: number
+                  }>
+                }
+                orig: {
+                  faces: Array<{
+                    x: number
+                    y: number
+                    h: number
+                    w: number
+                  }>
+                }
+              }
+              sizes: {
+                large: {
+                  h: number
+                  w: number
+                  resize: string
+                }
+                medium: {
+                  h: number
+                  w: number
+                  resize: string
+                }
+                small: {
+                  h: number
+                  w: number
+                  resize: string
+                }
+                thumb: {
+                  h: number
+                  w: number
+                  resize: string
+                }
+              }
+              original_info: {
+                height: number
+                width: number
+                focus_rects: Array<{
+                  x: number
+                  y: number
+                  w: number
+                  h: number
+                }>
+              }
+              allow_download_status: {
+                allow_download: boolean
+              }
+              media_results: {
+                result: {
+                  media_key: string
+                }
+              }
+            }>
+          }
+          favorite_count: number
+          favorited: boolean
+          full_text: string
+          is_quote_status: boolean
+          lang: string
+          possibly_sensitive: boolean
+          possibly_sensitive_editable: boolean
+          quote_count: number
+          reply_count: number
+          retweet_count: number
+          retweeted: boolean
+          user_id_str: string
+          id_str: string
+        }
+      }
+    }
+  }
+}
