@@ -2,7 +2,7 @@
   <Component
     :is="zoomable ? 'a' : tag"
     class="overflow-hidden"
-    :class="{ 'cursor-zoom-in': zoomable, 'w-full h-full object-cover': fill }"
+    :class="{ 'cursor-zoom-in': zoomable, 'w-full h-full object-cover': fill, [rounded!]: true }"
     v-bind="pswpAttrs"
     ref="imgWrapperRef"
   >
@@ -10,6 +10,8 @@
       :src
       alt=""
       loading="lazy"
+      class="object-contain"
+      :class="[size]"
       ref="imgRef"
       @load="onLoad"
     />
@@ -27,6 +29,9 @@ const props = withDefaults(
     zoomable?: boolean
     fill?: boolean
     src: string
+    size?: string
+    
+    rounded?: string
     galleryItem?: boolean
   }>(),
   {

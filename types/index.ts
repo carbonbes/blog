@@ -343,3 +343,20 @@ export type TwitterApiTweetResponse = {
     }
   }
 }
+
+export type TweetEmbed = {
+  author: {
+    avatar: string
+    name: string
+    tag: string
+  }
+  text?: string
+  media?: [
+    {
+      url: string
+      thumbnail?: string
+      type: 'photo' | 'video'
+    }
+  ]
+  published: string
+}

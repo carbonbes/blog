@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    IIconsTwitter: typeof import('~icons/icons/twitter')['default']
     ITablerArrowBackUp: typeof import('~icons/tabler/arrow-back-up')['default']
     ITablerArrowDown: typeof import('~icons/tabler/arrow-down')['default']
     ITablerArrowForwardUp: typeof import('~icons/tabler/arrow-forward-up')['default']

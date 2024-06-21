@@ -50,6 +50,11 @@ export default {
           '70%': { transform: 'translateX(5%)' },
           '100%': { transform: 'translateX(0)' },
         },
+        pulse: {
+          '0%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.2)' },
+          '100%': { transform: 'scale(1)' }
+        }
       },
 
       animation: {
@@ -63,6 +68,7 @@ export default {
         'fade-in-right-side': 'fade-in-right-side .25s',
         'fade-in-bottom-side': 'fade-in-bottom-side .25s',
         'fade-in-left-side': 'fade-in-left-side .25s',
+        pulse: 'pulse infinite 3s'
       },
 
       fontFamily: {
