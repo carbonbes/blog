@@ -23,7 +23,7 @@ export default defineApiEndpoint(async ({ event }) => {
     const matches = postRegexp.exec(url)
   }
 
-  if (type === 'twitter') {
+  if (type === 'x') {
     const tweetIdRegexp = /(?:https?:\/\/)?(?:www\.)?(?:twitter|x)\.com\/.+\/([0-9]{19})/gi
     const matches = tweetIdRegexp.exec(url)
 
@@ -60,7 +60,8 @@ export default defineApiEndpoint(async ({ event }) => {
           type: media.type
         }
       }),
-      published: r.data.tweetResult.result.legacy.created_at
+      published: r.data.tweetResult.result.legacy.created_at,
+      type
     }
   }
 })

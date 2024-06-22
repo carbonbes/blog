@@ -21,7 +21,7 @@ import InlineSpoiler from '~/tiptap-extensions/inline-spoiler'
 import Gallery from '~/tiptap-extensions/gallery'
 import TrailingNode from '~/tiptap-extensions/trailing-node'
 import Delimiter from '@tiptap/extension-horizontal-rule'
-import Tweet from '~/tiptap-extensions/tweet-embed'
+import SNEmbed from '~/tiptap-extensions/social-network-embed'
 
 const extensions: Extensions = [
   Document,
@@ -63,7 +63,7 @@ const extensions: Extensions = [
   Gallery,
   TrailingNode,
   Delimiter,
-  Tweet,
+  SNEmbed,
 ]
 
 export default function useEditor() {

@@ -8,12 +8,14 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     IIconsTwitter: typeof import('~icons/icons/twitter')['default']
+    IIconsX: typeof import('~icons/icons/x')['default']
     ITablerArrowBackUp: typeof import('~icons/tabler/arrow-back-up')['default']
     ITablerArrowDown: typeof import('~icons/tabler/arrow-down')['default']
     ITablerArrowForwardUp: typeof import('~icons/tabler/arrow-forward-up')['default']
     ITablerArrowLeft: typeof import('~icons/tabler/arrow-left')['default']
     ITablerArrowsDiagonal: typeof import('~icons/tabler/arrows-diagonal')['default']
     ITablerArrowUp: typeof import('~icons/tabler/arrow-up')['default']
+    ITablerBrandX: typeof import('~icons/tabler/brand-x')['default']
     ITablerChevronRight: typeof import('~icons/tabler/chevron-right')['default']
     ITablerDivide: typeof import('~icons/tabler/divide')['default']
     ITablerDots: typeof import('~icons/tabler/dots')['default']

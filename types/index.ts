@@ -60,7 +60,7 @@ export type DropdownItem = {
   subitems?: DropdownItem[]
 }
 
-export type EmbedType = 'youtube' | 'twitter' | 'telegram' | undefined
+export type EmbedType = 'youtube' | 'x' | 'telegram'
 
 export type TwitterApiTweetResponse = {
   data: {
@@ -344,7 +344,7 @@ export type TwitterApiTweetResponse = {
   }
 }
 
-export type TweetEmbed = {
+export type SocialNetworkEmbed = {
   author: {
     avatar: string
     name: string
@@ -359,4 +359,5 @@ export type TweetEmbed = {
     }
   ]
   published: string
+  type: Exclude<EmbedType, 'youtube'>
 }
