@@ -75,7 +75,7 @@ export default defineApiEndpoint(async ({ event }) => {
           }
         } else if (['video', 'animated_gif'].includes(media.type)) {
           const videos = media.video_info.variants.filter((variant) => variant.content_type === 'video/mp4')
-          
+
           return {
             url: media.type === 'video' ? videos[videos.length - 1].url : media.video_info.variants[0].url,
             thumbnail: media.media_url_https,

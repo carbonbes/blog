@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     IIconsTwitter: typeof import('~icons/icons/twitter')['default']
     IIconsX: typeof import('~icons/icons/x')['default']
+    IIconsYoutube: typeof import('~icons/icons/youtube')['default']
     ITablerArrowBackUp: typeof import('~icons/tabler/arrow-back-up')['default']
     ITablerArrowDown: typeof import('~icons/tabler/arrow-down')['default']
     ITablerArrowForwardUp: typeof import('~icons/tabler/arrow-forward-up')['default']
@@ -32,6 +33,7 @@ declare module 'vue' {
     ITablerPencil: typeof import('~icons/tabler/pencil')['default']
     ITablerPhoto: typeof import('~icons/tabler/photo')['default']
     ITablerPin: typeof import('~icons/tabler/pin')['default']
+    ITablerPlayerPlay: typeof import('~icons/tabler/player-play')['default']
     ITablerPlus: typeof import('~icons/tabler/plus')['default']
     ITablerTrash: typeof import('~icons/tabler/trash')['default']
     ITablerVerticalGrip: typeof import('~icons/tabler/vertical-grip')['default']

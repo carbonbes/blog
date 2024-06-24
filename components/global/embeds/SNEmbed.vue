@@ -50,7 +50,8 @@
       <Video
         v-else-if="embed.media?.length === 1 && ['video', 'animated_gif'].includes(embed.media[0].type)"
         :src="embed.media[0].url"
-        :autoplay="embed.media[0].type === 'animated_gif'"
+        :thumbnail="embed.media[0].thumbnail"
+        autoplay
         :loop="embed.media[0].type === 'animated_gif'"
         :controls="embed.media[0].type === 'video'"
         size="w-full max-h-80"
