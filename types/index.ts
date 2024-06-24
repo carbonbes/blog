@@ -355,7 +355,7 @@ export type SocialNetworkEmbed = {
     {
       url: string
       thumbnail?: string
-      type: 'photo' | 'video'
+      type: 'photo' | 'video' | 'animated_gif'
     }
   ]
   published: string

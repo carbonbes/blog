@@ -22,6 +22,10 @@ export default defineNuxtConfig({
     cloudinaryCloudName: env.NUXT_CLOUDINARY_CLOUD_NAME,
     cloudinaryApiKey: env.NUXT_CLOUDINARY_API_KEY,
     cloudinaryApiSecret: env.NUXT_CLOUDINARY_API_SECRET,
+
+    xGuestTokenUrl: env.NUXT_X_GUEST_TOKEN_URL,
+    xAuthToken: env.NUXT_X_AUTH_TOKEN,
+    xApiUrl: env.NUXT_X_API_URL,
   },
 
   modules: [
