@@ -35,7 +35,7 @@ export type NodeType =
   | 'bulletList'
   | 'orderedList'
   | 'gallery'
-  | 'socialNetworkEmbed'
+  | 'SNEmbed'
   | 'link'
   | 'delimiter'
 
@@ -225,6 +225,15 @@ export type TwitterApiTweetResponse = {
               allow_download_status: {
                 allow_download: boolean
               }
+              video_info: {
+                aspect_ratio: [ 1, 1 ]
+                duration_millis: 39886
+                variants: {
+                  content_type: 'application/x-mpegURL' | 'video/mp4'
+                  url: string
+                  bitrate?: number
+                }[]
+              },
               media_results: {
                 result: {
                   media_key: string
@@ -344,11 +353,11 @@ export type TwitterApiTweetResponse = {
   }
 }
 
-export type SocialNetworkEmbed = {
+export type SNEmbed = {
   author: {
     avatar: string
     name: string
-    tag: string
+    username: string
   }
   text?: string
   media?: [

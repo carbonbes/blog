@@ -5,7 +5,7 @@ import {
   type VerifyOtpResponse,
   type Article,
   type CDNMedia,
-  type TweetEmbed,
+  type SNEmbed,
 } from '~/types/index'
 
 export async function signIn(body: { email: string }) {
@@ -67,5 +67,5 @@ export async function uploadMediaByUrl(url: string) {
 }
 
 export async function getEmbed(url: string) {
-  return await $fetch<Response<TweetEmbed>>(`/api/v1/embed?url=${url}`)
+  return await $fetch<Response<SNEmbed>>(`/api/v1/embed?url=${url}`)
 }

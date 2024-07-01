@@ -11,16 +11,19 @@
           class="size-9 row-[1/2_span] col-[1]"
         />
         <Flex itemsCenter class="min-w-0 gap-2 row-[1_span] col-[2] leading-[18px] whitespace-nowrap">
-          <p
-            class="font-medium text-[15px] overflow-hidden text-ellipsis"
+          <a
+            :href="`https://x.com/${embed.author.username}`"
+            target="_blank"
+            class="!no-underline !text-[inherit] font-medium text-[15px] overflow-hidden text-ellipsis"
           >
             {{ embed.author.name }}
-          </p>
-          <p
-            class="text-gray-400 text-[15px] overflow-hidden text-ellipsis"
+          </a>
+          <a
+            :href="`https://x.com/${embed.author.username}`"
+            class="!no-underline !text-gray-400 text-[15px] overflow-hidden text-ellipsis"
           >
-            @{{ embed.author.tag }}
-          </p>
+            @{{ embed.author.username }}
+          </a>
         </Flex>
         <DateTime
           :dateTime="embed.published!"
@@ -48,7 +51,7 @@
       />
 
       <Video
-        v-else-if="embed.media?.length === 1 && ['video', 'animated_gif'].includes(embed.media[0].type)"
+        v-else-if="embed.media?.length === 1 && ['video', 'gif'].includes(embed.media[0].type)"
         :src="embed.media[0].url"
         :thumbnail="embed.media[0].thumbnail"
         autoplay
@@ -63,7 +66,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { SocialNetworkEmbed } from '~/types'
+import type { SNEmbed } from '~/types'
 
-const props = defineProps<{ embed: SocialNetworkEmbed }>()
+const props = defineProps<{ embed: SNEmbed }>()
 </script>

@@ -12,7 +12,6 @@
       galleryItem
       zoomable
       size="w-full h-full object-cover"
-      :class="{  }"
     />
   </div>
 </template>
