@@ -56,6 +56,7 @@
         autoplay
         :loop="embed.media[0].type === 'gif'"
         :controls="embed.media[0].type === 'video'"
+        playsInline
         size="w-full max-h-80"
         :type="embed.media[0].type"
         class="bg-gray-100/50 flex justify-center"

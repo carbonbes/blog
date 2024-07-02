@@ -21,6 +21,7 @@
       :autoplay
       :loop
       :controls
+      :playsinline="playsInline"
       class="aspect-video"
       :class="[size]"
     />
@@ -41,6 +42,7 @@ const props = defineProps<{
   autoplay?: boolean
   loop?: boolean
   controls?: boolean
+  playsInline?: boolean
   size?: string
 }>()
 
