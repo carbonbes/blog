@@ -12,7 +12,7 @@ cloudinary.config({
 
 export default function useCdn() {
   async function upload(filePath: string) {
-    return await cloudinary.uploader.upload(filePath)
+    return await cloudinary.uploader.upload(filePath, { resource_type: 'auto' })
   }
 
   return { upload }

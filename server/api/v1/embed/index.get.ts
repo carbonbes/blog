@@ -1,8 +1,8 @@
 import getEmbedType from '~/utils/getEmbedType'
 import { TwitterApiTweetResponse } from '~/types'
-import { uploadMediaByUrl } from '~/utils/api'
 
 const { xGuestTokenUrl, xAuthToken, xApiUrl } = useRuntimeConfig()
+const { upload } = useCdn()
 
 export default defineApiEndpoint(async ({ event }) => {
   const { url }: { url: string } = getQuery(event)
@@ -61,39 +61,45 @@ export default defineApiEndpoint(async ({ event }) => {
       }
     )
 
-    return {
-      author: {
-        avatar: user.profile_image_url_https,
-        name: user.name,
-        username: user.screen_name,
-      },
-      text: tweet.full_text,
-      media: tweet.entities.media?.map(async (media) => {
+    const media = await Promise.all(
+      tweet.entities.media?.map(async (media) => {
         if (media.type === 'photo') {
-          const { data } = await uploadMediaByUrl(media.media_url_https)
+          const r = await upload(media.media_url_https)
 
           return {
-            url: data?.url,
-            width: data?.width,
-            height: data?.height,
-            type: 'image'
+            url: r.url,
+            width: r.width,
+            height: r.height,
+            type: 'image',
           }
         }
-        
+
         if (['video', 'animated_gif'].includes(media.type)) {
           const variants = media.video_info.variants
 
-          const { data } = await uploadMediaByUrl(variants[variants.length - 1].url)
+          const r = await upload(variants[variants.length - 1].url)
 
           return {
-            url: data?.url,
-            thumbnail: media.type === 'video' ? `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/${data?.public_id}.${data?.format}` : undefined,
-            width: data?.width,
-            height: data?.height,
-            type: media.type === 'video' ? 'video' : media.type === 'animated_gif' ? 'gif' : undefined
+            url: r.url,
+            thumbnail: media.type === 'video'
+              ? `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/${r.public_id}.${r.format}`
+              : undefined,
+            width: r.width,
+            height: r.height,
+            type: media.type === 'video' ? 'video' : media.type === 'animated_gif' ? 'gif' : undefined,
           }
         }
-      }),
+      })
+    )
+
+    return {
+      author: {
+        avatar: (await upload(user.profile_image_url_https)).secure_url,
+        name: user.name,
+        username: user.screen_name,
+      },
+      text: tweet.full_text.replace(/https:\/\/t\.co\/\S+\s*$/gm, '').trim(),
+      media,
       published: tweet.created_at,
       type
     }

@@ -2,7 +2,7 @@ import isValidImageURL from '~/utils/isValidImageURL'
 
 export default defineApiEndpoint(
   async ({ event }) => {
-    const { url } = await readBody(event)
+    const { url }: { url: string } = await readBody(event)
 
     if (!url)
       throw createError({

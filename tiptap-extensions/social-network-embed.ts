@@ -35,6 +35,10 @@ const SNEmbedNode = Node.create({
     ]
   },
 
+  renderHTML({ HTMLAttributes }) {
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'sn-embed' })]
+  },
+
   addPasteRules() {
     return [
       nodePasteRule({

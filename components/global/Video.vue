@@ -9,14 +9,14 @@
       @click="isPlaying = true"
     >
       <ITablerPlayerPlay
-        v-if="type === 'default'"
+        v-if="type === 'video'"
         class="!size-10 text-white [&>path]:fill-white z-[1] group-hover/overlay:scale-[1.2] transition-transform"
       />
       <IIconsYoutube v-else />
     </Flex>
 
     <video
-      v-if="type === 'default' && isPlaying"
+      v-if="['video', 'gif'].includes(type) && isPlaying"
       :src
       :autoplay
       :loop
@@ -37,12 +37,12 @@
 const props = defineProps<{
   src: string
   thumbnail?: string
-  type: 'default' | 'youtube'
+  type: 'video' | 'gif' | 'youtube'
   autoplay?: boolean
   loop?: boolean
   controls?: boolean
   size?: string
 }>()
 
-const isPlaying = ref(false)
+const isPlaying = ref(props.type === 'gif' ? true : false)
 </script>

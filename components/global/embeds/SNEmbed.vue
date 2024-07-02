@@ -25,41 +25,45 @@
             @{{ embed.author.username }}
           </a>
         </Flex>
-        <DateTime
-          :dateTime="embed.published!"
-          class="row-[2_span] col-[2] text-gray-500 leading-[18px] text-sm translate-y-[2px]"
-        />
+        <Tooltip :tooltip="new Date(embed.published).toLocaleString()">
+          <DateTime
+            :dateTime="embed.published!"
+            class="max-w-fit row-[2_span] col-[2] text-gray-500 leading-[18px] text-sm translate-y-[2px]"
+          />
+        </Tooltip>
       </div>
 
       <ITablerBrandX class="pl-4 box-content" v-if="embed.type === 'x'" />
     </Flex>
 
     <Flex col>
-      <p v-if="embed.text" class="px-5 pb-5 whitespace-pre-line">{{ embed.text }}</p>
+      <p v-if="embed.text" class="px-5 pb-5 whitespace-pre-line">
+        {{ embed.text }}
+      </p>
 
       <Image
-        v-if="embed.media?.length === 1 && embed.media[0].type === 'photo'"
+        v-if="embed.media && isSingleImg"
         :src="embed.media[0].url"
         size="max-h-80"
         zoomable
         class="bg-gray-100/50 flex justify-center"
       />
 
-      <Gallery
-        v-else-if="embed.media?.length > 1 "
-        :images="embed.media"
-      />
-
       <Video
-        v-else-if="embed.media?.length === 1 && ['video', 'gif'].includes(embed.media[0].type)"
+        v-else-if="embed.media && isSingleVideo"
         :src="embed.media[0].url"
         :thumbnail="embed.media[0].thumbnail"
         autoplay
-        :loop="embed.media[0].type === 'animated_gif'"
+        :loop="embed.media[0].type === 'gif'"
         :controls="embed.media[0].type === 'video'"
         size="w-full max-h-80"
-        type="default"
+        :type="embed.media[0].type"
         class="bg-gray-100/50 flex justify-center"
+      />
+
+      <Gallery
+        v-else-if="embed.media && embed.media?.length > 1"
+        :images="embed.media"
       />
     </Flex>
   </Flex>
@@ -69,4 +73,7 @@
 import type { SNEmbed } from '~/types'
 
 const props = defineProps<{ embed: SNEmbed }>()
+
+const isSingleImg = computed(() => props.embed.media && props.embed.media.length === 1 && props.embed.media[0].type === 'image')
+const isSingleVideo = computed(() => props.embed.media && props.embed.media.length === 1 && ['video', 'gif'].includes(props.embed.media[0].type))
 </script>
