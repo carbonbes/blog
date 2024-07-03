@@ -5717,6 +5717,11 @@ perfect-debounce@^1.0.0:
   resolved "https://registry.yarnpkg.com/perfect-debounce/-/perfect-debounce-1.0.0.tgz#9c2e8bc30b169cc984a58b7d5b28049839591d2a"
   integrity sha512-xCy9V055GLEqoFaHoC1SoLIaLmWctgCUaBaWxDZ7/Zx4CTyX7cJQLJOok/orfjZAh9kEYpjJa4d0KcJmCbctZA==
 
+photoswipe-video-plugin@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/photoswipe-video-plugin/-/photoswipe-video-plugin-1.0.2.tgz#156b6a72ffa86e6c6e2b486e8ec5b48f6696941a"
+  integrity sha512-skNHaalLU7rptZ3zq4XfS5hPqSDD65ctvpf2X8buvC8BpOt6XKSIgRkLzTwgQOUm9yQ8kQ4mMget7CIqGcqtDg==
+
 photoswipe@^5.4.3:
   version "5.4.3"
   resolved "https://registry.yarnpkg.com/photoswipe/-/photoswipe-5.4.3.tgz#413670ab08ac062c09f2f8dd645dcd1278afcb4a"

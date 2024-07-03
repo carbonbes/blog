@@ -62,9 +62,9 @@
         class="bg-gray-100/50 flex justify-center"
       />
 
-      <Gallery
+      <SNEmbedGallery
         v-else-if="embed.media && embed.media?.length > 1"
-        :images="embed.media"
+        :items="embed.media"
       />
     </Flex>
   </Flex>

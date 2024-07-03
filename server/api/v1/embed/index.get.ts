@@ -64,28 +64,34 @@ export default defineApiEndpoint(async ({ event }) => {
     const media = await Promise.all(
       tweet.entities.media?.map(async (media) => {
         if (media.type === 'photo') {
-          const r = await upload(media.media_url_https)
+          const { url, width, height } = await upload(media.media_url_https)
 
           return {
-            url: r.url,
-            width: r.width,
-            height: r.height,
+            url,
+            width,
+            height,
             type: 'image',
           }
         }
 
         if (['video', 'animated_gif'].includes(media.type)) {
-          const variants = media.video_info.variants
+          const maxQualityVideo = media.video_info!.variants[media.video_info!.variants.length - 1]
 
-          const r = await upload(variants[variants.length - 1].url)
+          const {
+            url,
+            public_id,
+            format,
+            width,
+            height
+          } = await upload(maxQualityVideo.url)
 
           return {
-            url: r.url,
+            url,
             thumbnail: media.type === 'video'
-              ? `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/${r.public_id}.${r.format}`
+              ? `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/${public_id}.${format}`
               : undefined,
-            width: r.width,
-            height: r.height,
+            width,
+            height,
             type: media.type === 'video' ? 'video' : media.type === 'animated_gif' ? 'gif' : undefined,
           }
         }

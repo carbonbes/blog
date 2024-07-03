@@ -225,7 +225,7 @@ export type TwitterApiTweetResponse = {
               allow_download_status: {
                 allow_download: boolean
               }
-              video_info: {
+              video_info?: {
                 aspect_ratio: [ 1, 1 ]
                 duration_millis: 39886
                 variants: {

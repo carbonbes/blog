@@ -58,6 +58,84 @@ const data = {
         },
       ],
     },
+    {
+      type: 'rootNode',
+      attrs: {
+        pin: false,
+        spoiler: false,
+      },
+      content: [
+        {
+          type: 'sn-embed',
+          attrs: {
+            url: null,
+            embed: {
+              author: {
+                avatar:
+                  'https://res.cloudinary.com/dkmur8a20/image/upload/v1719996822/wa1dnxhbevjbhsbtdzl6.jpg',
+                name: 'Разрыхлитель Мозгов™',
+                username: 'crazy_kutas',
+              },
+              text: '#10YearsChallenge\n\nЧто можно купить на 1000 рублей:',
+              media: [
+                {
+                  url: 'http://res.cloudinary.com/dkmur8a20/image/upload/v1719996820/qqrmdcde55frlfbhn3wb.jpg',
+                  width: 647,
+                  height: 429,
+                  type: 'image',
+                },
+                {
+                  url: 'http://res.cloudinary.com/dkmur8a20/image/upload/v1719996820/tyxbsdcckqxodnddilgj.jpg',
+                  width: 651,
+                  height: 488,
+                  type: 'image',
+                },
+              ],
+              published: 'Tue Jan 22 04:37:39 +0000 2019',
+              type: 'x',
+            },
+            type: 'x',
+          },
+        },
+      ],
+    },
+    {
+      type: 'rootNode',
+      attrs: {
+        pin: false,
+        spoiler: false,
+      },
+      content: [
+        {
+          type: 'sn-embed',
+          attrs: {
+            url: null,
+            embed: {
+              author: {
+                avatar:
+                  'https://res.cloudinary.com/dkmur8a20/image/upload/v1719998975/zlsomwoabklztu90rvcx.jpg',
+                name: 'ваня градобоев',
+                username: 'vanyagradoboev',
+              },
+              text: 'сплю с открытыми окнами, налетает всякое',
+              media: [
+                {
+                  url: 'http://res.cloudinary.com/dkmur8a20/video/upload/v1719998974/csurqofrzkpay3vsdsb5.mp4',
+                  thumbnail:
+                    'https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/csurqofrzkpay3vsdsb5.mp4',
+                  width: 720,
+                  height: 720,
+                  type: 'video',
+                },
+              ],
+              published: 'Mon Jun 24 22:40:28 +0000 2024',
+              type: 'x',
+            },
+            type: 'x',
+          },
+        },
+      ],
+    },
   ],
 }
 
