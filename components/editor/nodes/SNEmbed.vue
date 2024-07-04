@@ -16,7 +16,7 @@
 
 <script lang="ts" setup>
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/vue-3'
-import SNEmbed from '~/components/global/embeds/sn-embed/SNEmbed.vue'
+import SNEmbed from '~/components/global/embeds/SNEmbed.vue'
 
 const props = defineProps<NodeViewProps>()
 

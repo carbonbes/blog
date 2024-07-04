@@ -3,8 +3,8 @@
     <Flex
       v-if="!isPlaying"
       center
-      class="relative w-full aspect-video after:content-[''] after:absolute after:inset-0 after:bg-black/50 bg-contain bg-no-repeat bg-center cursor-pointer group/overlay"
-      :class="[size]"
+      class="relative w-full after:content-[''] after:absolute after:inset-0 after:bg-black/50 bg-contain bg-no-repeat bg-center cursor-pointer group/overlay"
+      :class="[size, aspectRatio]"
       :style="{ backgroundImage: `url(${thumbnail}`}"
       @click="isPlaying = true"
     >
@@ -22,8 +22,7 @@
       :loop
       :controls
       :playsinline="playsInline"
-      class="aspect-video"
-      :class="[size]"
+      :class="[size, aspectRatio]"
     />
 
     <iframe
@@ -44,6 +43,7 @@ const props = defineProps<{
   controls?: boolean
   playsInline?: boolean
   size?: string
+  aspectRatio?: string
 }>()
 
 const isPlaying = ref(props.type === 'gif' ? true : false)

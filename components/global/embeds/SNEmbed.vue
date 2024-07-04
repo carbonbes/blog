@@ -44,6 +44,8 @@
       <Image
         v-if="embed.media && isSingleImg"
         :src="embed.media[0].url"
+        :srcWidth="embed.media[0].width"
+        :srcHeight="embed.media[0].height"
         size="max-h-80"
         zoomable
         class="bg-gray-100/50 flex justify-center"
@@ -60,9 +62,10 @@
         size="w-full max-h-80"
         :type="embed.media[0].type"
         class="bg-gray-100/50 flex justify-center"
+        aspectRatio="aspect-video"
       />
 
-      <SNEmbedGallery
+      <Gallery
         v-else-if="embed.media && embed.media?.length > 1"
         :items="embed.media"
       />

@@ -13,7 +13,6 @@
       class="object-contain"
       :class="[size]"
       ref="imgRef"
-      @load="onLoad"
     />
   </Component>
 </template>
@@ -29,6 +28,8 @@ const props = withDefaults(
     zoomable?: boolean
     fill?: boolean
     src: string
+    srcWidth?: number
+    srcHeight?: number
     size?: string
     rounded?: string
     galleryItem?: boolean
@@ -80,29 +81,16 @@ function destroyPhotoswipe() {
   lightbox.value = undefined
 }
 
-const pswpSizes = reactive({
-  width: 0,
-  height: 0
-})
-
-function onLoad() {
-  const img = imgRef.value?.$el as HTMLImageElement
-
-  pswpSizes.width = img.naturalWidth
-  pswpSizes.height = img.naturalHeight
-}
-
 const pswpAttrs = computed(() => {
   if (!props.zoomable) return undefined
 
   return {
-    'data-pswp-src': props.src,
-    'data-pswp-width': pswpSizes.width,
-    'data-pswp-height': pswpSizes.height,
-    'data-cropped': true,
     href: props.src,
     rel: 'nofollow',
     target: '_blank',
+    'data-pswp-width': props.srcWidth,
+    'data-pswp-height': props.srcHeight,
+    'data-cropped': true,
   }
 })
 

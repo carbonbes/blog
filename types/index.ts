@@ -364,6 +364,8 @@ export type SNEmbed = {
     {
       url: string
       thumbnail?: string
+      width: number
+      height: number
       type: 'image' | 'video' | 'gif'
     }
   ]

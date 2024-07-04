@@ -136,6 +136,51 @@ const data = {
         },
       ],
     },
+    {
+      type: 'rootNode',
+      attrs: {
+        pin: false,
+        spoiler: false,
+      },
+      content: [
+        {
+          type: 'sn-embed',
+          attrs: {
+            url: null,
+            embed: {
+              author: {
+                avatar:
+                  'https://res.cloudinary.com/dkmur8a20/image/upload/v1720086913/duzrezgqmrwamtmwg7ui.jpg',
+                name: 'ваня градобоев',
+                username: 'vanyagradoboev',
+              },
+              text: 'кстати, чтобы вы еще чучуть больше охуели - вот это тоже я построил, точнее я это строил параллельно своему дому. остались еще доделки, но в целом получилось два дома за год',
+              media: [
+                {
+                  url: 'http://res.cloudinary.com/dkmur8a20/video/upload/v1720086912/g1bqkociuibtxmshuvzr.mp4',
+                  thumbnail:
+                    'https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/g1bqkociuibtxmshuvzr.mp4',
+                  width: 720,
+                  height: 1280,
+                  type: 'video',
+                },
+                {
+                  url: 'http://res.cloudinary.com/dkmur8a20/video/upload/v1720086912/loc44hhluwr6w5yluak3.mp4',
+                  thumbnail:
+                    'https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/loc44hhluwr6w5yluak3.mp4',
+                  width: 720,
+                  height: 960,
+                  type: 'video',
+                },
+              ],
+              published: 'Sun Sep 24 13:35:28 +0000 2023',
+              type: 'x',
+            },
+            type: 'x',
+          },
+        },
+      ],
+    },
   ],
 }
 
