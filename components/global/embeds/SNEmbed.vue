@@ -4,32 +4,36 @@
       <div
         class="grid grid-rows-[repeat(2,_1fr)] grid-columns-[repeat(2,_minmax(0,_max_-_content))] gap-x-3"
       >
-        <Image
-          :src="embed.author.avatar!"
-          size="w-full"
-          rounded="rounded-full"
-          class="size-9 row-[1/2_span] col-[1]"
-        />
+        <a :href="embed.author.url" target="_blank" class="row-[1/2_span] col-[1]">
+          <Image
+            :src="embed.author.avatar!"
+            size="w-full"
+            rounded="rounded-full"
+            class="size-9"
+          />
+        </a>
         <Flex itemsCenter class="min-w-0 gap-2 row-[1_span] col-[2] leading-[18px] whitespace-nowrap">
           <a
-            :href="`https://x.com/${embed.author.username}`"
+            :href="embed.author.url"
             target="_blank"
             class="!no-underline !text-[inherit] font-medium text-[15px] overflow-hidden text-ellipsis"
           >
             {{ embed.author.name }}
           </a>
           <a
-            :href="`https://x.com/${embed.author.username}`"
+            :href="embed.author.url"
             class="!no-underline !text-gray-400 text-[15px] overflow-hidden text-ellipsis"
           >
             @{{ embed.author.username }}
           </a>
         </Flex>
         <Tooltip :tooltip="new Date(embed.published).toLocaleString()">
-          <DateTime
-            :dateTime="embed.published!"
-            class="max-w-fit row-[2_span] col-[2] text-gray-500 leading-[18px] text-sm translate-y-[2px]"
-          />
+          <a :href="embed.url" target="_blank" class="max-w-fit row-[2_span] col-[2] translate-y-[2px] !no-underline">
+            <DateTime
+              :dateTime="embed.published!"
+              class="text-gray-500 leading-[18px] text-sm"
+            />
+          </a>
         </Tooltip>
       </div>
 

@@ -3,9 +3,9 @@
     <Flex
       v-if="!isPlaying"
       center
-      class="relative w-full after:content-[''] after:absolute after:inset-0 after:bg-black/50 bg-contain bg-no-repeat bg-center cursor-pointer group/overlay"
+      class="relative w-full after:content-[''] after:absolute after:inset-0 after:bg-black/30 bg-contain bg-no-repeat bg-center cursor-pointer group/overlay"
       :class="[size, aspectRatio]"
-      :style="{ backgroundImage: `url(${thumbnail}`}"
+      :style="{ backgroundImage: `url(${thumbnail}` }"
       @click="isPlaying = true"
     >
       <ITablerPlayerPlay
@@ -22,6 +22,7 @@
       :loop
       :controls
       :playsinline="playsInline"
+      :muted
       :class="[size, aspectRatio]"
     />
 
@@ -34,17 +35,23 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps<{
-  src: string
-  thumbnail?: string
-  type: 'video' | 'gif' | 'youtube'
-  autoplay?: boolean
-  loop?: boolean
-  controls?: boolean
-  playsInline?: boolean
-  size?: string
-  aspectRatio?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    src: string
+    thumbnail?: string
+    type: 'video' | 'gif' | 'youtube'
+    autoplay?: boolean
+    loop?: boolean
+    controls?: boolean
+    playsInline?: boolean
+    size?: string
+    aspectRatio?: string
+    muted?: boolean
+  }>(),
+  {
+    muted: true,
+  }
+)
 
 const isPlaying = ref(props.type === 'gif' ? true : false)
 </script>

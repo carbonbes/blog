@@ -3,10 +3,10 @@
     class="grid gap-1"
     :class="{
       'grid-rows-[250px] grid-cols-[repeat(2,_1fr)]': items.length === 2,
-      'grid-rows-[repeat(2, 125px)] grid-cols-[2fr_1fr]': items.length > 2
+      'grid-rows-[repeat(2,_125px)] grid-cols-[2fr_1fr]': items.length > 2
     }"
   >
-    <template v-for="item in items">
+    <template v-for="(item, i) in items">
       <Image
         v-if="item.type === 'image'"
         :src="item.url"
@@ -15,6 +15,8 @@
         galleryItem
         zoomable
         size="w-full h-full object-cover"
+        class="row-[1_span]"
+        :class="{ 'row-[2_span]': i === 0 && items.length > 2 }"
       />
 
       <Video
@@ -25,7 +27,8 @@
         autoplay
         :loop="item.type === 'gif'"
         :controls="item.type === 'video'"
-        class="flex justify-center bg-gray-100/50"
+        class="flex justify-center bg-gray-100/50 row-[1_span]"
+        :class="{ 'row-[2_span]': i === 0 && items.length > 2 }"
         size="w-full h-full"
       />
     </template>

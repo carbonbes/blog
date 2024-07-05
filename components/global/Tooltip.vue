@@ -1,6 +1,6 @@
 <template>
   <TooltipProvider>
-    <TooltipRoot v-bind="forward">
+    <TooltipRoot>
       <TooltipTrigger asChild>
         <slot />
       </TooltipTrigger>
@@ -10,6 +10,7 @@
           <TooltipContent
             class="px-[15px] py-[10px] bg-black text-white text-[15px] leading-none select-none rounded-lg will-change-[opacity]"
             :side-offset="5"
+            v-bind="forward"
           >
             {{ tooltip }}
             <TooltipArrow class="fill-black" :width="8" />

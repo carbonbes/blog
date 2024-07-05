@@ -358,6 +358,7 @@ export type SNEmbed = {
     avatar: string
     name: string
     username: string
+    url: string
   }
   text?: string
   media?: [
@@ -370,5 +371,6 @@ export type SNEmbed = {
     }
   ]
   published: string
-  type: Exclude<EmbedType, 'youtube'>
+  type: Exclude<EmbedType, 'youtube'>,
+  url: string
 }

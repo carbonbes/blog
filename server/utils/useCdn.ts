@@ -11,8 +11,14 @@ cloudinary.config({
 })
 
 export default function useCdn() {
-  async function upload(filePath: string) {
-    return await cloudinary.uploader.upload(filePath, { resource_type: 'auto' })
+  async function upload(
+    filePath: string,
+    options?: { withMetadata?: boolean }
+  ) {
+    return await cloudinary.uploader.upload(filePath, {
+      resource_type: 'auto',
+      media_metadata: options?.withMetadata,
+    })
   }
 
   return { upload }

@@ -75,7 +75,12 @@ export default defineApiEndpoint(async ({ event }) => {
         }
 
         if (['video', 'animated_gif'].includes(media.type)) {
-          const maxQualityVideo = media.video_info!.variants[media.video_info!.variants.length - 1]
+          const maxQualityVideoUrl = media.video_info!.variants[media.video_info!.variants.length - 1].url
+
+          const formats = {
+            'video': 'video',
+            'animated_gif': 'gif'
+          }
 
           const {
             url,
@@ -83,7 +88,7 @@ export default defineApiEndpoint(async ({ event }) => {
             format,
             width,
             height
-          } = await upload(maxQualityVideo.url)
+          } = await upload(maxQualityVideoUrl)
 
           return {
             url,
@@ -92,7 +97,7 @@ export default defineApiEndpoint(async ({ event }) => {
               : undefined,
             width,
             height,
-            type: media.type === 'video' ? 'video' : media.type === 'animated_gif' ? 'gif' : undefined,
+            type: formats[media.type],
           }
         }
       })
@@ -103,11 +108,13 @@ export default defineApiEndpoint(async ({ event }) => {
         avatar: (await upload(user.profile_image_url_https)).secure_url,
         name: user.name,
         username: user.screen_name,
+        url: `https://x.com/${user.screen_name}`
       },
       text: tweet.full_text.replace(/https:\/\/t\.co\/\S+\s*$/gm, '').trim(),
       media,
       published: tweet.created_at,
-      type
+      type,
+      url: `https://x.com/${user.screen_name}/status/${xId}`
     }
   }
 })
