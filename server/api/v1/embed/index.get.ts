@@ -22,8 +22,7 @@ export default defineApiEndpoint(async ({ event }) => {
     })
 
   if (type === 'telegram') {
-    const postRegexp = /(?:https?:\/\/)?(?:www[.])?(?:telegram|t)\.me\/(.+)\/?\/(\d+)?$/gi
-    const matches = postRegexp.exec(url)
+    
   }
 
   if (type === 'x') {
@@ -116,5 +115,10 @@ export default defineApiEndpoint(async ({ event }) => {
       type,
       url: `https://x.com/${user.screen_name}/status/${xId}`
     }
+  }
+
+  if (type === 'youtube') {
+    const youtubeVideoRegexp = /https?:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z-_0-9]+)/gm
+    const matches = youtubeVideoRegexp.exec(url)![1]
   }
 })

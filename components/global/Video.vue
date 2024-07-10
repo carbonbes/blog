@@ -3,8 +3,8 @@
     <Flex
       v-if="!isPlaying"
       center
-      class="relative w-full after:content-[''] after:absolute after:inset-0 after:bg-black/30 bg-contain bg-no-repeat bg-center cursor-pointer group/overlay"
-      :class="[size, aspectRatio]"
+      class="relative w-full after:content-[''] after:absolute after:inset-0 after:bg-black/30 bg-center bg-no-repeat cursor-pointer group/overlay"
+      :class="[size, aspectRatio, { 'bg-cover aspect-video rounded-xl overflow-hidden': type === 'youtube', 'bg-contain': type === 'video' }]"
       :style="{ backgroundImage: `url(${thumbnail}` }"
       @click="isPlaying = true"
     >
@@ -12,7 +12,10 @@
         v-if="type === 'video'"
         class="!size-10 text-white [&>path]:fill-white z-[1] group-hover/overlay:scale-[1.2] transition-transform"
       />
-      <IIconsYoutube v-else />
+      <IIconsYoutube
+        v-else
+        class="!size-16 z-[1] group-hover/overlay:text-red-600 transition-colors"
+      />
     </Flex>
 
     <video
@@ -28,8 +31,9 @@
 
     <iframe
       v-else-if="type === 'youtube' && isPlaying"
-      :src
+      :src="`${src}?controls=2&autoplay=1&enablejsapi=1`"
       allow="autoplay;fullscreen;"
+      class="w-full aspect-video rounded-xl"
     />
   </div>
 </template>

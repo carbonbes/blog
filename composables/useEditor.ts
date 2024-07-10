@@ -22,6 +22,7 @@ import Gallery from '~/tiptap-extensions/gallery'
 import TrailingNode from '~/tiptap-extensions/trailing-node'
 import Delimiter from '@tiptap/extension-horizontal-rule'
 import SNEmbed from '~/tiptap-extensions/social-network-embed'
+import YoutubeEmbed from '~/tiptap-extensions/youtube-embed'
 
 const extensions: Extensions = [
   Document,
@@ -64,6 +65,7 @@ const extensions: Extensions = [
   TrailingNode,
   Delimiter,
   SNEmbed,
+  YoutubeEmbed,
 ]
 
 export default function useEditor() {
