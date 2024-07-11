@@ -1,7 +1,18 @@
 import getEmbedType from '~/utils/getEmbedType'
 import { TwitterApiTweetResponse } from '~/types'
+import { TelegramClient } from 'telegram'
+import { StringSession } from 'telegram/sessions'
+import { Api } from 'telegram/tl'
 
-const { xGuestTokenUrl, xAuthToken, xApiUrl } = useRuntimeConfig()
+const {
+  xGuestTokenUrl,
+  xAuthToken,
+  xApiUrl,
+  telegramApiId,
+  telegramApiHash,
+  telegramApiStringSession
+} = useRuntimeConfig()
+
 const { upload } = useCdn()
 
 export default defineApiEndpoint(async ({ event }) => {
@@ -22,7 +33,31 @@ export default defineApiEndpoint(async ({ event }) => {
     })
 
   if (type === 'telegram') {
-    
+    const stringSession = new StringSession(telegramApiStringSession)
+
+    const client = new TelegramClient(stringSession, telegramApiId, telegramApiHash, {})
+    await client.connect()
+
+    const r = await client.invoke(
+      new Api.channels.GetMessages({
+        channel: 'port_media',
+        id: [2011]
+      })
+    )
+
+    return {
+      // author: {
+      //   avatar: (await upload(user.profile_image_url_https)).secure_url,
+      //   name: user.name,
+      //   username: user.screen_name,
+      //   url: `https://x.com/${user.screen_name}`
+      // },
+      text: r.messages[0].message,
+      // media,
+      // published: tweet.created_at,
+      type,
+      url
+    }
   }
 
   if (type === 'x') {
@@ -113,7 +148,7 @@ export default defineApiEndpoint(async ({ event }) => {
       media,
       published: tweet.created_at,
       type,
-      url: `https://x.com/${user.screen_name}/status/${xId}`
+      url
     }
   }
 

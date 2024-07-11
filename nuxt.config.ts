@@ -26,6 +26,11 @@ export default defineNuxtConfig({
     xGuestTokenUrl: env.NUXT_X_GUEST_TOKEN_URL,
     xAuthToken: env.NUXT_X_AUTH_TOKEN,
     xApiUrl: env.NUXT_X_API_URL,
+
+    telegramApiHash: env.NUXT_TELEGRAM_API_HASH,
+    telegramApiId: env.NUXT_TELEGRAM_API_ID,
+    telegramAccountNumber: env.NUXT_TELEGRAM_ACCOUNT_NUMBER,
+    telegramApiStringSession: env.NUXT_TELEGRAM_API_STRING_SESSION
   },
 
   modules: [
