@@ -31,8 +31,7 @@
 
     <iframe
       v-else-if="type === 'youtube' && isPlaying"
-      :src="`${src}?controls=2&autoplay=1&enablejsapi=1`"
-      allow="autoplay;fullscreen;"
+      :src="`${src}?controls=2&autoplay=1&enablejsapi=1&playsinline=1`"
       class="w-full aspect-video rounded-xl"
     />
   </div>

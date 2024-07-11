@@ -15,7 +15,7 @@ const YoutubeEmbedNode = Node.create({
 
   addAttributes() {
     return {
-      id: {
+      video_id: {
         default: null,
       },
       thumbnail: {
@@ -43,7 +43,7 @@ const YoutubeEmbedNode = Node.create({
         type: this.type,
         getAttributes: (match) => {
           return {
-            id: match[1],
+            video_id: match[1],
             thumbnail: `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`
           }
         },

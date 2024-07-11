@@ -1,7 +1,7 @@
 <template>
   <NodeViewWrapper>
     <Video
-      :src="`http://www.youtube.com/embed/${node.attrs.id}`"
+      :src="`http://www.youtube.com/embed/${node.attrs.video_id}`"
       :thumbnail="node.attrs.thumbnail"
       type="youtube"
     />
