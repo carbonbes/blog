@@ -33,31 +33,63 @@ export default defineApiEndpoint(async ({ event }) => {
     })
 
   if (type === 'telegram') {
-    const stringSession = new StringSession(telegramApiStringSession)
+    const telegramPostRegexp = /https?:\/\/(?:telegram|t)\.me\/(.+)\/(\d+)/gi
+    const [, channelName, postId] = telegramPostRegexp.exec(url) || []
 
-    const client = new TelegramClient(stringSession, telegramApiId, telegramApiHash, {})
+    const stringSession = new StringSession(telegramApiStringSession)
+    const client = new TelegramClient(stringSession, +telegramApiId, telegramApiHash, {})
     await client.connect()
 
-    const r = await client.invoke(
-      new Api.channels.GetMessages({
-        channel: 'port_media',
-        id: [2011]
-      })
+    const post = {}
+
+    const [{ message, media, groupedId }] = await client.getMessages(
+      channelName,
+      {
+        ids: [new Api.InputMessageID({ id: postId as unknown as number })],
+      }
     )
 
-    return {
-      // author: {
-      //   avatar: (await upload(user.profile_image_url_https)).secure_url,
-      //   name: user.name,
-      //   username: user.screen_name,
-      //   url: `https://x.com/${user.screen_name}`
-      // },
-      text: r.messages[0].message,
-      // media,
-      // published: tweet.created_at,
-      type,
-      url
+    if (media && groupedId) {
+      const ids: number[] = []
+
+      for (let i = +postId + 1; i <= +postId + 10; i++) {
+        ids.push(i)
+      }
+
+      const gPosts = await client.getMessages(
+        channelName,
+        {
+          ids
+        }
+      )
+
+      post.text = message
+      post.media = [media, ...gPosts.filter((gPost) => Number(gPost?.groupedId) === Number(groupedId))]
+
+      return post
     }
+
+    // if (r.media) {
+    //   const media = await client.downloadMedia(r[0])
+
+    //   const image = Buffer.from(media!).toString('base64')
+
+    //   return media
+    // }
+
+    // return {
+    //   author: {
+    //     // avatar: (await upload(user.profile_image_url_https)).secure_url,
+    //     name: r.chats[0].title,
+    //     username: r.chats[0].username,
+    //     // url: `https://x.com/${user.screen_name}`
+    //   },
+    //   text: r.messages[0].message,
+    //   // media,
+    //   published: r.messages[0].date,
+    //   type,
+    //   url
+    // }
   }
 
   if (type === 'x') {

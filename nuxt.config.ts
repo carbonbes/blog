@@ -9,10 +9,6 @@ const env = { ...process.env, ...loadEnv('', process.cwd()) }
 export default defineNuxtConfig({
   devtools: {
     enabled: true,
-
-    timeline: {
-      enabled: true,
-    },
   },
 
   runtimeConfig: {
@@ -29,7 +25,6 @@ export default defineNuxtConfig({
 
     telegramApiHash: env.NUXT_TELEGRAM_API_HASH,
     telegramApiId: env.NUXT_TELEGRAM_API_ID,
-    telegramAccountNumber: env.NUXT_TELEGRAM_ACCOUNT_NUMBER,
     telegramApiStringSession: env.NUXT_TELEGRAM_API_STRING_SESSION
   },
 

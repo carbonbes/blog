@@ -1,7 +1,7 @@
 import type { EmbedType } from '~/types'
 
 export default function getEmbedType(url: string): EmbedType | undefined {
-  const telegramRegexp = /(?:https?:\/\/)?(?:www\.)?t\.me\/.+/gi
+  const telegramRegexp = /(?:https?:\/\/)?(?:www\.)?(?:t|telegram)\.me\/.+/gi
   const xRegexp = /(?:https?:\/\/)?(?:www\.)?(?:twitter|x)\.com\/.+/gi
   const youtubeRegexp = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)/gi
 
