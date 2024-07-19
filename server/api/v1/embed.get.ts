@@ -3,6 +3,7 @@ import { TwitterApiTweetResponse } from '~/types'
 import { TelegramClient } from 'telegram'
 import { StringSession } from 'telegram/sessions'
 import { Api } from 'telegram/tl'
+import getMimeTypeFromBuffer from '~/utils/getMimeTypeFromBuffer'
 
 const {
   xGuestTokenUrl,
@@ -14,6 +15,30 @@ const {
 } = useRuntimeConfig()
 
 const { upload } = useCdn()
+
+type TelegramMediaArgs = 
+  | {
+      telegram: TelegramClient
+      channelUsername: string
+      type: 'profile_photo'
+    }
+  | {
+      telegram: TelegramClient
+      media: Api.TypeMessageMedia
+      type: 'media'
+    }
+
+async function getTelegramMedia(args: TelegramMediaArgs) {
+  const { telegram } = args
+
+  const buffer = args.type === 'media'
+    ? await telegram.downloadMedia(args.media)
+    : await telegram.downloadProfilePhoto(args.channelUsername)
+
+  const mimeType = getMimeTypeFromBuffer(buffer as Buffer)
+
+  return `data:${mimeType};base64,` + Buffer.from(buffer!).toString('base64')
+}
 
 export default defineApiEndpoint(async ({ event }) => {
   const { url }: { url: string } = getQuery(event)
@@ -34,39 +59,82 @@ export default defineApiEndpoint(async ({ event }) => {
 
   if (type === 'telegram') {
     const telegramPostRegexp = /https?:\/\/(?:telegram|t)\.me\/(.+)\/(\d+)/gi
-    const [, channelName, postId] = telegramPostRegexp.exec(url) || []
+    const [, channelUsername, postId] = telegramPostRegexp.exec(url) || []
 
     const stringSession = new StringSession(telegramApiStringSession)
-    const client = new TelegramClient(stringSession, +telegramApiId, telegramApiHash, {})
-    await client.connect()
+    const telegram = new TelegramClient(stringSession, +telegramApiId, telegramApiHash, {})
+    await telegram.connect()
 
-    const post = {}
+    const { chats: [{ title: channelName }] } = await telegram.invoke(
+      new Api.channels.GetChannels({
+        id: [channelUsername]
+      })
+    )
 
-    const [{ message, media, groupedId }] = await client.getMessages(
-      channelName,
+    const [{ message: postText, media: postMedia, date: postDatePublished, groupedId }] = await telegram.getMessages(
+      channelUsername,
       {
-        ids: [new Api.InputMessageID({ id: postId as unknown as number })],
+        ids: new Api.InputMessageID({ id: postId as unknown as number }),
       }
     )
 
-    if (media && groupedId) {
+    if (postMedia && groupedId) {
       const ids: number[] = []
 
       for (let i = +postId + 1; i <= +postId + 10; i++) {
         ids.push(i)
       }
 
-      const gPosts = await client.getMessages(
-        channelName,
+      const posts = await telegram.getMessages(
+        channelUsername,
         {
           ids
         }
       )
 
-      post.text = message
-      post.media = [media, ...gPosts.filter((gPost) => Number(gPost?.groupedId) === Number(groupedId))]
+      return {
+        // author: {
+        //   // avatar: (await upload(user.profile_image_url_https)).secure_url,
+        //   name: r.chats[0].title,
+        //   username: r.chats[0].username,
+        //   // url: `https://x.com/${user.screen_name}`
+        // },
+        text: postText,
+        // media: [
+        //   media,
+        //   ...posts
+        //     .filter((post) => Number(post?.groupedId) === Number(groupedId))
+        //     .map((post) => post.media),
+        // ],
+        published: postDatePublished * 1000,
+        type,
+        url
+      }
+    } else if (postMedia && !groupedId) {
+      const base64Avatar = await getTelegramMedia({ telegram, channelUsername, type: 'profile_photo' })
+      const avatar = (await upload(base64Avatar)).secure_url
 
-      return post
+      const base64Media = await getTelegramMedia({ telegram, media: postMedia, type: 'media' })
+      const media = await upload(base64Media)
+
+      return {
+        author: {
+          avatar,
+          name: channelName,
+          username: channelUsername,
+          url: `https://t.me/${channelUsername}`
+        },
+        text: postText,
+        media: [{
+          url: media.secure_url,
+          width: media.width,
+          height: media.height,
+          type: media.resource_type
+        }],
+        published: postDatePublished * 1000,
+        type,
+        url
+      }
     }
 
     // if (r.media) {
@@ -75,20 +143,6 @@ export default defineApiEndpoint(async ({ event }) => {
     //   const image = Buffer.from(media!).toString('base64')
 
     //   return media
-    // }
-
-    // return {
-    //   author: {
-    //     // avatar: (await upload(user.profile_image_url_https)).secure_url,
-    //     name: r.chats[0].title,
-    //     username: r.chats[0].username,
-    //     // url: `https://x.com/${user.screen_name}`
-    //   },
-    //   text: r.messages[0].message,
-    //   // media,
-    //   published: r.messages[0].date,
-    //   type,
-    //   url
     // }
   }
 

@@ -37,7 +37,8 @@
         </Tooltip>
       </div>
 
-      <ITablerBrandX class="pl-4 box-content" v-if="embed.type === 'x'" />
+      <ITablerBrandX v-if="embed.type === 'x'" class="pl-4 box-content" />
+      <IIconsTelegram v-else class="pl-4 box-content" />
     </Flex>
 
     <Flex col>

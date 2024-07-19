@@ -7,6 +7,8 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    IIconsT: typeof import('~icons/icons/t')['default']
+    IIconsTelegram: typeof import('~icons/icons/telegram')['default']
     IIconsTwitter: typeof import('~icons/icons/twitter')['default']
     IIconsX: typeof import('~icons/icons/x')['default']
     IIconsYoutube: typeof import('~icons/icons/youtube')['default']
@@ -16,6 +18,7 @@ declare module 'vue' {
     ITablerArrowLeft: typeof import('~icons/tabler/arrow-left')['default']
     ITablerArrowsDiagonal: typeof import('~icons/tabler/arrows-diagonal')['default']
     ITablerArrowUp: typeof import('~icons/tabler/arrow-up')['default']
+    ITablerBrandTelegram: typeof import('~icons/tabler/brand-telegram')['default']
     ITablerBrandX: typeof import('~icons/tabler/brand-x')['default']
     ITablerChevronRight: typeof import('~icons/tabler/chevron-right')['default']
     ITablerDivide: typeof import('~icons/tabler/divide')['default']
