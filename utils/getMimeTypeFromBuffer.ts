@@ -18,15 +18,9 @@ export default function getMimeTypeFromBuffer(buffer: Buffer) {
       case '47494638':
         return 'image/gif'
 
-      case '25504446':
-        return 'application/pdf'
-
       case 'FFD8FFDB':
       case 'FFD8FFE0':
         return 'image/jpeg'
-
-      case '504B0304':
-        return 'application/zip'
 
       default:
         return null

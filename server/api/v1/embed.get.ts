@@ -37,7 +37,9 @@ async function getTelegramMedia(args: TelegramMediaArgs) {
 
   const mimeType = getMimeTypeFromBuffer(buffer as Buffer)
 
-  return `data:${mimeType};base64,` + Buffer.from(buffer!).toString('base64')
+  const base64 = `data:${mimeType};base64,` + Buffer.from(buffer!).toString('base64')
+
+  return await upload(base64)
 }
 
 export default defineApiEndpoint(async ({ event }) => {
@@ -71,51 +73,75 @@ export default defineApiEndpoint(async ({ event }) => {
       })
     )
 
-    const [{ message: postText, media: postMedia, date: postDatePublished, groupedId }] = await telegram.getMessages(
+    const [mainPost] = await telegram.getMessages(
       channelUsername,
       {
         ids: new Api.InputMessageID({ id: postId as unknown as number }),
       }
     )
 
-    if (postMedia && groupedId) {
+    const avatar = (await getTelegramMedia({ telegram, channelUsername, type: 'profile_photo' })).secure_url
+
+    if (mainPost.media && mainPost.groupedId) {
       const ids: number[] = []
 
       for (let i = +postId + 1; i <= +postId + 10; i++) {
         ids.push(i)
       }
 
-      const posts = await telegram.getMessages(
-        channelUsername,
-        {
-          ids
-        }
+      const groupedPosts = (
+        await telegram.getMessages(channelUsername, {
+          ids,
+        })
+      ).filter((post) => Number(post?.groupedId) === Number(mainPost.groupedId))
+
+      groupedPosts.unshift(mainPost)
+
+      const media = await Promise.all(
+        groupedPosts.map(async (post) => {
+          const {
+            secure_url,
+            public_id,
+            format,
+            width,
+            height,
+            resource_type
+          } = await getTelegramMedia({ telegram, media: post.media!, type: 'media' })
+
+          if (resource_type === 'image') {
+            return {
+              url: secure_url,
+              width,
+              height,
+              type: resource_type
+            }
+          } else if (resource_type === 'video') {
+            return {
+              url: secure_url,
+              thumbnail: `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/${public_id}.${format}`,
+              width,
+              height,
+              type: resource_type
+            }
+          }
+        })
       )
 
       return {
-        // author: {
-        //   // avatar: (await upload(user.profile_image_url_https)).secure_url,
-        //   name: r.chats[0].title,
-        //   username: r.chats[0].username,
-        //   // url: `https://x.com/${user.screen_name}`
-        // },
-        text: postText,
-        // media: [
-        //   media,
-        //   ...posts
-        //     .filter((post) => Number(post?.groupedId) === Number(groupedId))
-        //     .map((post) => post.media),
-        // ],
-        published: postDatePublished * 1000,
+        author: {
+          avatar: avatar,
+          name: channelName,
+          username: channelUsername,
+          url: `https://t.me/${channelUsername}`
+        },
+        text: mainPost.message,
+        media,
+        published: mainPost.date * 1000,
         type,
         url
       }
-    } else if (postMedia && !groupedId) {
-      const base64Avatar = await getTelegramMedia({ telegram, channelUsername, type: 'profile_photo' })
-      const avatar = (await upload(base64Avatar)).secure_url
-
-      const base64Media = await getTelegramMedia({ telegram, media: postMedia, type: 'media' })
-      const media = await upload(base64Media)
+    } else if (mainPost.media && !mainPost.groupedId) {
+      const media = await getTelegramMedia({ telegram, media: mainPost.media, type: 'media' })
 
       return {
         author: {
@@ -124,26 +150,18 @@ export default defineApiEndpoint(async ({ event }) => {
           username: channelUsername,
           url: `https://t.me/${channelUsername}`
         },
-        text: postText,
+        text: mainPost.message,
         media: [{
           url: media.secure_url,
           width: media.width,
           height: media.height,
           type: media.resource_type
         }],
-        published: postDatePublished * 1000,
+        published: mainPost.date * 1000,
         type,
         url
       }
     }
-
-    // if (r.media) {
-    //   const media = await client.downloadMedia(r[0])
-
-    //   const image = Buffer.from(media!).toString('base64')
-
-    //   return media
-    // }
   }
 
   if (type === 'x') {

@@ -34,157 +34,29 @@ const data = {
         {
           type: 'sn-embed',
           attrs: {
-            embed: {
-              author: {
-                avatar:
-                  'https://res.cloudinary.com/dkmur8a20/image/upload/v1719922253/o98vmx7cqtubtodzplls.jpg',
-                name: 'Шизойд',
-                username: 'sebullllba',
-                url: 'https://x.com/sebullllba',
-              },
-              text: '«Посмотрел Слово пацана», «а я вот этот сериал», «а я буду стопиццотый раз пересматривать Друзей», «а я - дом Дракона». \n\nУ вас у всех чересчур дохуя свободного времени (сказано с интонацией деда из Brassic. \n\nВсе, можете накидываться.',
-              media: [
-                {
-                  url: 'http://res.cloudinary.com/dkmur8a20/video/upload/v1719922253/kvjrbzptdbfrzm0rwfjm.mp4',
-                  width: 480,
-                  height: 480,
-                  type: 'gif',
-                },
-              ],
-              published: 'Mon Dec 04 14:26:50 +0000 2023',
-              type: 'x',
-              url: 'https://x.com/sebullllba/status/1731681471109157096',
-            },
-            type: 'x',
-          },
-        },
-      ],
-    },
-    {
-      type: 'rootNode',
-      attrs: {
-        pin: false,
-        spoiler: false,
-      },
-      content: [
-        {
-          type: 'sn-embed',
-          attrs: {
             url: null,
             embed: {
               author: {
                 avatar:
-                  'https://res.cloudinary.com/dkmur8a20/image/upload/v1719996822/wa1dnxhbevjbhsbtdzl6.jpg',
-                name: 'Разрыхлитель Мозгов™',
-                username: 'crazy_kutas',
-                url: 'https://x.com/crazy_kutas',
+                  'https://res.cloudinary.com/dkmur8a20/image/upload/v1721636992/kkonmi8z730xj8yc9j7y.jpg',
+                name: 'Код Дурова',
+                username: 'd_code',
+                url: 'https://t.me/d_code',
               },
-              text: '#10YearsChallenge\n\nЧто можно купить на 1000 рублей:',
+              text: '🪙 Жетоны подключили //\n\nПопулярный криптокошелёк Trust Wallet добавил поддержку жетонов в Сети TON. Теперь пользователи приложения смогут управлять практически всеми своими активами на блокчейне TON.\n\nНапомним, ранее в Сети TON состоялась интеграция самого популярного стейблкоина — USDt. Всего за несколько месяцев общая эмиссия в Сети составила более 730 млн USDt, для Tether это стало лучшим показателем среди всех блокчейнов.\n\n@d_code',
               media: [
                 {
-                  url: 'http://res.cloudinary.com/dkmur8a20/image/upload/v1719996820/qqrmdcde55frlfbhn3wb.jpg',
-                  width: 647,
-                  height: 429,
-                  type: 'image',
-                },
-                {
-                  url: 'http://res.cloudinary.com/dkmur8a20/image/upload/v1719996820/tyxbsdcckqxodnddilgj.jpg',
-                  width: 651,
-                  height: 488,
+                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721636993/a9rdf7gye1v0rm8sa5rk.jpg',
+                  width: 2121,
+                  height: 1453,
                   type: 'image',
                 },
               ],
-              published: 'Tue Jan 22 04:37:39 +0000 2019',
-              type: 'x',
-              url: 'https://x.com/crazy_kutas/status/1087569961025970176',
+              published: 1721489663000,
+              type: 'telegram',
+              url: 'https://t.me/d_code/19708',
             },
-            type: 'x',
-          },
-        },
-      ],
-    },
-    {
-      type: 'rootNode',
-      attrs: {
-        pin: false,
-        spoiler: false,
-      },
-      content: [
-        {
-          type: 'sn-embed',
-          attrs: {
-            url: null,
-            embed: {
-              author: {
-                avatar:
-                  'https://res.cloudinary.com/dkmur8a20/image/upload/v1719998975/zlsomwoabklztu90rvcx.jpg',
-                name: 'ваня градобоев',
-                username: 'vanyagradoboev',
-                url: 'https://x.com/vanyagradoboev',
-              },
-              text: 'сплю с открытыми окнами, налетает всякое',
-              media: [
-                {
-                  url: 'http://res.cloudinary.com/dkmur8a20/video/upload/v1719998974/csurqofrzkpay3vsdsb5.mp4',
-                  thumbnail:
-                    'https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/csurqofrzkpay3vsdsb5.mp4',
-                  width: 720,
-                  height: 720,
-                  type: 'video',
-                },
-              ],
-              published: 'Mon Jun 24 22:40:28 +0000 2024',
-              type: 'x',
-              url: 'https://x.com/vanyagradoboev/1805370432939327989',
-            },
-            type: 'x',
-          },
-        },
-      ],
-    },
-    {
-      type: 'rootNode',
-      attrs: {
-        pin: false,
-        spoiler: false,
-      },
-      content: [
-        {
-          type: 'sn-embed',
-          attrs: {
-            url: null,
-            embed: {
-              author: {
-                avatar:
-                  'https://res.cloudinary.com/dkmur8a20/image/upload/v1720086913/duzrezgqmrwamtmwg7ui.jpg',
-                name: 'ваня градобоев',
-                username: 'vanyagradoboev',
-                url: 'https://x.com/vanyagradoboev',
-              },
-              text: 'кстати, чтобы вы еще чучуть больше охуели - вот это тоже я построил, точнее я это строил параллельно своему дому. остались еще доделки, но в целом получилось два дома за год',
-              media: [
-                {
-                  url: 'http://res.cloudinary.com/dkmur8a20/video/upload/v1720086912/g1bqkociuibtxmshuvzr.mp4',
-                  thumbnail:
-                    'https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/g1bqkociuibtxmshuvzr.mp4',
-                  width: 720,
-                  height: 1280,
-                  type: 'video',
-                },
-                {
-                  url: 'http://res.cloudinary.com/dkmur8a20/video/upload/v1720086912/loc44hhluwr6w5yluak3.mp4',
-                  thumbnail:
-                    'https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/loc44hhluwr6w5yluak3.mp4',
-                  width: 720,
-                  height: 960,
-                  type: 'video',
-                },
-              ],
-              published: 'Sun Sep 24 13:35:28 +0000 2023',
-              type: 'x',
-              url: 'https://x.com/vanyagradoboev/status/1705939005626355739',
-            },
-            type: 'x',
+            type: 'telegram',
           },
         },
       ],
@@ -234,6 +106,61 @@ const data = {
               url: 'https://x.com/NASA/status/1763649550479241501',
             },
             type: 'x',
+          },
+        },
+      ],
+    },
+    {
+      type: 'rootNode',
+      attrs: {
+        pin: false,
+        spoiler: false,
+      },
+      content: [
+        {
+          type: 'sn-embed',
+          attrs: {
+            url: null,
+            embed: {
+              author: {
+                avatar:
+                  'https://res.cloudinary.com/dkmur8a20/image/upload/v1721645137/ekmbi0ct8hguiholr5h2.jpg',
+                name: 'Big Geek',
+                username: 'biggeekru',
+                url: 'https://t.me/biggeekru',
+              },
+              text: 'Unihertz представила новое поколение своего компактного смартфона — Jelly Max\n\nТеперь это самый маленький смартфон на рынке с поддержкой 5G. Из других интересных фишек: прозрачная задняя крышка и ремешок на руку в комплекте. Отдельно можно докупить ремешок через плечо.\n\n• Дисплей: 5,05" 1520x720 IPS\n• Чипсет: Dimensity 7300\n• Камеры: 100 Мп + 8 Мп телевик + 32 Мп селфи\n• Память: 12/256 ГБ + microSD\n• Связь: 5G, NFC, Wi-Fi 6, Bluetooth 5.3\n• Биометрия: сканер отпечатков на спинке\n• Водозащита: нет\n• Аккумулятор и зарядка: 4000 мАч, 66 Вт\n• Габариты: 128,7 х 62,7 x 16,3 мм\n• Цена: $339 (~29 900 ₽)',
+              media: [
+                {
+                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721645138/abpgejskpsy820i5d9vf.jpg',
+                  width: 780,
+                  height: 440,
+                  type: 'image',
+                },
+                {
+                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721645138/a0osvtjptkxgczi3jkdm.jpg',
+                  width: 780,
+                  height: 440,
+                  type: 'image',
+                },
+                {
+                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721645138/fwcmqqplueotgahdx0q1.jpg',
+                  width: 680,
+                  height: 680,
+                  type: 'image',
+                },
+                {
+                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721645138/vs29j9ut6u2tdmcxvrkd.jpg',
+                  width: 680,
+                  height: 419,
+                  type: 'image',
+                },
+              ],
+              published: 1721203273000,
+              type: 'telegram',
+              url: 'https://t.me/biggeekru/26500',
+            },
+            type: 'telegram',
           },
         },
       ],
