@@ -46,6 +46,7 @@
     "cloudinary": "^2.2.0",
     "dayjs-nuxt": "^2.1.9",
     "eslint": "^9.2.0",
+    "file-type": "^19.3.0",
     "h3-formidable": "^1.0.0",
     "photoswipe": "^5.4.3",
     "radix-vue": "^1.8.0",

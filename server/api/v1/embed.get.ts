@@ -1,5 +1,5 @@
 import getEmbedType from '~/utils/getEmbedType'
-import { TwitterApiTweetResponse } from '~/types'
+import { CDNMedia, TwitterApiTweetResponse } from '~/types'
 import { TelegramClient } from 'telegram'
 import { StringSession } from 'telegram/sessions'
 import { Api } from 'telegram/tl'
@@ -32,14 +32,33 @@ async function getTelegramMedia(args: TelegramMediaArgs) {
   const { telegram } = args
 
   const buffer = args.type === 'media'
-    ? await telegram.downloadMedia(args.media)
-    : await telegram.downloadProfilePhoto(args.channelUsername)
+    ? await telegram.downloadMedia(args.media) as Buffer
+    : await telegram.downloadProfilePhoto(args.channelUsername) as Buffer
 
-  const mimeType = getMimeTypeFromBuffer(buffer as Buffer)
+  const mimeType = await getMimeTypeFromBuffer(buffer)
 
-  const base64 = `data:${mimeType};base64,` + Buffer.from(buffer!).toString('base64')
+  const base64 = `data:${mimeType};base64,` + Buffer.from(buffer).toString('base64')
 
   return await upload(base64)
+}
+
+function getEmbedMedia(media: CDNMedia) {
+  const {
+    secure_url,
+    public_id,
+    format,
+    width,
+    height,
+    resource_type
+  } = media
+
+  return {
+    url: secure_url,
+    ...(resource_type === 'video' && { thumbnail: `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/${public_id}.${format}` }),
+    width,
+    height,
+    type: resource_type
+  }
 }
 
 export default defineApiEndpoint(async ({ event }) => {
@@ -99,31 +118,11 @@ export default defineApiEndpoint(async ({ event }) => {
 
       const media = await Promise.all(
         groupedPosts.map(async (post) => {
-          const {
-            secure_url,
-            public_id,
-            format,
-            width,
-            height,
-            resource_type
-          } = await getTelegramMedia({ telegram, media: post.media!, type: 'media' })
+          if (!post.media) return
 
-          if (resource_type === 'image') {
-            return {
-              url: secure_url,
-              width,
-              height,
-              type: resource_type
-            }
-          } else if (resource_type === 'video') {
-            return {
-              url: secure_url,
-              thumbnail: `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/${public_id}.${format}`,
-              width,
-              height,
-              type: resource_type
-            }
-          }
+          const media = await getTelegramMedia({ telegram, media: post.media, type: 'media' })
+
+          return getEmbedMedia(media)
         })
       )
 
@@ -151,12 +150,7 @@ export default defineApiEndpoint(async ({ event }) => {
           url: `https://t.me/${channelUsername}`
         },
         text: mainPost.message,
-        media: [{
-          url: media.secure_url,
-          width: media.width,
-          height: media.height,
-          type: media.resource_type
-        }],
+        media: [getEmbedMedia(media)],
         published: mainPost.date * 1000,
         type,
         url

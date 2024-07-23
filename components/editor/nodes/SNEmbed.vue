@@ -8,6 +8,7 @@
       class="px-4 py-24 border-2 border-gray-100 rounded-xl"
     >
       <ITablerBrandX class="!size-16 animate-pulse" v-if="node.attrs.type === 'x'" />
+      <IIconsTelegram class="!size-16 animate-pulse" v-else />
     </Flex>
 
     <SNEmbed v-else :embed="node.attrs.embed" />
