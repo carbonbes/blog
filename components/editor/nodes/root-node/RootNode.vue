@@ -47,18 +47,7 @@
       <Flex
         itemsCenter
         class="absolute top-1/2 left-full -translate-y-1/2 ml-4 pl-4 py-4 w-full h-full bg-gray-100 gap-2 sm:hidden rounded-l-xl"
-      >
-        <UIButton
-          v-for="(button, i) in nodeQuickActions"
-          :key="i"
-          variant="secondary"
-          size="s"
-          class="shadow"
-          @click="button.action"
-        >
-          <Component :is="button.icon" />
-        </UIButton>
-      </Flex>
+      />
 
       <Flex col class="absolute top-0 right-0 gap-2 sm:hidden">
         <UIButton
@@ -109,8 +98,10 @@
       :nodeIsSpoilered
       :nodeType
       @close="onClose"
+      @moveNode="moveNode"
       @changeNodeType="changeNodeType"
       @toggleAttribute="toggleAttribute"
+      @removeNode="deleteNode"
       ref="nodeActionsBSRef"
     />
   </NodeViewWrapper>
@@ -121,11 +112,6 @@ import { NodeViewWrapper, NodeViewContent, type NodeViewProps, type JSONContent 
 import NodeActionsButton from '~/components/editor/nodes/root-node/NodeActionsButton.vue'
 import NodesListBottomsheet from '~/components/editor/nodes/root-node/NodesListBottomsheet.vue'
 import NodeActionsBottomsheet from '~/components/editor/nodes/root-node/NodeActionsBottomsheet.vue'
-import ArrowUp from '~icons/tabler/arrow-up'
-import ArrowDown from '~icons/tabler/arrow-down'
-import Trash from '~icons/tabler/trash'
-import Dots from '~icons/tabler/dots'
-import X from '~icons/tabler/x'
 import type { HeadingLevel, NodeType } from '~/types'
 import type { NodeSelection } from '@tiptap/pm/state'
 
@@ -162,37 +148,6 @@ const nodeClasses = computed(() => ({
 const nodeContentRef = ref<HTMLDivElement>()
 const nodesListBSRef = ref<InstanceType<typeof NodesListBottomsheet>>()
 const nodeActionsBSRef = ref<InstanceType<typeof NodesListBottomsheet>>()
-
-const nodeQuickActions = markRaw([
-  {
-    icon: ArrowUp
-  },
-  {
-    icon: ArrowDown
-  },
-  {
-    icon: Trash,
-    action: () => {
-      props.deleteNode()
-      resetTransformX()
-      props.editor.commands.blur()
-    }
-  },
-  {
-    icon: Dots,
-    action: () => {
-      nodeActionsBSRef.value?.setOpen(true)
-      props.editor.commands.blur()
-    }
-  },
-  {
-    icon: X,
-    action: () => {
-      resetTransformX()
-      props.editor.commands.blur()
-    }
-  }
-])
 
 function insertNode(type: NodeType, level?: HeadingLevel) {
   let content: JSONContent[] | undefined
@@ -308,7 +263,8 @@ const { isSwiping, direction, lengthX } = useSwipe(nodeContentRef, {
       }
     } else {
       if (lengthX.value > 0 && el.clientWidth && (Math.abs(lengthX.value) / el.clientWidth) >= 0.25) {
-        transformX.value = 'translateX(-75%)'
+        resetTransformX()
+        nodeActionsBSRef.value.setOpen(true)
       } else {
         resetTransformX()
       }

@@ -47,12 +47,15 @@ import type BottomSheet from '~/components/global/BottomSheet.vue'
 import type { HeadingLevel, NodeType } from '~/types'
 import Pin from '~icons/tabler/pin'
 import EyeOff from '~icons/tabler/eye-off'
+import ArrowUp from '~icons/tabler/arrow-up'
+import ArrowDown from '~icons/tabler/arrow-down'
 import Refresh from '~icons/tabler/refresh'
 import Heading1 from '~icons/tabler/h1'
 import Heading2 from '~icons/tabler/h2'
 import Paragraph from '~icons/tabler/letter-case'
 import List from '~icons/tabler/list'
 import ListNumbers from '~icons/tabler/list-numbers'
+import Trash from '~icons/tabler/trash'
 
 const props = defineProps<{
   nodeIsPinned: boolean
@@ -61,9 +64,11 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  close: any
-  changeNodeType: [{ type: NodeType, level?: HeadingLevel }]
+  close: [void]
+  moveNode: [direction: 'up' | 'down']
   toggleAttribute: [attr: 'pin' | 'spoiler']
+  changeNodeType: [{ type: NodeType, level?: HeadingLevel }]
+  removeNode: [void]
 }>()
 
 const state: {
@@ -97,12 +102,36 @@ const mainButtons = computed(() => [
     }
   },
   {
+    icon: ArrowUp,
+    label: 'Поднять наверх',
+    action: () => {
+      emit('moveNode', 'up')
+      setOpen(false)
+    }
+  },
+  {
+    icon: ArrowDown,
+    label: 'Опустить вниз',
+    action: () => {
+      emit('moveNode', 'down')
+      setOpen(false)
+    }
+  },
+  {
     icon: Refresh,
     label: 'Поменять на',
     action: () => {
       state.view = 2
     },
     additional: true
+  },
+  {
+    icon: Trash,
+    label: 'Удалить',
+    action: () => {
+      emit('removeNode')
+      setOpen(false)
+    }
   },
 ])
 
