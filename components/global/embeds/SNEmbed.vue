@@ -42,21 +42,11 @@
     </Flex>
 
     <Flex col>
-      <p v-if="embed.text" class="px-5 pb-5 whitespace-pre-line">
-        <template v-if="isLongText && textIsCollapsed">
-          <span>{{ `${embed.text.slice(0, 250)}...` }}&nbsp;</span>
-          <button
-            class="text-blue-500"
-            @click="textIsCollapsed = false"
-          >
-            Раскрыть
-          </button>
-        </template>
-
-        <template v-else>
-          {{ embed.text }}
-        </template>
-      </p>
+      <CollapsibleText
+        v-if="embed.text"
+        :text="embed.text"
+        class="px-5 pb-5 whitespace-pre-line"
+      />
 
       <Image
         v-if="embed.media && isSingleImg"
@@ -97,8 +87,4 @@ const props = defineProps<{ embed: SNEmbed }>()
 
 const isSingleImg = computed(() => props.embed.media && props.embed.media.length === 1 && props.embed.media[0].type === 'image')
 const isSingleVideo = computed(() => props.embed.media && props.embed.media.length === 1 && ['video', 'gif'].includes(props.embed.media[0].type))
-
-const isLongText = computed(() => props.embed.text && props.embed.text.length >= 300)
-
-const textIsCollapsed = ref(isLongText.value)
 </script>
