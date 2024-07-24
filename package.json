@@ -26,7 +26,6 @@
     "@tiptap/extension-bold": "^2.4.0",
     "@tiptap/extension-bullet-list": "^2.4.0",
     "@tiptap/extension-dropcursor": "^2.4.0",
-    "@tiptap/extension-focus": "^2.4.0",
     "@tiptap/extension-heading": "^2.4.0",
     "@tiptap/extension-history": "^2.4.0",
     "@tiptap/extension-horizontal-rule": "^2.4.0",

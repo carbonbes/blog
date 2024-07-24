@@ -13,7 +13,6 @@ import Link from '@tiptap/extension-link'
 import ListItem from '@tiptap/extension-list-item'
 import BulletList from '@tiptap/extension-bullet-list'
 import OrderedList from '@tiptap/extension-ordered-list'
-import Focus from '@tiptap/extension-focus'
 import History from '@tiptap/extension-history'
 import Placeholder from '@tiptap/extension-placeholder'
 import Dropcursor from '@tiptap/extension-dropcursor'
@@ -43,10 +42,6 @@ const extensions: Extensions = [
   Strike,
   Underline,
   Link,
-  Focus.configure({
-    className: 'focused',
-    mode: 'shallowest',
-  }),
   History,
   Placeholder.configure({
     includeChildren: true,
@@ -81,6 +76,14 @@ export default function useEditor() {
       content,
 
       extensions,
+
+      editorProps: {
+        handleClickOn(view, pos, node, nodePos, event, direct) {
+          if (['sn-embed'].includes(node.type.name)) {
+            editor.value?.commands.blur()
+          }
+        },
+      },
 
       onUpdate({ editor }) {
         const content = editor.getJSON() as JSONContent[]
