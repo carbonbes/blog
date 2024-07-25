@@ -32,7 +32,9 @@
             class="w-full h-full rounded-xl overflow-hidden"
           >
             <Image
-              :src="image.src"
+              :src="image.src!"
+              :srcWidth="image.width"
+              :srcHeight="image.height"
               zoomable
               class="w-fit h-fit block [&_>img]:h-full"
               :class="{ '[&_>img]:max-h-80': isSingle, '[&_>img]:max-w-20 [&_>img]:max-h-20': isGallery, 'opacity-50': image.loading }"
@@ -77,13 +79,17 @@
         v-if="isGallery"
         class="mt-10 gap-2"
       >
-        <UIButton size="s" @click="open">
-          <ITablerPlus />
-        </UIButton>
+        <Tooltip tooltip="Выбрать из галереи">
+          <UIButton size="s" @click="open">
+            <ITablerPlus />
+          </UIButton>
+        </Tooltip>
 
-        <UIButton size="s" @click="dialogRef?.setOpen(true)">
-          <ITablerLink />
-        </UIButton>
+        <Tooltip tooltip="Добавить по ссылке">
+          <UIButton size="s" @click="dialogRef?.setOpen(true)">
+            <ITablerLink />
+          </UIButton>
+        </Tooltip>
       </Flex>
     </Flex>
   </NodeViewWrapper>
@@ -175,9 +181,7 @@ async function uploadImages(files: File[]) {
       }
 
       try {
-        const {
-          data: { secure_url, width, height },
-        } = await uploadMediaByFile(file)
+        const { data: { secure_url, width, height }} = await uploadMediaByFile(file)
 
         const i = images.value.findIndex((image) => image.id === id)
 
@@ -218,9 +222,7 @@ async function uploadImage(imageUrl: string) {
   images.value.push({ id, src: imageUrl, loading: true })
 
   try {
-    const {
-      data: { secure_url, width, height },
-    } = await uploadMediaByUrl(imageUrl)
+    const { data: { secure_url, width, height } } = await uploadMediaByUrl(imageUrl)
 
     const i = images.value.findIndex((image) => image.id === id)
 
