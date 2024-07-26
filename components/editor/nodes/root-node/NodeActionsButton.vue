@@ -57,14 +57,6 @@ function onOpen(value: boolean) {
   isOpen.value = value
 }
 
-function moveNode(dir: 'up' | 'down') {
-  if (dir === 'up') {
-    if (!props.previousNode) return
-  } else {
-    if (!props.nextNode) return
-  }
-}
-
 function removeNode() {
   emit('removeNode')
 
@@ -92,13 +84,13 @@ const nodeActions = computed(() => [
   {
     icon: ArrowUp,
     label: 'Вверх',
-    action: () => moveNode('up'),
+    action: () => emit('moveNode', 'up'),
     disabled: !props.previousNode
   },
   {
     icon: ArrowDown,
     label: 'Вниз',
-    action: () => moveNode('down'),
+    action: () => emit('moveNode', 'down'),
     disabled: !props.nextNode
   },
   {

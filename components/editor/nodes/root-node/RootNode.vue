@@ -97,6 +97,9 @@
       :nodeIsPinned
       :nodeIsSpoilered
       :nodeType
+      :previousNode
+      :nextNode
+      @onOpen="(value) => value ? editor.commands.setNodeSelection(nodeStartPos) : editor.commands.setTextSelection(0)"
       @close="onClose"
       @moveNode="moveNode"
       @changeNodeType="changeNodeType"
@@ -128,7 +131,7 @@ const selectedNode = computed(() => props.editor.state.selection as NodeSelectio
 const previousNode = computed(() => {
   if (!selectedNode.value) return null
 
-  return props.editor.state.doc.resolve(selectedNode.value.from).nodeBefore
+ return props.editor.state.doc.resolve(selectedNode.value.from).nodeBefore
 })
 
 const nextNode = computed(() => {
@@ -200,8 +203,29 @@ function changeNodeType({
   props.editor.commands.blur()
 }
 
-function moveNode(dir: 'up' | 'down') {
+function moveNode(direction: 'up' | 'down') {
+  const view = props.editor.view
+  let tr = props.editor.state.tr
 
+  const currentNode = props.node
+
+  if (direction === 'up') {
+    const previousNodePos = nodeStartPos.value - previousNode.value?.nodeSize!
+
+    tr = tr
+      .replaceWith(previousNodePos, previousNodePos + previousNode.value!.nodeSize, currentNode)
+      .replaceWith(nodeStartPos.value - previousNode.value!.nodeSize + currentNode.nodeSize, nodeStartPos.value + currentNode.nodeSize - previousNode.value!.nodeSize, previousNode.value!)
+      .scrollIntoView()
+
+    view.dispatch(tr)
+  } else {
+    tr = tr
+      .replaceWith(nodeStartPos.value, nodeEndPos.value, nextNode.value!)
+      .replaceWith(nodeEndPos.value, nextNode.value!.nodeSize, currentNode)
+      .scrollIntoView()
+
+    view.dispatch(tr)
+  }
 }
 
 function toggleAttribute(attr: 'pin' | 'spoiler') {

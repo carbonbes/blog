@@ -1,5 +1,10 @@
 <template>
-  <BottomSheet class="!bg-gray-100 after:!bg-gray-100" @close="onClose" ref="bottomsheetRef">
+  <BottomSheet
+    class="!bg-gray-100 after:!bg-gray-100"
+    @isOpen="(value) => emit('onOpen', value)"
+    @close="onClose"
+    ref="bottomsheetRef"
+  >
     <template #header>
       <FadeInOpacityTransition>
         <button v-if="state.view === 2" @click="state.view = 1">
@@ -11,13 +16,14 @@
     <SlideTransition :initialIndex="state.view">
       <Flex v-if="state.view === 1" col class="pb-[25vh] !flex gap-4">
         <UIButton
-          v-for="(button, i) in mainButtons"
+          v-for="(button, i) in buttons"
           :key="i"
           variant="secondary"
           size="l"
           class="flex items-center gap-3"
           :class="{ 'text-blue-500': button.active }"
           @click="button.action"
+          :disabled="button.disabled"
         >
           <Component :is="button.icon" />
           {{ button.label }}
@@ -45,6 +51,7 @@
 <script lang="ts" setup>
 import type BottomSheet from '~/components/global/BottomSheet.vue'
 import type { HeadingLevel, NodeType } from '~/types'
+import type { Node } from '@tiptap/pm/model'
 import Pin from '~icons/tabler/pin'
 import EyeOff from '~icons/tabler/eye-off'
 import ArrowUp from '~icons/tabler/arrow-up'
@@ -61,9 +68,12 @@ const props = defineProps<{
   nodeIsPinned: boolean
   nodeIsSpoilered: boolean
   nodeType: NodeType
+  previousNode: Node | null
+  nextNode: Node | null
 }>()
 
 const emit = defineEmits<{
+  onOpen: [boolean]
   close: [void]
   moveNode: [direction: 'up' | 'down']
   toggleAttribute: [attr: 'pin' | 'spoiler']
@@ -82,7 +92,7 @@ function onClose() {
   state.view = 1
 }
 
-const mainButtons = computed(() => [
+const buttons = computed(() => [
   {
     icon: Pin,
     label: !props.nodeIsPinned ? 'Вывести в карточке' : 'Выводится в карточке',
@@ -104,6 +114,7 @@ const mainButtons = computed(() => [
   {
     icon: ArrowUp,
     label: 'Поднять наверх',
+    disabled: !props.previousNode,
     action: () => {
       emit('moveNode', 'up')
       setOpen(false)
@@ -112,6 +123,7 @@ const mainButtons = computed(() => [
   {
     icon: ArrowDown,
     label: 'Опустить вниз',
+    disabled: !props.nextNode,
     action: () => {
       emit('moveNode', 'down')
       setOpen(false)

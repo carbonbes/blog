@@ -59,6 +59,7 @@ const props = defineProps<DialogContentProps & {
 }>()
 
 const emits = defineEmits<DialogContentEmits & {
+  isOpen: [boolean]
   close: any
 }>()
 
@@ -145,6 +146,8 @@ function onScrollEnd() {
 }
 
 const isOpen = ref(false)
+
+watch(isOpen, (v) => emits('isOpen', v))
 
 function setOpen(value: boolean) {
   isOpen.value = value
