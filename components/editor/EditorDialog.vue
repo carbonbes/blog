@@ -128,6 +128,61 @@ const data = {
         },
       ],
     },
+    {
+      type: 'rootNode',
+      attrs: {
+        pin: false,
+        spoiler: false,
+      },
+      content: [
+        {
+          type: 'sn-embed',
+          attrs: {
+            url: null,
+            embed: {
+              author: {
+                avatar:
+                  'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897995/jikglj27hrh8lb4frkek.jpg',
+                name: 'Big Geek',
+                username: 'biggeekru',
+                url: 'https://t.me/biggeekru',
+              },
+              text: 'Unihertz представила новое поколение своего компактного смартфона — Jelly Max\n\nТеперь это самый маленький смартфон на рынке с поддержкой 5G. Из других интересных фишек: прозрачная задняя крышка и ремешок на руку в комплекте. Отдельно можно докупить ремешок через плечо.\n\n• Дисплей: 5,05" 1520x720 IPS\n• Чипсет: Dimensity 7300\n• Камеры: 100 Мп + 8 Мп телевик + 32 Мп селфи\n• Память: 12/256 ГБ + microSD\n• Связь: 5G, NFC, Wi-Fi 6, Bluetooth 5.3\n• Биометрия: сканер отпечатков на спинке\n• Водозащита: нет\n• Аккумулятор и зарядка: 4000 мАч, 66 Вт\n• Габариты: 128,7 х 62,7 x 16,3 мм\n• Цена: $339 (~29 900 ₽)',
+              media: [
+                {
+                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897996/s69mso1zhoeke85plmc4.jpg',
+                  width: 780,
+                  height: 440,
+                  type: 'image',
+                },
+                {
+                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897997/ywmifrk7j8fnkipmwqqg.jpg',
+                  width: 780,
+                  height: 440,
+                  type: 'image',
+                },
+                {
+                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897997/em5ilplxh3twvtyklk8l.jpg',
+                  width: 680,
+                  height: 680,
+                  type: 'image',
+                },
+                {
+                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897997/popth5jpq0vqemafu0ps.jpg',
+                  width: 680,
+                  height: 419,
+                  type: 'image',
+                },
+              ],
+              published: 1721203273000,
+              type: 'telegram',
+              url: 'https://t.me/biggeekru/26500',
+            },
+            type: 'telegram',
+          },
+        },
+      ],
+    },
   ],
 }
 

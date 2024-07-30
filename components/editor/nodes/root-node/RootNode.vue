@@ -208,20 +208,27 @@ function moveNode(direction: 'up' | 'down') {
   let tr = props.editor.state.tr
 
   const currentNode = props.node
+  const currentNodeSize = props.node.nodeSize
 
   if (direction === 'up') {
-    const previousNodePos = nodeStartPos.value - previousNode.value?.nodeSize!
+    const previousNodeStartPos = nodeStartPos.value - previousNode.value!.nodeSize
+    const previousNodeEndPos = nodeStartPos.value
+    const previousNodeSize = previousNode.value!.nodeSize
 
     tr = tr
-      .replaceWith(previousNodePos, previousNodePos + previousNode.value!.nodeSize, currentNode)
-      .replaceWith(nodeStartPos.value - previousNode.value!.nodeSize + currentNode.nodeSize, nodeStartPos.value + currentNode.nodeSize - previousNode.value!.nodeSize, previousNode.value!)
+      .delete(previousNodeStartPos, previousNodeEndPos)
+      .insert(nodeStartPos.value - previousNodeSize + currentNodeSize, previousNode.value!)
       .scrollIntoView()
 
     view.dispatch(tr)
   } else {
+    const nextNodeStartPos = nodeEndPos.value
+    const nextNodeEndPos = nodeEndPos.value + nextNode.value!.nodeSize
+    const nextNodeSize = nextNode.value!.nodeSize
+
     tr = tr
-      .replaceWith(nodeStartPos.value, nodeEndPos.value, nextNode.value!)
-      .replaceWith(nodeEndPos.value, nextNode.value!.nodeSize, currentNode)
+      .delete(nextNodeStartPos, nextNodeEndPos)
+      .insert(nodeStartPos.value + nextNodeSize - currentNodeSize, nextNode.value!)
       .scrollIntoView()
 
     view.dispatch(tr)
