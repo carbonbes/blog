@@ -14,9 +14,8 @@
         :nodeIsSpoilered
         :nodeType
         :nodeAttrs
-        :previousNode
-        :nextNode
-        @isOpen="(value) => value ? editor.commands.setNodeSelection(nodeStartPos) : editor.commands.setTextSelection(0)"
+        :neighborNodes
+        @onOpen="onOpen"
         @changeNodeType="changeNodeType"
         @toggleAttribute="toggleAttribute"
         @moveNode="moveNode"
@@ -41,7 +40,7 @@
 
       <NodeViewContent
         class="sm:py-2 sm:px-3 rounded-xl w-full [&_ol]:pl-4 [&_ul]:pl-4 not-first:[&_ul_>_li]:mt-2 not-first:[&_ol_>_li]:mt-2 [&_ol]:list-decimal [&_ul]:list-disc outline-none transition-colors"
-        :class="{ 'bg-blue-100/50': selected }"
+        :class="{ 'bg-blue-100/50': nodeSelected }"
       />
 
       <Flex
@@ -97,9 +96,8 @@
       :nodeIsPinned
       :nodeIsSpoilered
       :nodeType
-      :previousNode
-      :nextNode
-      @onOpen="(value) => value ? editor.commands.setNodeSelection(nodeStartPos) : editor.commands.setTextSelection(0)"
+      :neighborNodes
+      @onOpen="onOpen"
       @close="onClose"
       @moveNode="moveNode"
       @changeNodeType="changeNodeType"
@@ -116,9 +114,10 @@ import NodeActionsButton from '~/components/editor/nodes/root-node/NodeActionsBu
 import NodesListBottomsheet from '~/components/editor/nodes/root-node/NodesListBottomsheet.vue'
 import NodeActionsBottomsheet from '~/components/editor/nodes/root-node/NodeActionsBottomsheet.vue'
 import type { HeadingLevel, NodeType } from '~/types'
-import type { NodeSelection } from '@tiptap/pm/state'
 
 const props = defineProps<NodeViewProps>()
+
+const nodeSelected = ref(false)
 
 const nodeStartPos = computed(() => props.getPos())
 const nodeEndPos = computed(() => props.getPos() + props.node.nodeSize)
@@ -126,18 +125,20 @@ const nodeType = computed(() => props.node.content.content[0].type.name as NodeT
 const nodeAttrs = computed(() => props.node.content.content[0].attrs)
 const nodeIsPinned = computed<boolean>(() => props.node.attrs.pin)
 const nodeIsSpoilered = computed<boolean>(() => props.node.attrs.spoiler)
-const selectedNode = computed(() => props.editor.state.selection as NodeSelection | undefined)
 
-const previousNode = computed(() => {
-  if (!selectedNode.value) return null
+const neighborNodes = computed(() => {
+  const { doc } = props.editor.state
 
- return props.editor.state.doc.resolve(selectedNode.value.from).nodeBefore
-})
+  const startPos = nodeStartPos.value
+  const endPos = nodeEndPos.value
 
-const nextNode = computed(() => {
-  if (!selectedNode.value) return null
+  let prevNode = null
+  let nextNode = null
 
-  return props.editor.state.doc.resolve(selectedNode.value.to).nodeAfter
+  if (startPos > 0) prevNode = doc.resolve(startPos).nodeBefore
+  if (endPos < doc.content.size) nextNode = doc.resolve(endPos).nodeAfter
+
+  return { prevNode, nextNode }
 })
 
 const { selectionIsEmpty } = useEditor()
@@ -203,6 +204,11 @@ function changeNodeType({
   props.editor.commands.blur()
 }
 
+function onOpen(value: boolean) {
+  value && props.editor.commands.setNodeSelection(nodeStartPos.value)
+  nodeSelected.value = value
+}
+
 function moveNode(direction: 'up' | 'down') {
   const view = props.editor.view
   let tr = props.editor.state.tr
@@ -211,24 +217,24 @@ function moveNode(direction: 'up' | 'down') {
   const currentNodeSize = props.node.nodeSize
 
   if (direction === 'up') {
-    const previousNodeStartPos = nodeStartPos.value - previousNode.value!.nodeSize
+    const previousNodeStartPos = nodeStartPos.value - neighborNodes.value!.prevNode!.nodeSize
     const previousNodeEndPos = nodeStartPos.value
-    const previousNodeSize = previousNode.value!.nodeSize
+    const previousNodeSize = neighborNodes.value!.prevNode!.nodeSize
 
     tr = tr
       .delete(previousNodeStartPos, previousNodeEndPos)
-      .insert(nodeStartPos.value - previousNodeSize + currentNodeSize, previousNode.value!)
+      .insert(nodeStartPos.value - previousNodeSize + currentNodeSize, neighborNodes.value.prevNode!)
       .scrollIntoView()
 
     view.dispatch(tr)
   } else {
     const nextNodeStartPos = nodeEndPos.value
-    const nextNodeEndPos = nodeEndPos.value + nextNode.value!.nodeSize
-    const nextNodeSize = nextNode.value!.nodeSize
+    const nextNodeEndPos = nodeEndPos.value + neighborNodes.value!.nextNode!.nodeSize
+    const nextNodeSize = neighborNodes.value!.nextNode!.nodeSize
 
     tr = tr
       .delete(nextNodeStartPos, nextNodeEndPos)
-      .insert(nodeStartPos.value + nextNodeSize - currentNodeSize, nextNode.value!)
+      .insert(nodeStartPos.value - nextNodeSize + currentNodeSize, neighborNodes.value.nextNode!)
       .scrollIntoView()
 
     view.dispatch(tr)
@@ -295,7 +301,7 @@ const { isSwiping, direction, lengthX } = useSwipe(nodeContentRef, {
     } else {
       if (lengthX.value > 0 && el.clientWidth && (Math.abs(lengthX.value) / el.clientWidth) >= 0.25) {
         resetTransformX()
-        nodeActionsBSRef.value.setOpen(true)
+        nodeActionsBSRef.value?.setOpen(true)
       } else {
         resetTransformX()
       }

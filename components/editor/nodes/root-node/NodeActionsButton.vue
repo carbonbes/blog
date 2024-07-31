@@ -36,12 +36,11 @@ const props = defineProps<{
   nodeIsSpoilered: boolean
   nodeType: NodeType
   nodeAttrs: NodeAttrs
-  previousNode: Node | null
-  nextNode: Node | null
+  neighborNodes: { prevNode: Node | null, nextNode: Node | null }
 }>()
 
 const emit = defineEmits<{
-  isOpen: [boolean]
+  onOpen: [boolean]
   changeNodeType: [{ type: NodeType, level?: HeadingLevel }]
   toggleAttribute: [attr: 'pin' | 'spoiler']
   moveNode: [dir: 'up' | 'down']
@@ -53,7 +52,7 @@ const dropdownRef = ref<InstanceType<typeof Dropdown>>()
 const isOpen = ref(false)
 
 function onOpen(value: boolean) {
-  emit('isOpen', value)
+  emit('onOpen', value)
   isOpen.value = value
 }
 
@@ -61,20 +60,20 @@ function removeNode() {
   emit('removeNode')
 
   dropdownRef.value?.setOpen(false)
-  emit('isOpen', false)
+  emit('onOpen', false)
 }
 
 const nodeActions = computed(() => [
   {
     icon: Pin,
-    label: props.nodeIsPinned ? 'Выводится в карточке' : 'Вывести в карточке',
+    label: 'Вывести в карточке',
     action: () => emit('toggleAttribute', 'pin'),
     active: props.nodeIsPinned,
     // disabled: !props.nodeIsPinned && props.editor.extensionStorage.rootNode.pinned === 2
   },
   {
     icon: EyeOff,
-    label: props.nodeIsSpoilered ? 'Скрывается' : 'Скрыть',
+    label: 'Скрыть',
     action: () => emit('toggleAttribute', 'spoiler'),
     active: props.nodeIsSpoilered,
   },
@@ -85,13 +84,13 @@ const nodeActions = computed(() => [
     icon: ArrowUp,
     label: 'Вверх',
     action: () => emit('moveNode', 'up'),
-    disabled: !props.previousNode
+    disabled: !props.neighborNodes.prevNode
   },
   {
     icon: ArrowDown,
     label: 'Вниз',
     action: () => emit('moveNode', 'down'),
-    disabled: !props.nextNode
+    disabled: !props.neighborNodes.nextNode
   },
   {
     separator: true,

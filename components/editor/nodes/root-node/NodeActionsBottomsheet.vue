@@ -68,8 +68,7 @@ const props = defineProps<{
   nodeIsPinned: boolean
   nodeIsSpoilered: boolean
   nodeType: NodeType
-  previousNode: Node | null
-  nextNode: Node | null
+  neighborNodes: { prevNode: Node | null, nextNode: Node | null }
 }>()
 
 const emit = defineEmits<{
@@ -95,7 +94,7 @@ function onClose() {
 const buttons = computed(() => [
   {
     icon: Pin,
-    label: !props.nodeIsPinned ? 'Вывести в карточке' : 'Выводится в карточке',
+    label: 'Вывести в карточке',
     active: props.nodeIsPinned,
     action: () => {
       emit('toggleAttribute', 'pin')
@@ -104,7 +103,7 @@ const buttons = computed(() => [
   },
   {
     icon: EyeOff,
-    label: !props.nodeIsSpoilered ? 'Скрыть' : 'Скрывается',
+    label: 'Скрыть',
     active: props.nodeIsSpoilered,
     action: () => {
       emit('toggleAttribute', 'spoiler')
@@ -114,7 +113,7 @@ const buttons = computed(() => [
   {
     icon: ArrowUp,
     label: 'Поднять наверх',
-    disabled: !props.previousNode,
+    disabled: !props.neighborNodes.prevNode,
     action: () => {
       emit('moveNode', 'up')
       setOpen(false)
@@ -123,7 +122,7 @@ const buttons = computed(() => [
   {
     icon: ArrowDown,
     label: 'Опустить вниз',
-    disabled: !props.nextNode,
+    disabled: !props.neighborNodes.nextNode,
     action: () => {
       emit('moveNode', 'down')
       setOpen(false)
