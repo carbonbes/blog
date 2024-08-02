@@ -48,34 +48,45 @@
         class="px-5 pb-5 whitespace-pre-line"
       />
 
-      <Image
-        v-if="embed.media && isSingleImg"
-        :src="embed.media[0].url"
-        :srcWidth="embed.media[0].width"
-        :srcHeight="embed.media[0].height"
-        size="max-h-80"
-        zoomable
-        class="bg-gray-100/50 flex justify-center"
-      />
+      <Lightbox>
+        <Image
+          v-if="embed.media && isSingleImg"
+          :src="embed.media[0].url"
+          :srcWidth="embed.media[0].width"
+          :srcHeight="embed.media[0].height"
+          size="max-h-80"
+          class="bg-gray-100/50 flex justify-center"
+          data-lightbox-item
+          :data-lightbox-src="embed.media[0].url"
+          :data-lightbox-width="embed.media[0].width"
+          :data-lightbox-height="embed.media[0].height"
+          data-lightbox-type="image"
+        />
 
-      <Video
-        v-else-if="embed.media && isSingleVideo"
-        :src="embed.media[0].url"
-        :thumbnail="embed.media[0].thumbnail"
-        autoplay
-        :loop="embed.media[0].type === 'gif'"
-        :controls="embed.media[0].type === 'video'"
-        playsInline
-        size="w-full max-h-80"
-        :type="embed.media[0].type"
-        class="bg-gray-100/50 flex justify-center"
-        aspectRatio="aspect-video"
-      />
+        <Video
+          v-else-if="embed.media && isSingleVideo"
+          :src="embed.media[0].url"
+          :thumbnail="embed.media[0].thumbnail"
+          autoplay
+          :loop="embed.media[0].type === 'gif'"
+          :controls="embed.media[0].type === 'video'"
+          playsInline
+          size="w-full max-h-80"
+          :type="embed.media[0].type"
+          class="bg-gray-100/50 flex justify-center"
+          aspectRatio="aspect-video"
+          data-lightbox-item
+          :data-lightbox-src="embed.media[0].url"
+          :data-lightbox-width="embed.media[0].width"
+          :data-lightbox-height="embed.media[0].height"
+          data-lightbox-type="video"
+        />
 
-      <Gallery
-        v-else-if="embed.media && embed.media?.length > 1"
-        :items="embed.media"
-      />
+        <Gallery
+          v-else-if="embed.media && embed.media?.length > 1"
+          :items="embed.media"
+        />
+      </Lightbox>
     </Flex>
   </Flex>
 </template>

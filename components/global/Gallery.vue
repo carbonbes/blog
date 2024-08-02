@@ -13,11 +13,14 @@
         :src="item.url"
         :srcWidth="item.width"
         :srcHeight="item.height"
-        galleryItem
-        zoomable
         size="w-full h-full object-cover"
         class="row-[1_span]"
         :class="{ 'row-[2_span]': i === 0 && items.length > 2, 'col-[3_span]': i === 0 && items.length > 3 }"
+        data-lightbox-item
+        :data-lightbox-src="item.url"
+        :data-lightbox-width="item.width"
+        :data-lightbox-height="item.height"
+        data-lightbox-type="image"
       />
 
       <Video
@@ -31,6 +34,11 @@
         class="flex justify-center bg-gray-100/50 row-[1_span]"
         :class="{ 'row-[2_span]': i === 0 && items.length > 2, 'col-[3_span]': i === 0 && items.length > 3 }"
         size="w-full h-full"
+        data-lightbox-item
+        :data-lightbox-src="item.url"
+        :data-lightbox-width="item.width"
+        :data-lightbox-height="item.height"
+        data-lightbox-type="video"
       />
     </template>
   </div>
