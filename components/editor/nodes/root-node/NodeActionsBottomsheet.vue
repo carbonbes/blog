@@ -68,7 +68,7 @@ const props = defineProps<{
   nodeIsPinned: boolean
   nodeIsSpoilered: boolean
   nodeType: NodeType
-  neighborNodes: { prevNode: Node | null, nextNode: Node | null }
+  neighborNodes: { prevNode: Node | null, nextNode: Node | null } | null
 }>()
 
 const emit = defineEmits<{
@@ -113,7 +113,7 @@ const buttons = computed(() => [
   {
     icon: ArrowUp,
     label: 'Поднять наверх',
-    disabled: !props.neighborNodes.prevNode,
+    disabled: !props.neighborNodes?.prevNode,
     action: () => {
       emit('moveNode', 'up')
       setOpen(false)
@@ -122,7 +122,7 @@ const buttons = computed(() => [
   {
     icon: ArrowDown,
     label: 'Опустить вниз',
-    disabled: !props.neighborNodes.nextNode,
+    disabled: !props.neighborNodes?.nextNode,
     action: () => {
       emit('moveNode', 'down')
       setOpen(false)

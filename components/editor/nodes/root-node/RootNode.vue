@@ -110,6 +110,7 @@
 
 <script lang="ts" setup>
 import { NodeViewWrapper, NodeViewContent, type NodeViewProps, type JSONContent } from '@tiptap/vue-3'
+import { NodeSelection } from '@tiptap/pm/state'
 import NodeActionsButton from '~/components/editor/nodes/root-node/NodeActionsButton.vue'
 import NodesListBottomsheet from '~/components/editor/nodes/root-node/NodesListBottomsheet.vue'
 import NodeActionsBottomsheet from '~/components/editor/nodes/root-node/NodeActionsBottomsheet.vue'
@@ -119,18 +120,29 @@ const props = defineProps<NodeViewProps>()
 
 const nodeSelected = ref(false)
 
-const nodeStartPos = computed(() => props.getPos())
-const nodeEndPos = computed(() => props.getPos() + props.node.nodeSize)
+const nodePos = computed(() => {
+  if (!props.selected) return null
+
+  const { selection } = props.editor.state
+  
+  return {
+    from: (selection as NodeSelection).from,
+    to: (selection as NodeSelection).to
+  }
+})
+
 const nodeType = computed(() => props.node.content.content[0].type.name as NodeType)
 const nodeAttrs = computed(() => props.node.content.content[0].attrs)
 const nodeIsPinned = computed<boolean>(() => props.node.attrs.pin)
 const nodeIsSpoilered = computed<boolean>(() => props.node.attrs.spoiler)
 
 const neighborNodes = computed(() => {
+  if (!props.selected) return null
+
   const { doc } = props.editor.state
 
-  const startPos = nodeStartPos.value
-  const endPos = nodeEndPos.value
+  const startPos = nodePos.value?.from!
+  const endPos = nodePos.value?.to!
 
   let prevNode = null
   let nextNode = null
@@ -160,7 +172,7 @@ function insertNode(type: NodeType, level?: HeadingLevel) {
     content = [{ type: 'listItem', content: [{ type: 'paragraph', content: [] }] }]
   }
 
-  props.editor.chain().insertContentAt(nodeEndPos.value, { type, attrs: { level }, content }).focus().run()
+  props.editor.chain().insertContentAt(nodePos.value!.to, { type, attrs: { level }, content }).focus().run()
 
   nodesListBSRef.value?.setOpen(false)
 }
@@ -173,15 +185,15 @@ function changeNodeType({
   level?: HeadingLevel
 }) {
   if (type === 'heading')
-    props.editor.chain().focus(nodeStartPos.value + 3).toggleHeading({ level }).run()
+    props.editor.chain().focus(nodePos.value!.from + 3).toggleHeading({ level }).run()
   
   else if (type === 'paragraph') {
-    props.editor.commands.focus(nodeStartPos.value + 3)
+    props.editor.commands.focus(nodePos.value!.from + 3)
 
     if (props.editor.isActive('bulletList') || props.editor.isActive('orderedList')) {
       const { state } = props.editor
       const { doc } = state
-      const resolvedPos = doc.resolve(nodeStartPos.value + 1)
+      const resolvedPos = doc.resolve(nodePos.value!.from + 1)
 
       resolvedPos.nodeAfter?.descendants((node) => {
         if (node.type.name === 'listItem') {
@@ -191,50 +203,44 @@ function changeNodeType({
         return false
       })
     } else {
-      props.editor.chain().focus(nodeStartPos.value + 3).setParagraph().run()
+      props.editor.chain().focus(nodePos.value!.from + 3).setParagraph().run()
     }
   }
 
   else if (type === 'bulletList')
-    props.editor.chain().focus(nodeStartPos.value + 3).toggleBulletList().run()
+    props.editor.chain().focus(nodePos.value!.from + 3).toggleBulletList().run()
 
   else if (type === 'orderedList')
-    props.editor.chain().focus(nodeStartPos.value + 3).toggleOrderedList().run()
+    props.editor.chain().focus(nodePos.value!.from + 3).toggleOrderedList().run()
 
   props.editor.commands.blur()
 }
 
-function onOpen(value: boolean) {
-  value && props.editor.commands.setNodeSelection(nodeStartPos.value)
-  nodeSelected.value = value
-}
-
 function moveNode(direction: 'up' | 'down') {
-  const view = props.editor.view
+  const { view } = props.editor
   let tr = props.editor.state.tr
 
-  const currentNode = props.node
   const currentNodeSize = props.node.nodeSize
 
   if (direction === 'up') {
-    const previousNodeStartPos = nodeStartPos.value - neighborNodes.value!.prevNode!.nodeSize
-    const previousNodeEndPos = nodeStartPos.value
+    const previousNodeStartPos = nodePos.value!.from - neighborNodes.value!.prevNode!.nodeSize
+    const previousNodeEndPos = nodePos.value!.from
     const previousNodeSize = neighborNodes.value!.prevNode!.nodeSize
 
     tr = tr
       .delete(previousNodeStartPos, previousNodeEndPos)
-      .insert(nodeStartPos.value - previousNodeSize + currentNodeSize, neighborNodes.value.prevNode!)
+      .insert(nodePos.value!.from - previousNodeSize + currentNodeSize, neighborNodes.value?.prevNode!)
       .scrollIntoView()
 
     view.dispatch(tr)
   } else {
-    const nextNodeStartPos = nodeEndPos.value
-    const nextNodeEndPos = nodeEndPos.value + neighborNodes.value!.nextNode!.nodeSize
+    const nextNodeStartPos = nodePos.value!.to
+    const nextNodeEndPos = nodePos.value!.to + neighborNodes.value!.nextNode!.nodeSize
     const nextNodeSize = neighborNodes.value!.nextNode!.nodeSize
 
     tr = tr
       .delete(nextNodeStartPos, nextNodeEndPos)
-      .insert(nodeStartPos.value - nextNodeSize + currentNodeSize, neighborNodes.value.nextNode!)
+      .insert(nodePos.value!.from - nextNodeSize + currentNodeSize, neighborNodes.value?.nextNode!)
       .scrollIntoView()
 
     view.dispatch(tr)
@@ -244,6 +250,11 @@ function moveNode(direction: 'up' | 'down') {
 function toggleAttribute(attr: 'pin' | 'spoiler') {
   const value = props.node.attrs[attr]
   props.updateAttributes({ [attr]: !value })
+}
+
+function onOpen(value: boolean) {
+  value && props.editor.commands.setNodeSelection(props.getPos())
+  nodeSelected.value = value
 }
 
 function onClose() {

@@ -36,7 +36,7 @@ const props = defineProps<{
   nodeIsSpoilered: boolean
   nodeType: NodeType
   nodeAttrs: NodeAttrs
-  neighborNodes: { prevNode: Node | null, nextNode: Node | null }
+  neighborNodes: { prevNode: Node | null, nextNode: Node | null } | null
 }>()
 
 const emit = defineEmits<{
@@ -84,13 +84,13 @@ const nodeActions = computed(() => [
     icon: ArrowUp,
     label: 'Вверх',
     action: () => emit('moveNode', 'up'),
-    disabled: !props.neighborNodes.prevNode
+    disabled: !props.neighborNodes?.prevNode
   },
   {
     icon: ArrowDown,
     label: 'Вниз',
     action: () => emit('moveNode', 'down'),
-    disabled: !props.neighborNodes.nextNode
+    disabled: !props.neighborNodes?.nextNode
   },
   {
     separator: true,
