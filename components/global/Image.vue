@@ -1,41 +1,31 @@
 <template>
-  <Component
-    :is="zoomable ? 'a' : tag"
-    class="overflow-hidden"
-    :class="[{ 'cursor-zoom-in': zoomable, 'w-full h-full object-cover': fill }, rounded]"
-    v-bind="pswpAttrs"
-    ref="imgWrapperRef"
-  >
-    <NuxtImg
-      :src
-      alt=""
-      loading="lazy"
-      class="object-contain"
-      :class="[size]"
-      ref="imgRef"
-    />
-  </Component>
+  <NuxtImg
+    :src
+    :alt="alt || ''"
+    :loading
+    class="object-contain"
+    :class="[{ 'cursor-zoom-in': zoomable, 'w-full h-full object-cover': fill }, size, rounded]"
+    v-bind="lightboxAttrs"
+  />
 </template>
 
 <script lang="ts" setup>
-import type { NuxtImg } from '#build/components'
-import PhotoSwipeLightbox from 'photoswipe/lightbox'
-import 'photoswipe/style.css'
-
 const props = withDefaults(
   defineProps<{
-    tag?: string
     zoomable?: boolean
     fill?: boolean
     src: string
-    srcWidth?: number
-    srcHeight?: number
+    alt?: string
+    loading?: 'lazy' | 'eager'
+    originalWidth?: number
+    originalHeight?: number
     size?: string
     rounded?: string
-    galleryItem?: boolean
   }>(),
   {
-    tag: 'div',
+    zoomable: false,
+    fill: false,
+    loading: 'lazy'
   }
 )
 
@@ -43,62 +33,16 @@ const emit = defineEmits<{
   isOpen: [boolean]
 }>()
 
-const { setPreviewOpen } = useImagePreview()
-
-const imgWrapperRef = ref()
-const imgRef = ref<InstanceType<typeof NuxtImg>>()
-const lightbox = ref<PhotoSwipeLightbox>()
-
-function initPhotoswipe() {
-  if (lightbox.value) return
-
-  lightbox.value = new PhotoSwipeLightbox({
-    gallery: props.galleryItem ? imgWrapperRef.value.parentNode : imgWrapperRef.value,
-    children: props.galleryItem
-      ? [...imgWrapperRef.value.parentNode.children]
-      : undefined,
-    pswpModule: () => import('photoswipe'),
-    mainClass: 'pointer-events-auto'
-  })
-
-  lightbox.value?.on('beforeOpen', () => {
-    emit('isOpen', true)
-    setPreviewOpen(true)
-  })
-
-  lightbox.value?.on('close', () => {
-    emit('isOpen', false)
-    setPreviewOpen(false)
-  })
-
-  lightbox.value.init()
-}
-
-function destroyPhotoswipe() {
-  if (!lightbox.value) return
-
-  lightbox.value.destroy()
-  lightbox.value = undefined
-}
-
-const pswpAttrs = computed(() => {
-  if (!props.zoomable) return undefined
+const lightboxAttrs = computed(() => {
+  if (!props.zoomable) return
 
   return {
-    href: props.src,
-    rel: 'nofollow',
-    target: '_blank',
-    'data-pswp-width': props.srcWidth,
-    'data-pswp-height': props.srcHeight,
-    'data-cropped': true,
+    'data-lightbox-item': true,
+    'data-lightbox-src': props.src,
+    'data-lightbox-alt': props.alt,
+    'data-lightbox-width': props.originalWidth,
+    'data-lightbox-height': props.originalHeight,
+    'data-lightbox-type': 'image'
   }
-})
-
-onMounted(() => {
-  if (props.zoomable) initPhotoswipe()
-})
-
-onUnmounted(() => {
-  if (props.zoomable) destroyPhotoswipe()
 })
 </script>

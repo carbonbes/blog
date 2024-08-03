@@ -1,7 +1,6 @@
 <template>
   <Dialog
     :class="editorDialogClasses"
-    @pointerDownOutside="(e) => previewIsOpen && e.preventDefault()"
     @close="setOpen(false)"
     ref="dialogRef"
   >
@@ -19,7 +18,6 @@ import type Dialog from '~/components/global/Dialog.vue'
 const dialogRef = ref<InstanceType<typeof Dialog>>()
 
 const { setOpen, scrollIsLocked } = useEditorDialog(dialogRef)
-const { previewIsOpen } = useImagePreview()
 
 const data = {
   type: 'doc',

@@ -48,23 +48,19 @@
         class="px-5 pb-5 whitespace-pre-line"
       />
 
-      <Lightbox>
+      <Lightbox v-if="embed.media && isSingleImg">
         <Image
-          v-if="embed.media && isSingleImg"
           :src="embed.media[0].url"
-          :srcWidth="embed.media[0].width"
-          :srcHeight="embed.media[0].height"
+          :originalWidth="embed.media[0].width"
+          :originalHeight="embed.media[0].height"
+          zoomable
           size="max-h-80"
           class="bg-gray-100/50 flex justify-center"
-          data-lightbox-item
-          :data-lightbox-src="embed.media[0].url"
-          :data-lightbox-width="embed.media[0].width"
-          :data-lightbox-height="embed.media[0].height"
-          data-lightbox-type="image"
         />
+      </Lightbox>
 
+      <Lightbox v-else-if="embed.media && isSingleVideo">
         <Video
-          v-else-if="embed.media && isSingleVideo"
           :src="embed.media[0].url"
           :thumbnail="embed.media[0].thumbnail"
           autoplay
@@ -75,18 +71,13 @@
           :type="embed.media[0].type"
           class="bg-gray-100/50 flex justify-center"
           aspectRatio="aspect-video"
-          data-lightbox-item
-          :data-lightbox-src="embed.media[0].url"
-          :data-lightbox-width="embed.media[0].width"
-          :data-lightbox-height="embed.media[0].height"
-          data-lightbox-type="video"
-        />
-
-        <Gallery
-          v-else-if="embed.media && embed.media?.length > 1"
-          :items="embed.media"
         />
       </Lightbox>
+
+      <Gallery
+        v-else-if="embed.media && embed.media?.length > 1"
+        :items="embed.media"
+      />
     </Flex>
   </Flex>
 </template>

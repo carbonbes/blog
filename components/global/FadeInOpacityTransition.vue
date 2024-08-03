@@ -10,6 +10,13 @@
 </template>
 
 <script lang="ts" setup>
-const enterActiveClass = computed(() => 'transition-opacity duration-[250ms]')
-const leaveActiveClass = computed(() => 'transition-opacity duration-[250ms]')
+const props = withDefaults(
+  defineProps<{ duration?: string }>(),
+  {
+    duration: '250ms'
+  }
+)
+
+const enterActiveClass = computed(() => `transition-opacity duration-[${props.duration}]`)
+const leaveActiveClass = computed(() => `transition-opacity duration-[${props.duration}]`)
 </script>
