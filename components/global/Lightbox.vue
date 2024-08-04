@@ -25,18 +25,18 @@
             {{ `${currentItemIndex + 1} / ${items?.length}` }}
           </span>
 
-          <button class="z-10" @click="currentItemIndex--">
+          <button class="z-10" @click="previousItem">
             <ITablerChevronLeft class="!size-12 text-gray-300" />
           </button>
 
           <Flex
             itemsCenter
             class="absolute inset-0"
+            :class="{ 'transition-transform': !isWindowResizing }"
             :style="{ transform: `translateX(${screenWidth * currentItemIndex * -1}px)` }"
           >
             <template v-for="(item, i) in items">
-              <Flex
-                center
+              <div
                 class="absolute top-0 left-0 inset-0"
                 :style="{ transform: `translateX(${screenWidth * i}px)` }"
                 :data-active-item="i === currentItemIndex"
@@ -46,15 +46,15 @@
                   :src="item.src"
                   :alt="item.alt"
                   loading="lazy"
-                  class="absolute max-h-full"
+                  class="max-h-full"
                   :style="currentItemImgTransform"
                   v-on-click-outside="onClickOutside"
                 />
-              </Flex>
+              </div>
             </template>
           </Flex>
 
-          <button class="z-10" @click="currentItemIndex++">
+          <button class="z-10" @click="nextItem">
             <ITablerChevronRight class="!size-12 text-gray-300" />
           </button>
         </Flex>
@@ -65,6 +65,8 @@
 
 <script lang="ts" setup>
 import { vOnClickOutside } from '@vueuse/components'
+import { useSpring, useMotionProperties } from '@vueuse/motion'
+import { dragDirective as vDrag } from '@vueuse/gesture'
 
 type Item = {
   src: string
@@ -87,6 +89,17 @@ const els = ref<Element[]>()
 const items = ref<Item[]>()
 
 const { width: screenWidth, height: screenHeight } = useWindowSize()
+
+const isWindowResizing = ref(false)
+
+const debouncedWindowResize = useDebounceFn(() => {
+  isWindowResizing.value = false
+}, 500)
+
+useEventListener(window, 'resize', () => {
+  isWindowResizing.value = true
+  debouncedWindowResize()
+})
 
 const currentItemIndex = ref(0)
 
@@ -112,17 +125,23 @@ const currentItemImgTransform = computed(() => {
   const relativeScaleX = originalWidth.value / currentItem.value!.width
   const relativeScaleY = originalHeight.value / currentItem.value!.height
 
-  return `transform: translate3d(${translateX}px, ${translateY}px, 0px) scale3d(${relativeScaleX}, ${relativeScaleY}, 1)`
+  return `transform: translate3d(${translateX}px, ${translateY}px, 0px)`
 })
 
-onKeyStroke(['d', 'D', 'ArrowRight'], () => currentItemIndex.value++)
-onKeyStroke(['a', 'A', 'ArrowLeft'], () => currentItemIndex.value--)
+onKeyStroke(['d', 'D', 'ArrowRight'], nextItem)
+onKeyStroke(['a', 'A', 'ArrowLeft'], previousItem)
 
 function openItem(i: number) {
   currentItemIndex.value = i
   open.value = true
+}
 
-  console.log(els.value![i].getBoundingClientRect())
+function nextItem() {
+  currentItemIndex.value++
+}
+
+function previousItem() {
+  currentItemIndex.value--
 }
 
 function onClickOutside(e: PointerEvent) {
