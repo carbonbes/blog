@@ -41,6 +41,7 @@
     "@tiptap/pm": "^2.5.6",
     "@tiptap/vue-3": "^2.5.6",
     "@types/formidable": "^3.4.5",
+    "@use-gesture/vanilla": "^10.3.1",
     "@vueuse/nuxt": "^10.9.0",
     "cloudinary": "^2.2.0",
     "dayjs-nuxt": "^2.1.9",
