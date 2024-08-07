@@ -32,15 +32,18 @@
           <Flex
             itemsCenter
             class="absolute inset-0"
-            :class="{ 'transition-transform': !isWindowResizing }"
-            :style="{ transform: `translateX(${screenWidth * activeItemIndex * -1}px)` }"
+            :class="{ 'transition-transform': !(isWindowResizing || state?.active) }"
+            :style="{ transform: `translateX(${((screenWidth * activeItemIndex) + (state?.active ? state?.movement[0]! : 0)) * -1}px)` }"
+            ref="itemsRef"
           >
             <LightboxItem
               v-for="(item, i) in items"
               :index="i"
               :item
               :activeItemIndex
-              :activeItemThumbnailBounding
+              :activeItem
+              :thumbnail="thumbnails![i]"
+              @close="open = false"
             />
           </Flex>
 
@@ -54,6 +57,8 @@
 </template>
 
 <script lang="ts" setup>
+import Flex from '~/components/global/Flex.vue'
+
 export type Item = {
   src: string
   alt?: string
@@ -71,30 +76,22 @@ const open = ref(false)
 
 watch(open, (v) => emits('onOpen', v))
 
-const els = ref<Element[]>()
+const thumbnails = ref<Element[]>()
 const items = ref<Item[]>()
 
-const {
-  width: screenWidth,
-  height: screenHeight,
-  isWindowResizing
-} = useWindowResizing()
+const itemsRef = ref<InstanceType<typeof Flex>>()
+
+const state = useDragGesture(itemsRef.value?.$el)
+
+const { width: screenWidth, isWindowResizing } = useWindowResizing()
 
 const activeItemIndex = ref(0)
 
-const currentItem = computed(() => {
+const activeItem = computed(() => {
   if (!items.value) return
 
   return items.value[activeItemIndex.value]
 })
-
-const currentItemOriginalEl = computed(() => {
-  if (!els.value) return
-
-  return els.value[activeItemIndex.value] as HTMLElement
-})
-
-const activeItemThumbnailBounding = useElementBounding(currentItemOriginalEl)
 
 onKeyStroke(['d', 'D', 'ArrowRight'], nextItem)
 onKeyStroke(['a', 'A', 'ArrowLeft'], previousItem)
@@ -112,14 +109,14 @@ function previousItem() {
   activeItemIndex.value--
 }
 
-onMounted(() => {
-  els.value = [...lightboxRef.value!.querySelectorAll('[data-lightbox-item]')]
+onMounted(async () => {
+  thumbnails.value = [...lightboxRef.value!.querySelectorAll('[data-lightbox-item]')]
 
-  items.value = els.value.map(
+  items.value = thumbnails.value.map(
     (item, i) => {
-      const itemEl = item as HTMLElement
+      const thumbnailEl = item as HTMLElement
 
-      useEventListener(itemEl, 'click', () => openItem(i))
+      useEventListener(item, 'click', () => openItem(i))
 
       const {
         lightboxSrc: src,
@@ -128,7 +125,7 @@ onMounted(() => {
         lightboxWidth: width,
         lightboxHeight: height,
         lightboxType: type
-      } = itemEl.dataset
+      } = thumbnailEl.dataset
 
       return {
         src,

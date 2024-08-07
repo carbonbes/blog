@@ -82,21 +82,25 @@ export default {
       function ({ addVariant }) {
         addVariant('not-first', '&:not(:first-child)')
         addVariant('not-last', '&:not(:last-child)')
-      },
-
-      function ({ addUtilities }) {
-        const noScrollbarUtil = {
-          '.no-scrollbar': {
-            '-ms-overflow-style': 'none',
-            'scrollbar-width': 'none',
-          },
-          '.no-scrollbar::-webkit-scrollbar': {
-            display: 'none',
-          },
-        }
-
-        addUtilities(noScrollbarUtil)
       }
     ),
+
+    plugin(
+      function ({ addUtilities }) {
+        const noDragUtil = {
+          '.no-drag': {
+            '-webkit-user-drag': 'none',
+            '-khtml-user-drag': 'none',
+            '-moz-user-drag': 'none',
+            '-o-user-drag': 'none',
+            'user-drag': 'none'
+          }
+        }
+
+        addUtilities(
+          noDragUtil
+        )
+      }
+    )
   ],
 }

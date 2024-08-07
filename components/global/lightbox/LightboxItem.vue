@@ -1,17 +1,16 @@
 <template>
   <div
     class="absolute top-0 left-0 inset-0"
-    :style="{ transform: `translateX(${screenWidth * index}px)` }"
+    :style="currentItemTransform"
     :data-active-item="index === activeItemIndex"
   >
-    <NuxtImg
+    <img
       v-if="item.type === 'image'"
       :src="item.src"
       :alt="item.alt"
       loading="lazy"
-      class="max-h-full"
-      :style="currentItemImgTransform"
-      v-on-click-outside="onClickOutside"
+      class="max-h-full select-none no-drag"
+      :style="activeItemImgTransform"
     />
   </div>
 </template>
@@ -19,38 +18,36 @@
 <script lang="ts" setup>
 import type { Item } from '~/components/global/lightbox/Lightbox.vue'
 import { vOnClickOutside } from '@vueuse/components'
-import { DragGesture } from '@use-gesture/vanilla'
 
 const props = defineProps<{
   index: number
   item: Item
   activeItemIndex: number
   activeItem: Item
-  activeItemThumbnailBounding: DOMRect
+  thumbnail: HTMLElement
 }>()
 
 const emits = defineEmits<{
   close: [void]
 }>()
 
-const {
-  width: screenWidth,
-  height: screenHeight,
-} = useWindowResizing()
+const { width: screenWidth, height: screenHeight } = useWindowResizing()
 
-const currentItemImgTransform = computed(() => {
-  const { width: originalWidth, height: originalHeight } = props.activeItemThumbnailBounding
+const currentItemThumbnailBounding = useElementBounding(props.thumbnail)
 
-  const translateX = (screenWidth.value / 2) - (props.activeItem.width / 2)
-  const translateY = (screenHeight.value / 2) - (props.activeItem.height / 2)
-  const relativeScaleX = originalWidth / props.activeItem.width
-  const relativeScaleY = originalHeight / props.activeItem.height
-
-  return `transform: translate3d(${translateX}px, ${translateY}px, 0px)`
+const currentItemTransform = computed(() => {
+  return `transform: translateX(${(screenWidth.value * props.index)}px)`
 })
 
-const dragState = useDrag(({ delta, movement: [x, y] }) => {
-  console.log(delta)
+const activeItemImgTransform = computed(() => {
+  const { width: thumbnailWidth, height: thumbnailHeight } = currentItemThumbnailBounding
+
+  const translateX = (screenWidth.value / 2) - (props.item.width / 2)
+  const translateY = (screenHeight.value / 2) - (props.item.height / 2)
+  const relativeScaleX = thumbnailWidth.value / props.item.width
+  const relativeScaleY = thumbnailHeight.value / props.item.height
+
+  return `transform: translate3d(${translateX}px, ${translateY}px, 0px)`
 })
 
 function onClickOutside(e: PointerEvent) {
