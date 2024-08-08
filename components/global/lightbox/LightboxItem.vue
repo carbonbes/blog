@@ -1,5 +1,6 @@
 <template>
-  <div
+  <Flex
+    center
     class="absolute top-0 left-0 inset-0"
     :style="currentItemTransform"
     :data-active-item="index === activeItemIndex"
@@ -10,9 +11,8 @@
       :alt="item.alt"
       loading="lazy"
       class="max-h-full select-none no-drag"
-      :style="activeItemImgTransform"
     />
-  </div>
+  </Flex>
 </template>
 
 <script lang="ts" setup>
@@ -21,6 +21,7 @@ import { vOnClickOutside } from '@vueuse/components'
 
 const props = defineProps<{
   index: number
+  isLast: boolean
   item: Item
   activeItemIndex: number
   activeItem: Item
@@ -39,15 +40,15 @@ const currentItemTransform = computed(() => {
   return `transform: translateX(${(screenWidth.value * props.index)}px)`
 })
 
-const activeItemImgTransform = computed(() => {
+const currentItemImgTransform = computed(() => {
   const { width: thumbnailWidth, height: thumbnailHeight } = currentItemThumbnailBounding
 
   const translateX = (screenWidth.value / 2) - (props.item.width / 2)
   const translateY = (screenHeight.value / 2) - (props.item.height / 2)
-  const relativeScaleX = thumbnailWidth.value / props.item.width
-  const relativeScaleY = thumbnailHeight.value / props.item.height
+  const scaleX = thumbnailWidth.value / props.item.width
+  const scaleY = thumbnailHeight.value / props.item.height
 
-  return `transform: translate3d(${translateX}px, ${translateY}px, 0px)`
+  return `transform: translate3d(${translateX}px, ${translateY}px, 0px) scale3d(${scaleX}, ${scaleY}, 1)`
 })
 
 function onClickOutside(e: PointerEvent) {

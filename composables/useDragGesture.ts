@@ -9,19 +9,23 @@ type DragState = Omit<FullGestureState<'drag'>, 'event'> & {
 }
 
 export default function useDragGesture(
-  el: HTMLElement | undefined,
+  target: Ref<MaybeRef>,
+  callback?: (state: DragState) => void,
   options?: UserDragConfig
 ) {
   const gesture = useState<DragGesture | null>('gesture', () => null)
   const state = useState<DragState | null>('state', () => null)
 
-  onMounted(() => {
+  watchEffect(() => {
+    if (!target.value) return
+
+    const el = (target.value.$el || target.value) as EventTarget
+
     gesture.value = new DragGesture(
       el,
       (dragState) => {
         state.value = dragState
-
-        console.log(el)
+        if (callback) callback(dragState)
       },
       {
         axis: options?.axis || 'x',
