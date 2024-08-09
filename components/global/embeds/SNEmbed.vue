@@ -48,31 +48,29 @@
         class="px-5 pb-5 whitespace-pre-line"
       />
 
-      <Lightbox v-if="embed.media && isSingleImg">
-        <Image
-          :src="embed.media[0].url"
-          :originalWidth="embed.media[0].width"
-          :originalHeight="embed.media[0].height"
-          zoomable
-          size="max-h-80"
-          class="bg-gray-100/50 flex justify-center"
-        />
-      </Lightbox>
+      <Image
+        v-if="embed.media && isSingleImg"
+        :src="embed.media[0].url"
+        :originalWidth="embed.media[0].width"
+        :originalHeight="embed.media[0].height"
+        zoomable
+        size="max-h-80"
+        class="bg-gray-100/50 flex justify-center"
+      />
 
-      <Lightbox v-else-if="embed.media && isSingleVideo">
-        <Video
-          :src="embed.media[0].url"
-          :thumbnail="embed.media[0].thumbnail"
-          autoplay
-          :loop="embed.media[0].type === 'gif'"
-          :controls="embed.media[0].type === 'video'"
-          playsInline
-          size="w-full max-h-80"
-          :type="embed.media[0].type"
-          class="bg-gray-100/50 flex justify-center"
-          aspectRatio="aspect-video"
-        />
-      </Lightbox>
+      <Video
+        v-else-if="embed.media && isSingleVideo"
+        :src="embed.media[0].url"
+        :thumbnail="embed.media[0].thumbnail"
+        autoplay
+        :loop="embed.media[0].type === 'gif'"
+        :controls="embed.media[0].type === 'video'"
+        playsInline
+        size="w-full max-h-80"
+        :type="embed.media[0].type"
+        class="bg-gray-100/50 flex justify-center"
+        aspectRatio="aspect-video"
+      />
 
       <Gallery
         v-else-if="embed.media && embed.media?.length > 1"

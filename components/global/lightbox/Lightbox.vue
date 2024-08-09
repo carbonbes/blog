@@ -1,8 +1,4 @@
 <template>
-  <div v-bind="$attrs" ref="lightboxRef">
-    <slot />
-  </div>
-
   <DialogRoot v-model:open="open">
     <DialogPortal>
       <FadeInOpacityTransition>
@@ -24,20 +20,25 @@
         </DialogClose>
 
         <Flex itemsCenter justifyBetween class="absolute inset-0">
-          <span class="absolute top-0 left-0 p-4 text-gray-300 z-10">
+          <span
+            v-if="!isSingleItem"
+            class="absolute top-0 left-0 p-4 text-gray-300 z-10"
+          >
             {{ `${activeItemIndex + 1} / ${items?.length}` }}
           </span>
 
-          <button class="z-10" @click="previousItem">
+          <button v-if="!isSingleItem" class="z-10" @click="previousItem">
             <ITablerChevronLeft class="!size-12 text-gray-300" />
           </button>
 
           <Flex
             itemsCenter
             class="absolute inset-0 touch-none"
-            :class="{ 'transition-transform': !(isResizing || state?.active) }"
-            :style="{ transform: `translateX(${((screenWidth * activeItemIndex) + (state?.active ? (state?.movement[0]! * -1) : 0)) * -1}px)` }"
-            ref="itemsRef"
+            :class="{
+              'transition-transform': !(isResizing || gestureState?.active),
+            }"
+            :style="itemsWrapperStyles"
+            ref="itemsWrapperRef"
           >
             <LightboxItem
               v-for="(item, i) in items"
@@ -51,7 +52,7 @@
             />
           </Flex>
 
-          <button class="z-10" @click="nextItem">
+          <button v-if="!isSingleItem" class="z-10" @click="nextItem">
             <ITablerChevronRight class="!size-12 text-gray-300" />
           </button>
         </Flex>
@@ -72,22 +73,37 @@ export type Item = {
   type: 'image' | 'video' | 'gif'
 }
 
-const emits = defineEmits<{ onOpen: [boolean] }>()
-
-const lightboxRef = ref<HTMLDivElement>()
+const props = defineProps<{
+  imageTarget: Ref
+}>()
 
 const open = ref(false)
 
-watch(open, (v) => emits('onOpen', v))
+function setOpen(value: boolean) {
+  open.value = value
+}
 
-const thumbnails = ref<Element[]>()
+const thumbnails = ref<HTMLElement[]>()
 
-const itemsRef = ref<InstanceType<typeof Flex>>()
+const itemsWrapperRef = ref<InstanceType<typeof Flex>>()
 
-const state = useDragGesture(itemsRef, (dragState) => {
-  const { active, movement: [x] } = dragState
+const itemsWrapperStyles = computed(() => ({
+  transform: `translateX(${
+    (screenWidth.value * activeItemIndex.value +
+      (gestureState.value?.active && !isSingleItem.value
+        ? gestureState.value?.movement[0]! * -1
+        : 0)) *
+    -1
+  }px)`,
+}))
 
-  if (active) return
+const gestureState = useDragGesture(itemsWrapperRef, (dragState) => {
+  const {
+    active,
+    movement: [x],
+  } = dragState
+
+  if (active || isSingleItem.value) return
 
   if (x <= -150) nextItem()
   if (x >= 150) previousItem()
@@ -96,6 +112,7 @@ const state = useDragGesture(itemsRef, (dragState) => {
 const { width: screenWidth, isResizing } = useWindowResizing()
 
 const items = ref<Item[]>()
+const isSingleItem = computed(() => items.value?.length === 1)
 const activeItemIndex = ref(0)
 
 const activeItem = computed(() => {
@@ -109,7 +126,7 @@ onKeyStroke(['a', 'A', 'ArrowLeft'], previousItem)
 
 function openItem(i: number) {
   activeItemIndex.value = i
-  open.value = true
+  setOpen(true)
 }
 
 function nextItem() {
@@ -117,36 +134,47 @@ function nextItem() {
 }
 
 function previousItem() {
-  activeItemIndex.value = (activeItemIndex.value - 1 + items.value!.length) % items.value!.length
+  activeItemIndex.value =
+    (activeItemIndex.value - 1 + items.value!.length) % items.value!.length
 }
 
 onMounted(() => {
-  thumbnails.value = [...lightboxRef.value!.querySelectorAll('[data-lightbox-item]')]
+  if (!(props.zoomable || props.lightboxItem)) return
 
-  items.value = thumbnails.value.map(
-    (item, i) => {
-      const thumbnailEl = item as HTMLElement
+  thumbnails.value = props.zoomable
+    ? [props.imgRef.value?.$el as unknown as HTMLElement]
+    : Array.from(
+        (
+          imgRef.value?.$el as unknown as HTMLElement
+        ).parentNode?.querySelectorAll(
+          '[data-lightbox-item]'
+        ) as unknown as HTMLElement
+      )
 
-      useEventListener(item, 'click', () => openItem(i))
+  items.value = thumbnails.value.map((item, i) => {
+    const thumbnailEl = item as HTMLElement
 
-      const {
-        lightboxSrc: src,
-        lightboxAlt: alt,
-        lightboxThumbnail: thumbnail,
-        lightboxWidth: width,
-        lightboxHeight: height,
-        lightboxType: type
-      } = thumbnailEl.dataset
+    useEventListener(item, 'click', () => openItem(i))
 
-      return {
-        src,
-        alt,
-        thumbnail,
-        width,
-        height,
-        type
-      }
+    const {
+      lightboxSrc: src,
+      lightboxAlt: alt,
+      lightboxThumbnail: thumbnail,
+      lightboxWidth: width,
+      lightboxHeight: height,
+      lightboxType: type,
+    } = thumbnailEl.dataset
+
+    return {
+      src,
+      alt,
+      thumbnail,
+      width,
+      height,
+      type,
     }
-  )
+  })
 })
+
+defineExpose({ setOpen })
 </script>

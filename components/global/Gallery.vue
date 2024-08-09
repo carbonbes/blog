@@ -1,5 +1,5 @@
 <template>
-  <Lightbox
+  <div
     class="grid gap-1"
     :class="{
       'auto-rows-[250px] grid-cols-[repeat(2,_1fr)]': items.length === 2,
@@ -13,7 +13,7 @@
         :src="item.url"
         :originalWidth="item.width"
         :originalHeight="item.height"
-        zoomable
+        lightboxItem
         size="w-full h-full object-cover"
         class="row-[1_span]"
         :class="{ 'row-[2_span]': i === 0 && items.length > 2, 'col-[3_span]': i === 0 && items.length > 3 }"
@@ -32,7 +32,7 @@
         size="w-full h-full"
       />
     </template>
-  </Lightbox>
+  </div>
 </template>
 
 <script lang="ts" setup>
