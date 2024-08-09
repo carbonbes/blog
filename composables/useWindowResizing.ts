@@ -1,16 +1,16 @@
 export default function useWindowResizing() {
-  const isWindowResizing = useState('is-window-resizing', () => false)
+  const isResizing = useState('is-resizing', () => false)
 
   const { width, height } = useWindowSize()
 
   const debounced = useDebounceFn(() => {
-    isWindowResizing.value = false
+    isResizing.value = false
   }, 100)
 
   useEventListener(window, 'resize', () => {
-    isWindowResizing.value = true
+    isResizing.value = true
     debounced()
   })
 
-  return { width, height, isWindowResizing }
+  return { width, height, isResizing }
 }

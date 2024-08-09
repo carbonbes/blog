@@ -35,7 +35,7 @@
           <Flex
             itemsCenter
             class="absolute inset-0 touch-none"
-            :class="{ 'transition-transform': !(isWindowResizing || state?.active) }"
+            :class="{ 'transition-transform': !(isResizing || state?.active) }"
             :style="{ transform: `translateX(${((screenWidth * activeItemIndex) + (state?.active ? (state?.movement[0]! * -1) : 0)) * -1}px)` }"
             ref="itemsRef"
           >
@@ -94,7 +94,7 @@ const state = useDragGesture(itemsRef, (dragState) => {
   if (x >= 150) previousItem()
 })
 
-const { width: screenWidth, isWindowResizing } = useWindowResizing()
+const { width: screenWidth, isResizing } = useWindowResizing()
 
 const activeItemIndex = ref(0)
 
