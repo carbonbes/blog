@@ -21,10 +21,10 @@ import { vOnClickOutside } from '@vueuse/components'
 
 const props = defineProps<{
   index: number
-  isLast: boolean
   item: Item
   activeItemIndex: number
   activeItem: Item
+  isLast: boolean
   thumbnail: HTMLElement
 }>()
 

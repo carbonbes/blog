@@ -42,10 +42,10 @@
             <LightboxItem
               v-for="(item, i) in items"
               :index="i"
-              :isLast="i + 1 === items?.length"
               :item
               :activeItemIndex
               :activeItem
+              :isLast="i + 1 === items?.length"
               :thumbnail="thumbnails![i]"
               @close="open = false"
             />
@@ -81,7 +81,6 @@ const open = ref(false)
 watch(open, (v) => emits('onOpen', v))
 
 const thumbnails = ref<Element[]>()
-const items = ref<Item[]>()
 
 const itemsRef = ref<InstanceType<typeof Flex>>()
 
@@ -96,6 +95,7 @@ const state = useDragGesture(itemsRef, (dragState) => {
 
 const { width: screenWidth, isResizing } = useWindowResizing()
 
+const items = ref<Item[]>()
 const activeItemIndex = ref(0)
 
 const activeItem = computed(() => {
@@ -113,11 +113,11 @@ function openItem(i: number) {
 }
 
 function nextItem() {
-  activeItemIndex.value++
+  activeItemIndex.value = (activeItemIndex.value + 1) % items.value!.length
 }
 
 function previousItem() {
-  activeItemIndex.value--
+  activeItemIndex.value = (activeItemIndex.value - 1 + items.value!.length) % items.value!.length
 }
 
 onMounted(() => {
