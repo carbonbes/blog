@@ -6,6 +6,7 @@
 
   <EditorDialog />
   <Notifications />
+  <Lightbox />
 </template>
 
 <script lang="ts" setup>

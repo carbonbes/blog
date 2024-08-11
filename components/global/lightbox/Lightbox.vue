@@ -73,15 +73,9 @@ export type Item = {
   type: 'image' | 'video' | 'gif'
 }
 
-const props = defineProps<{
-  imageTarget: Ref
-}>()
+const { images } = useLightboxDialog()
 
 const open = ref(false)
-
-function setOpen(value: boolean) {
-  open.value = value
-}
 
 const thumbnails = ref<HTMLElement[]>()
 
@@ -105,8 +99,8 @@ const gestureState = useDragGesture(itemsWrapperRef, (dragState) => {
 
   if (active || isSingleItem.value) return
 
-  if (x <= -150) nextItem()
-  if (x >= 150) previousItem()
+  if (x <= -250) nextItem()
+  if (x >= 250) previousItem()
 })
 
 const { width: screenWidth, isResizing } = useWindowResizing()
@@ -126,7 +120,7 @@ onKeyStroke(['a', 'A', 'ArrowLeft'], previousItem)
 
 function openItem(i: number) {
   activeItemIndex.value = i
-  setOpen(true)
+  open.value = true
 }
 
 function nextItem() {
@@ -138,20 +132,12 @@ function previousItem() {
     (activeItemIndex.value - 1 + items.value!.length) % items.value!.length
 }
 
-onMounted(() => {
-  if (!(props.zoomable || props.lightboxItem)) return
+watchEffect(() => {
+  if (!images.value) return
 
-  thumbnails.value = props.zoomable
-    ? [props.imgRef.value?.$el as unknown as HTMLElement]
-    : Array.from(
-        (
-          imgRef.value?.$el as unknown as HTMLElement
-        ).parentNode?.querySelectorAll(
-          '[data-lightbox-item]'
-        ) as unknown as HTMLElement
-      )
+  thumbnails.value = images.value
 
-  items.value = thumbnails.value.map((item, i) => {
+  items.value = thumbnails.value?.map((item, i) => {
     const thumbnailEl = item as HTMLElement
 
     useEventListener(item, 'click', () => openItem(i))
@@ -175,6 +161,4 @@ onMounted(() => {
     }
   })
 })
-
-defineExpose({ setOpen })
 </script>
