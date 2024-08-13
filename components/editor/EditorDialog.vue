@@ -61,6 +61,18 @@ const data = {
                   height: 707,
                   type: 'image',
                 },
+                {
+                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897723/ytfussadsfefmle6cdve.jpg',
+                  width: 1041,
+                  height: 833,
+                  type: 'image',
+                },
+                {
+                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897723/nlsc47tbwneaj0henlyj.jpg',
+                  width: 1000,
+                  height: 839,
+                  type: 'image',
+                },
               ],
               published: 'Fri Mar 01 19:36:34 +0000 2024',
               type: 'x',

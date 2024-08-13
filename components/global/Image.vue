@@ -5,7 +5,7 @@
     :loading
     class="object-contain"
     :class="[
-      { 'cursor-zoom-in': zoomable, 'w-full h-full object-cover': fill },
+      { 'cursor-zoom-in': zoomable || lightboxItem, 'w-full h-full object-cover': fill },
       size,
       rounded,
     ]"
