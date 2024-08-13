@@ -132,15 +132,20 @@ function previousItem() {
     (activeItemIndex.value - 1 + items.value!.length) % items.value!.length
 }
 
-watchEffect(() => {
+function initLightbox() {
   if (!images.value) return
 
   thumbnails.value = images.value
 
-  items.value = thumbnails.value?.map((item, i) => {
+  items.value = thumbnails.value?.map((item, i): Item => {
     const thumbnailEl = item as HTMLElement
 
     useEventListener(item, 'click', () => openItem(i))
+
+    if (item.dataset.clicked === 'true') {
+      openItem(i)
+      delete item.dataset.clicked
+    }
 
     const {
       lightboxSrc: src,
@@ -158,7 +163,9 @@ watchEffect(() => {
       width,
       height,
       type,
-    }
+    } as unknown as Item
   })
-})
+}
+
+watchEffect(initLightbox)
 </script>

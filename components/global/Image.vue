@@ -60,15 +60,13 @@ const lightboxAttrs = computed(() => {
 
 function setImages() {
   if (!(props.zoomable || props.lightboxItem)) return
-  
+
+  const el = imgRef.value?.$el as HTMLElement
+
   lightboxImages.value = props.zoomable
-    ? [imgRef.value?.$el]
-    : Array.from(
-      (
-        imgRef.value?.$el as unknown as HTMLElement
-      ).parentNode?.querySelectorAll(
-        '[data-lightbox-item]'
-      ) as unknown as HTMLElement
-    )
+    ? [el]
+    : Array.from(el.parentNode?.querySelectorAll('[data-lightbox-item]')!)
+
+  el.dataset.clicked = 'true'
 }
 </script>
