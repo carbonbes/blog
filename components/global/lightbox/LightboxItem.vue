@@ -1,9 +1,6 @@
 <template>
-  <Flex
-    center
-    class="absolute top-0 left-0 inset-0"
-    :style="currentItemTransform"
-    :data-active-item="index === activeItemIndex"
+  <SwiperSlide
+    class="flex items-center justify-center"
   >
     <img
       v-if="item.type === 'image'"
@@ -12,7 +9,7 @@
       loading="lazy"
       class="max-h-full select-none no-drag"
     />
-  </Flex>
+  </SwiperSlide>
 </template>
 
 <script lang="ts" setup>
