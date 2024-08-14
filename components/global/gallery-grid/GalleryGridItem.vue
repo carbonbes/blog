@@ -28,7 +28,7 @@
 import type Item from '~/components/global/gallery/Gallery.vue'
 
 const props = defineProps<{
-  item: Item
-  class?: string
+  item: typeof Item
+  class?: string | object
 }>()
 </script>

@@ -2,7 +2,7 @@
   <DialogRoot v-model:open="open">
     <DialogPortal>
       <FadeInOpacityTransition>
-        <DialogOverlay class="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+        <DialogOverlay class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1]" />
       </FadeInOpacityTransition>
 
       <DialogContent
@@ -24,37 +24,31 @@
             v-if="!isSingleItem"
             class="absolute top-0 left-0 p-4 text-gray-300 z-10"
           >
-            {{ `${swiper?.index} / ${items?.length}` }}
+            {{ `${swiper?.realIndex! + 1} / ${items?.length}` }}
           </span>
 
-          <button class="z-10" @click="previousItem">
+          <button v-if="!isSingleItem" class="z-10" @click="previousItem">
             <ITablerChevronLeft class="!size-12 text-gray-300" />
           </button>
 
           <Swiper
-            :slidesPerView="1"
-            :spaceBetween="100"
-            loop
-            zoom
-            :initialSlide="activeItemIndex"
+            :options="{
+              initialSlide: activeItemIndex,
+              loop: true,
+              zoom: true,
+            }"
             class="!absolute inset-0"
+            ref="swiperRef"
           >
-            <SwiperSlide
+            <LightboxItem
               v-for="(item, i) in items"
               :key="i"
-              class="!flex items-center justify-center"
-            >
-              <img
-                v-if="item.type === 'image'"
-                :src="item.src"
-                :alt="item.alt"
-                loading="lazy"
-                class="max-h-full select-none no-drag"
-              />
-            </SwiperSlide>
+              :item
+              :thumbnail="thumbnails![i]"
+            />
           </Swiper>
 
-          <button class="z-10" @click="nextItem">
+          <button v-if="!isSingleItem" class="z-10" @click="nextItem">
             <ITablerChevronRight class="!size-12 text-gray-300" />
           </button>
         </Flex>
@@ -65,6 +59,7 @@
 
 <script lang="ts" setup>
 import Flex from '~/components/global/Flex.vue'
+import type Swiper from '~/components/global/swiper/Swiper.vue'
 
 export type Item = {
   src: string
@@ -79,7 +74,12 @@ const { images } = useLightboxDialog()
 
 const open = ref(false)
 
-const swiper = useSwiper()
+const swiperRef = ref<InstanceType<typeof Swiper>>()
+const swiper = computed(() => {
+  if (!swiperRef.value) return
+
+  return swiperRef.value.swiper
+})
 
 const thumbnails = ref<HTMLElement[]>()
 
@@ -96,11 +96,11 @@ function openItem(i: number) {
 }
 
 function nextItem() {
-  swiper?.slideNext()
+  swiper.value?.slideNext()
 }
 
 function previousItem() {
-  swiper?.slidePrev()
+  swiper.value?.slidePrev()
 }
 
 function initLightbox() {

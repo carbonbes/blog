@@ -4,9 +4,9 @@
     <NuxtPage />
   </main>
 
-  <EditorDialog />
+  <LazyEditorDialog />
   <Notifications />
-  <Lightbox />
+  <LazyLightbox />
 </template>
 
 <script lang="ts" setup>

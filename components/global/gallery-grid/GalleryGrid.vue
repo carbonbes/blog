@@ -7,7 +7,7 @@
       'auto-rows-[125px] grid-cols-[repeat(3,_1fr)]': items.length >= 4
     }"
   >
-    <GalleryItem
+    <GalleryGridItem
       v-for="(item, i) in items"
       :item
       :class="{

@@ -1,14 +1,15 @@
 <template>
-  <SwiperSlide
-    class="flex items-center justify-center"
-  >
-    <img
-      v-if="item.type === 'image'"
-      :src="item.src"
-      :alt="item.alt"
-      loading="lazy"
-      class="max-h-full select-none no-drag"
-    />
+  <SwiperSlide class="!flex items-center justify-center">
+    <div class="swiper-zoom-container">
+      <NuxtImg
+        v-if="item.type === 'image'"
+        :src="item.src"
+        :alt="item.alt"
+        loading="lazy"
+        class="max-h-full"
+        v-on-click-outside="onClickOutside"
+      />
+    </div>
   </SwiperSlide>
 </template>
 
@@ -17,11 +18,7 @@ import type { Item } from '~/components/global/lightbox/Lightbox.vue'
 import { vOnClickOutside } from '@vueuse/components'
 
 const props = defineProps<{
-  index: number
   item: Item
-  activeItemIndex: number
-  activeItem: Item
-  isLast: boolean
   thumbnail: HTMLElement
 }>()
 
@@ -32,10 +29,6 @@ const emits = defineEmits<{
 const { width: screenWidth, height: screenHeight } = useWindowResizing()
 
 const currentItemThumbnailBounding = useElementBounding(props.thumbnail)
-
-const currentItemTransform = computed(() => {
-  return `transform: translateX(${(screenWidth.value * props.index)}px)`
-})
 
 const currentItemImgTransform = computed(() => {
   const { width: thumbnailWidth, height: thumbnailHeight } = currentItemThumbnailBounding

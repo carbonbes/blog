@@ -17,7 +17,7 @@ export default function useDragGesture(
   const state = useState<DragState | null>('state', () => null)
 
   watchEffect(() => {
-    if (!target.value) return
+    if (!target.value || gesture.value) return
 
     const el = (target.value.$el || target.value) as EventTarget
 

@@ -72,7 +72,7 @@
         aspectRatio="aspect-video"
       />
 
-      <Gallery
+      <GalleryGrid
         v-else-if="embed.media && embed.media?.length > 1"
         :items="embed.media"
       />
