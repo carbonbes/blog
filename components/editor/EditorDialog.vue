@@ -61,6 +61,11 @@ const data = {
                   height: 707,
                   type: 'image',
                 },
+                {
+                  url: 'https://upload.wikimedia.org/wikipedia/commons/f/f1/Sintel_movie_4K.webm',
+                  thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/f/f1/Sintel_movie_4K.webm',
+                  type: 'video'
+                }
               ],
               published: 'Fri Mar 01 19:36:34 +0000 2024',
               type: 'x',

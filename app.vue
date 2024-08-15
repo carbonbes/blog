@@ -5,7 +5,7 @@
   </main>
 
   <LazyEditorDialog />
-  <Notifications />
+  <LazyNotifications />
   <LazyLightbox />
 </template>
 

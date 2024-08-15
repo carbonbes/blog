@@ -8,6 +8,7 @@
       <DialogContent
         aria-describedby=""
         class="absolute inset-0 overflow-hidden"
+        @closeAutoFocus="(e) => e.preventDefault()"
       >
         <VisuallyHidden>
           <DialogTitle />
@@ -15,7 +16,7 @@
 
         <DialogClose asChild>
           <button class="absolute top-0 right-0 p-4 z-10">
-            <ITablerX class="!size-8 text-gray-300" />
+            <ITablerX class="!size-8 text-white/30 hover:text-white transition-colors" />
           </button>
         </DialogClose>
 
@@ -24,32 +25,47 @@
             v-if="!isSingleItem"
             class="absolute top-0 left-0 p-4 text-gray-300 z-10"
           >
-            {{ `${swiper?.realIndex! + 1} / ${items?.length}` }}
+            {{ `${activeItemIndex + 1} / ${items?.length}` }}
           </span>
 
-          <button v-if="!isSingleItem" class="z-10" @click="previousItem">
-            <ITablerChevronLeft class="!size-12 text-gray-300" />
+          <button
+            v-if="!isSingleItem"
+            id="lightbox-prev-slide-control"
+            class="z-10"
+            @click="previousItem"
+          >
+            <ITablerChevronLeft class="!size-12 text-white/30 hover:text-white transition-colors" />
           </button>
 
           <Swiper
             :options="{
               initialSlide: activeItemIndex,
+              spaceBetween: 100,
               loop: true,
               zoom: true,
             }"
             class="!absolute inset-0"
             ref="swiperRef"
+            @realIndexChange="(value) => activeItemIndex = value"
           >
-            <LightboxItem
+            <SwiperSlide
               v-for="(item, i) in items"
               :key="i"
               :item
               :thumbnail="thumbnails![i]"
+              :active="activeItemIndex === i"
+              :swiper
+              @close="open = false"
             />
           </Swiper>
 
-          <button v-if="!isSingleItem" class="z-10" @click="nextItem">
-            <ITablerChevronRight class="!size-12 text-gray-300" />
+          <button
+            v-if="!isSingleItem"
+            id="lightbox-next-slide-control"
+            class="z-10"
+            @click="nextItem"
+          >
+            <ITablerChevronRight class="!size-12 text-white/30 hover:text-white transition-colors" />
           </button>
         </Flex>
       </DialogContent>
@@ -60,6 +76,7 @@
 <script lang="ts" setup>
 import Flex from '~/components/global/Flex.vue'
 import type Swiper from '~/components/global/swiper/Swiper.vue'
+import type SwiperSlide from '~/components/global/swiper/SwiperSlide.vue'
 
 export type Item = {
   src: string

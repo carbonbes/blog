@@ -10,25 +10,22 @@
     :class
   />
 
-  <Video
+  <div
     v-else
-    :src="item.url"
-    :thumbnail="item.thumbnail"
-    :type="item.type"
-    autoplay
-    :loop="item.type === 'gif'"
-    :controls="item.type === 'video'"
-    class="flex justify-center bg-gray-100/50 row-[1_span]"
+    data-lightbox-item
+    :data-lightbox-src="item.url"
+    data-lightbox-type="video"
+    class="row-[1_span]"
     :class
     size="w-full h-full"
   />
 </template>
 
 <script lang="ts" setup>
-import type Item from '~/components/global/gallery/Gallery.vue'
+import { type Item } from '~/components/global/gallery-grid/GalleryGrid.vue'
 
-const props = defineProps<{
-  item: typeof Item
+defineProps<{
+  item: Item
   class?: string | object
 }>()
 </script>

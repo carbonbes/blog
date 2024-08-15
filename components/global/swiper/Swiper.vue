@@ -16,7 +16,7 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-  activeIndexChange: [number]
+  realIndexChange: [number]
 }>()
 
 const containerRef = ref<HTMLElement>()
@@ -26,6 +26,8 @@ function initSwiper() {
   if (!containerRef.value || swiper.value) return
 
   swiper.value = new Swiper(containerRef.value, props.options)
+
+  swiper.value.on('realIndexChange', (swiper) => emits('realIndexChange', swiper.realIndex))
 }
 
 onMounted(initSwiper)

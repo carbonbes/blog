@@ -42,7 +42,7 @@ const props = withDefaults(
   defineProps<{
     src: string
     thumbnail?: string
-    type: 'video' | 'gif' | 'youtube'
+    type?: 'video' | 'gif' | 'youtube'
     autoplay?: boolean
     loop?: boolean
     controls?: boolean
@@ -52,6 +52,7 @@ const props = withDefaults(
     muted?: boolean
   }>(),
   {
+    type: 'video',
     muted: true,
   }
 )
