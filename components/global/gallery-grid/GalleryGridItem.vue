@@ -10,19 +10,18 @@
     :class
   />
 
-  <div
+  <VideoThumbnail
     v-else
-    data-lightbox-item
-    :data-lightbox-src="item.url"
-    data-lightbox-type="video"
-    class="row-[1_span]"
+    :src="item.url"
+    :thumbnail="item.thumbnail!"
+    lightboxItem
     :class
-    size="w-full h-full"
   />
 </template>
 
 <script lang="ts" setup>
 import { type Item } from '~/components/global/gallery-grid/GalleryGrid.vue'
+import VideoThumbnail from '~/components/global/gallery-grid/VideoThumbnail.vue'
 
 defineProps<{
   item: Item

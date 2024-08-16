@@ -11,7 +11,7 @@
     ]"
     v-bind="{ ...$attrs, ...lightboxAttrs }"
     ref="imgRef"
-    @click="setImages"
+    @click="setItems({ target: imgRef?.$el, zoomable, lightboxItem })"
   />
 </template>
 
@@ -41,7 +41,7 @@ const emit = defineEmits<{
   isOpen: [boolean]
 }>()
 
-const { images: lightboxImages } = useLightboxDialog()
+const { setItems } = useLightboxDialog()
 
 const imgRef = ref<InstanceType<typeof NuxtImg>>()
 
@@ -57,16 +57,4 @@ const lightboxAttrs = computed(() => {
     'data-lightbox-type': 'image',
   }
 })
-
-function setImages() {
-  if (!(props.zoomable || props.lightboxItem)) return
-
-  const el = imgRef.value?.$el as HTMLElement
-
-  lightboxImages.value = props.zoomable
-    ? [el]
-    : Array.from(el.parentNode?.querySelectorAll('[data-lightbox-item]')!)
-
-  el.dataset.clicked = 'true'
-}
 </script>

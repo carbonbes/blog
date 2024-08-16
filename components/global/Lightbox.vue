@@ -87,7 +87,7 @@ export type Item = {
   type: 'image' | 'video' | 'gif'
 }
 
-const { images } = useLightboxDialog()
+const { items: thumbnails } = useLightboxDialog()
 
 const open = ref(false)
 
@@ -97,8 +97,6 @@ const swiper = computed(() => {
 
   return swiperRef.value.swiper
 })
-
-const thumbnails = ref<HTMLElement[]>()
 
 const items = ref<Item[]>()
 const isSingleItem = computed(() => items.value?.length === 1)
@@ -121,18 +119,16 @@ function previousItem() {
 }
 
 function initLightbox() {
-  if (!images.value) return
-
-  thumbnails.value = images.value
+  if (!thumbnails.value) return
 
   items.value = thumbnails.value?.map((item, i): Item => {
     const thumbnailEl = item as HTMLElement
 
     useEventListener(item, 'click', () => openItem(i))
 
-    if (item.dataset.clicked === 'true') {
+    if (item.dataset.wasClicked === '') {
       openItem(i)
-      delete item.dataset.clicked
+      delete item.dataset.wasClicked
     }
 
     const {

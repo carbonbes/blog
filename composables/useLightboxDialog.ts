@@ -1,5 +1,23 @@
 export default function useLightboxDialog() {
-  const images = useState<HTMLElement[] | null>('images', () => null)
+  const items = useState<HTMLElement[] | null>('items', () => null)
 
-  return { images }
+  function setItems({
+    target,
+    zoomable,
+    lightboxItem,
+  }: {
+    target: HTMLElement
+    zoomable?: boolean
+    lightboxItem?: boolean
+  }) {
+    if (!(zoomable || lightboxItem)) return
+
+    items.value = zoomable
+      ? [target]
+      : Array.from(target.parentNode?.querySelectorAll('[data-lightbox-item]')!)
+
+    target.dataset.wasClicked = ''
+  }
+
+  return { items, setItems }
 }
