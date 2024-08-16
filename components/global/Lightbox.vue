@@ -42,7 +42,6 @@
               initialSlide: activeItemIndex,
               spaceBetween: 100,
               loop: true,
-              zoom: true,
             }"
             class="!absolute inset-0"
             ref="swiperRef"
