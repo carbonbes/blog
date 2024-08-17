@@ -9,16 +9,19 @@
         aria-describedby=""
         class="absolute inset-0 overflow-hidden"
         @closeAutoFocus="(e) => e.preventDefault()"
+        @escapeKeyDown="close"
+        @pointerDownOutside="() => close()"
       >
         <VisuallyHidden>
           <DialogTitle />
         </VisuallyHidden>
 
-        <DialogClose asChild>
-          <button class="absolute top-0 right-0 p-4 z-10">
-            <ITablerX class="!size-8 text-white/30 hover:text-white transition-colors" />
-          </button>
-        </DialogClose>
+        <button
+          class="absolute top-0 right-0 p-4 z-10"
+          @click="() => close()"
+        >
+          <ITablerX class="!size-8 text-white/30 hover:text-white transition-colors" />
+        </button>
 
         <Flex itemsCenter justifyBetween class="absolute inset-0">
           <span
@@ -50,11 +53,12 @@
             <SwiperSlide
               v-for="(item, i) in items"
               :key="i"
+              :index="i"
               :item
               :thumbnail="thumbnails![i]"
-              :active="activeItemIndex === i"
+              :isActiveSlide="activeItemIndex === i"
               :swiper
-              @close="open = false"
+              @close="close"
             />
           </Swiper>
 
@@ -76,6 +80,7 @@
 import Flex from '~/components/global/Flex.vue'
 import type Swiper from '~/components/global/swiper/Swiper.vue'
 import type SwiperSlide from '~/components/global/swiper/SwiperSlide.vue'
+import { promiseTimeout } from '@vueuse/core'
 
 export type Item = {
   src: string
@@ -151,4 +156,12 @@ function initLightbox() {
 }
 
 watchEffect(initLightbox)
+
+async function close(e?: KeyboardEvent) {
+  if (e) e.preventDefault()
+
+  await promiseTimeout(300)
+
+  open.value = false
+}
 </script>

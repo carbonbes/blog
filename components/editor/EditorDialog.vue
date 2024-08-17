@@ -1,9 +1,5 @@
 <template>
-  <Dialog
-    :class="editorDialogClasses"
-    @close="setOpen(false)"
-    ref="dialogRef"
-  >
+  <Dialog :class="editorDialogClasses" @close="setOpen(false)" ref="dialogRef">
     <Editor :data :disableScroll="scrollIsLocked" />
 
     <template #footer>
@@ -23,114 +19,104 @@ const data = {
   type: 'doc',
   content: [
     {
-      type: 'rootNode',
-      attrs: {
-        pin: false,
-        spoiler: false,
+      "type": "rootNode",
+      "attrs": {
+        "pin": false,
+        "spoiler": false
       },
-      content: [
+      "content": [
         {
-          type: 'sn-embed',
-          attrs: {
-            url: null,
-            embed: {
-              author: {
-                avatar:
-                  'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897722/fu7cstumcwrdmya947vh.jpg',
-                name: 'NASA',
-                username: 'NASA',
-                url: 'https://x.com/NASA',
+          "type": "sn-embed",
+          "attrs": {
+            "url": null,
+            "embed": {
+              "author": {
+                "avatar": "https://res.cloudinary.com/dkmur8a20/image/upload/v1723893272/easydvszdazlrupqip8h.jpg",
+                "name": "Big Geek",
+                "username": "biggeekru",
+                "url": "https://t.me/biggeekru"
               },
-              text: "We're launching into #WomensHistoryMonth with a stellar salute to the incredible women who lead the way to change and inspire future generations. We celebrate the accomplishments you’ve made as you to contribute to NASA’s journey to the stars. https://t.co/OfqckHovmp",
-              media: [
+              "text": "Samsung представила сервис для удалённого присмотра за пожилыми людьми\n\nС помощью бесплатного сервиса Family Care можно удалённо настраивать умные устройства и управлять ими. \n\nНапример, можно напомнить о приёме лекарств, контролировать бытовую технику и даже следить за местоположением подопечного. Сервис изучает бытовые привычки пользователя и даёт знать, если что-то пошло не так.\n\nНесколько лет назад похожий сервис запускал Amazon, но из-за сложности с сетью и нестабильности устройств, проект не получил развития.\n\nFamily Care станет доступен уже завтра в ограниченном количестве регионов. Он работает на базе умного дома SmartThings и только с гаджетами Samsung.",
+              "media": [
                 {
-                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897723/nlsc47tbwneaj0henlyj.jpg',
-                  width: 1000,
-                  height: 839,
-                  type: 'image',
+                  "url": "https://res.cloudinary.com/dkmur8a20/image/upload/v1723893274/qt7pkcobezexxcper1pi.jpg",
+                  "width": 1200,
+                  "height": 675,
+                  "type": "image"
                 },
                 {
-                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897723/ytfussadsfefmle6cdve.jpg',
-                  width: 1041,
-                  height: 833,
-                  type: 'image',
+                  "url": "https://res.cloudinary.com/dkmur8a20/image/upload/v1723893274/xy9jul1tvbzqnn4kuz4l.jpg",
+                  "width": 1280,
+                  "height": 1280,
+                  "type": "image"
                 },
                 {
-                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897723/zd9mcrle4pystoxe5saj.jpg',
-                  width: 1064,
-                  height: 707,
-                  type: 'image',
-                },
-                {
-                  url: 'https://upload.wikimedia.org/wikipedia/commons/f/f1/Sintel_movie_4K.webm',
-                  thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/f/f1/Sintel_movie_4K.webm',
-                  type: 'video'
+                  "url": "https://res.cloudinary.com/dkmur8a20/image/upload/v1723893274/oqh6vv5m5fz1avsyjxph.jpg",
+                  "width": 1280,
+                  "height": 853,
+                  "type": "image"
                 }
               ],
-              published: 'Fri Mar 01 19:36:34 +0000 2024',
-              type: 'x',
-              url: 'https://x.com/NASA/status/1763649550479241501',
+              "published": 1723727190000,
+              "type": "telegram",
+              "url": "https://t.me/biggeekru/27110"
             },
-            type: 'x',
-          },
-        },
-      ],
+            "type": "telegram"
+          }
+        }
+      ]
     },
     {
-      type: 'rootNode',
-      attrs: {
-        pin: false,
-        spoiler: false,
+      "type": "rootNode",
+      "attrs": {
+        "pin": false,
+        "spoiler": false
       },
-      content: [
+      "content": [
         {
-          type: 'sn-embed',
-          attrs: {
-            url: null,
-            embed: {
-              author: {
-                avatar:
-                  'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897995/jikglj27hrh8lb4frkek.jpg',
-                name: 'Big Geek',
-                username: 'biggeekru',
-                url: 'https://t.me/biggeekru',
+          "type": "sn-embed",
+          "attrs": {
+            "url": null,
+            "embed": {
+              "author": {
+                "avatar": "https://res.cloudinary.com/dkmur8a20/image/upload/v1723893515/nrzazpbcrwswtnuxxrv6.jpg",
+                "name": "Big Geek",
+                "username": "biggeekru",
+                "url": "https://t.me/biggeekru"
               },
-              text: 'Unihertz представила новое поколение своего компактного смартфона — Jelly Max\n\nТеперь это самый маленький смартфон на рынке с поддержкой 5G. Из других интересных фишек: прозрачная задняя крышка и ремешок на руку в комплекте. Отдельно можно докупить ремешок через плечо.\n\n• Дисплей: 5,05" 1520x720 IPS\n• Чипсет: Dimensity 7300\n• Камеры: 100 Мп + 8 Мп телевик + 32 Мп селфи\n• Память: 12/256 ГБ + microSD\n• Связь: 5G, NFC, Wi-Fi 6, Bluetooth 5.3\n• Биометрия: сканер отпечатков на спинке\n• Водозащита: нет\n• Аккумулятор и зарядка: 4000 мАч, 66 Вт\n• Габариты: 128,7 х 62,7 x 16,3 мм\n• Цена: $339 (~29 900 ₽)',
-              media: [
+              "text": "Нейросеть от Сбера GigaChat умеет не только генерировать текст, но и работать с готовыми материалами.\n\nОна легко сократит объём слов, поможет с переводом на другой язык и перескажет содержание файла. Для этого прикрепите документ в формате txt или pdf и напишите свой запрос. Подсказка 👉 промпт лучше начинать с глаголов.\n\nЭти и другие полезные функции ждут вас здесь.",
+              "media": [
                 {
-                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897996/s69mso1zhoeke85plmc4.jpg',
-                  width: 780,
-                  height: 440,
-                  type: 'image',
+                  "url": "https://res.cloudinary.com/dkmur8a20/video/upload/v1723893533/r9waskk3sbixvyzffdqh.mp4",
+                  "thumbnail": "https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/r9waskk3sbixvyzffdqh.mp4",
+                  "width": 1080,
+                  "height": 1080,
+                  "type": "video"
                 },
                 {
-                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897997/ywmifrk7j8fnkipmwqqg.jpg',
-                  width: 780,
-                  height: 440,
-                  type: 'image',
+                  "url": "https://res.cloudinary.com/dkmur8a20/video/upload/v1723893533/r9waskk3sbixvyzffdqh.mp4",
+                  "thumbnail": "https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/r9waskk3sbixvyzffdqh.mp4",
+                  "width": 1080,
+                  "height": 1080,
+                  "type": "video"
                 },
                 {
-                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897997/em5ilplxh3twvtyklk8l.jpg',
-                  width: 680,
-                  height: 680,
-                  type: 'image',
-                },
-                {
-                  url: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1721897997/popth5jpq0vqemafu0ps.jpg',
-                  width: 680,
-                  height: 419,
-                  type: 'image',
-                },
+                  "url": "https://res.cloudinary.com/dkmur8a20/video/upload/v1723893533/r9waskk3sbixvyzffdqh.mp4",
+                  "thumbnail": "https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/r9waskk3sbixvyzffdqh.mp4",
+                  "width": 1080,
+                  "height": 1080,
+                  "type": "video"
+                }
               ],
-              published: 1721203273000,
-              type: 'telegram',
-              url: 'https://t.me/biggeekru/26500',
+              "published": 1723708876000,
+              "type": "telegram",
+              "url": "https://t.me/biggeekru/27105"
             },
-            type: 'telegram',
-          },
-        },
-      ],
-    },
+            "type": "telegram"
+          }
+        }
+      ]
+    }
   ],
 }
 

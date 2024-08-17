@@ -3,28 +3,30 @@
     class="swiper-slide"
     v-intersection-observer="[onIntersectionObserver, { threshold: 1 }]"
   >
-    <img
-      v-if="item.type === 'image'"
-      :src="item.src"
-      :alt="item.alt"
-      loading="lazy"
-      class="max-h-full origin-top-left touch-none"
+    <div
+      class="absolute origin-top-left"
       :class="{ 'transition-transform duration-300': enabledTransformTransition }"
       :style="currentSlideContentTransform"
-      ref="slideContentRef"
-    />
+    >
+      <img
+        v-if="['image', 'gif'].includes(item.type)"
+        :src="item.src"
+        :alt="item.alt"
+        loading="lazy"
+        class="max-h-screen touch-none"
+        ref="slideContentRef"
+      />
 
-    <video
-      v-else-if="item.type === 'video'"
-      :src="item.src"
-      class="origin-top-left touch-none"
-      :class="{ 'transition-transform duration-300': enabledTransformTransition }"
-      :style="currentSlideContentTransform"
-      controls
-      muted
-      playsinline
-      ref="slideContentRef"
-    />
+      <video
+        v-else-if="item.type === 'video'"
+        :src="item.src"
+        class="w-full h-full max-w-[1000px] bg-black aspect-video touch-none"
+        controls
+        muted
+        playsinline
+        ref="slideContentRef"
+      />
+    </div>
   </div>
 </template>
 
@@ -35,9 +37,10 @@ import type Swiper from 'swiper'
 import { promiseTimeout } from '@vueuse/core'
 
 const props = defineProps<{
+  index: number
   item: Item
   thumbnail: HTMLElement
-  active: boolean
+  isActiveSlide: boolean
   swiper: Swiper
 }>()
 
@@ -46,8 +49,6 @@ const emits = defineEmits<{
 }>()
 
 const { width: screenWidth, height: screenHeight, isResizing } = useWindowResizing()
-
-const slideContentRef = ref<HTMLImageElement | HTMLVideoElement>()
 
 const enabledTransformTransition = ref(false)
 const currentSlideContentTransform = ref<string>()
@@ -60,10 +61,12 @@ onMounted(() => {
   nextSlideControlRef.value = document.querySelector('#lightbox-next-slide-control') as HTMLElement
 })
 
+const slideContentRef = ref<HTMLImageElement | HTMLVideoElement>()
+
 onClickOutside(
   slideContentRef,
   () => {
-    if (!props.active || props.swiper.animating) return
+    if (!props.isActiveSlide || props.swiper.animating) return
 
     emits('close')
   },
@@ -96,61 +99,35 @@ function onIntersectionObserver([{ isIntersecting }]: IntersectionObserverEntry[
   else stopVideo()
 }
 
-function getCroppedBoundsByElement(el: HTMLElement, imageWidth: number, imageHeight: number) {
-  const thumbAreaRect = el.getBoundingClientRect()
-
-  const hRatio = thumbAreaRect.width / imageWidth
-  const vRatio = thumbAreaRect.height / imageHeight
-  const fillZoomLevel = hRatio > vRatio ? hRatio : vRatio
-
-  const offsetX = (thumbAreaRect.width - imageWidth * fillZoomLevel) / 2
-  const offsetY = (thumbAreaRect.height - imageHeight * fillZoomLevel) / 2
-
-  const bounds = {
-    x: thumbAreaRect.left + offsetX,
-    y: thumbAreaRect.top + offsetY,
-    w: imageWidth * fillZoomLevel
-  }
-
-  bounds.innerRect = {
-    w: thumbAreaRect.width,
-    h: thumbAreaRect.height,
-    x: offsetX,
-    y: offsetY
-  }
-
-  return bounds
-}
-
 const currentSlideThumbnailBounding = useElementBounding(props.thumbnail)
+const currentSlideContentBounding = useElementBounding(slideContentRef)
+
+const startScaleX = computed(() => currentSlideThumbnailBounding.width.value / props.item.width)
+const startScaleY = computed(() => currentSlideThumbnailBounding.height.value / props.item.height)
+const endTranslateX = computed(() => (screenWidth.value / 2) - (props.item.width / 2))
+const endTranslateY = computed(() => (screenHeight.value / 2) - (props.item.height / 2))
 
 async function setTransform() {
   const {
     top: thumbnailTop,
     left: thumbnailLeft,
-    width: thumbnailWidth,
-    height: thumbnailHeight
   } = currentSlideThumbnailBounding
 
-  const startScaleX = thumbnailWidth.value / props.item.width
-  const startScaleY = thumbnailHeight.value / props.item.height
   const startTranslateX = thumbnailLeft.value
   const startTranslateY = thumbnailTop.value
-  const endTranslateX = (screenWidth.value / 2) - (props.item.width / 2)
-  const endTranslateY = (screenHeight.value / 2) - (props.item.height / 2)
 
-  if (!props.active) {
-    currentSlideContentTransform.value = `transform: translate(${endTranslateX}px, ${endTranslateY}px) scale(1, 1)`
+  if (!props.isActiveSlide) {
+    currentSlideContentTransform.value = `transform: translate(${endTranslateX.value}px, ${endTranslateY.value}px) scale(1, 1)`
 
     return
   }
 
-  currentSlideContentTransform.value = `transform: translate(${startTranslateX}px, ${startTranslateY}px) scale(${startScaleX}, ${startScaleY})`
+  currentSlideContentTransform.value = `transform: translate(${startTranslateX}px, ${startTranslateY}px) scale(${startScaleX.value}, ${startScaleY.value})`
 
   await promiseTimeout(0)
 
   enabledTransformTransition.value = true
-  currentSlideContentTransform.value = `transform: translate(${endTranslateX}px, ${endTranslateY}px) scale(1, 1)`
+  currentSlideContentTransform.value = `transform: translate(${endTranslateX.value}px, ${endTranslateY.value}px) scale(1, 1)`
 }
 
 onMounted(setTransform)

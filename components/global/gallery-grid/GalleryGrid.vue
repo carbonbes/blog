@@ -10,6 +10,7 @@
     <GalleryGridItem
       v-for="(item, i) in items"
       :item
+      :isSingleItem="items.length === 1"
       :class="{
         'row-[2_span]': i === 0 && items.length > 2,
         'col-[3_span]': i === 0 && items.length > 3,
@@ -22,6 +23,7 @@
 <script lang="ts" setup>
 export type Item = {
   url: string,
+  alt?: string
   thumbnail?: string
   width: number
   height: number
