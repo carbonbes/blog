@@ -10,7 +10,7 @@ export default function useWindowResizing() {
   useEventListener(window, 'resize', () => {
     isResizing.value = true
     debounced()
-  })
+  }, { passive: true })
 
   return { width, height, isResizing }
 }

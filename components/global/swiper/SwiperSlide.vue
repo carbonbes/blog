@@ -4,8 +4,8 @@
     v-intersection-observer="[onIntersectionObserver, { threshold: 1 }]"
   >
     <div
-      class="absolute origin-top-left"
-      :class="{ 'transition-transform duration-300': enabledTransformTransition }"
+      class="origin-top-left"
+      :class="{ 'transition-transform duration-300': enabledTransformTransition && !isResizing }"
       :style="currentSlideContentTransform"
     >
       <img
@@ -18,7 +18,7 @@
       />
 
       <video
-        v-else-if="item.type === 'video'"
+        v-else
         :src="item.src"
         class="w-full h-full max-w-[1000px] bg-black aspect-video touch-none"
         controls
@@ -49,9 +49,6 @@ const emits = defineEmits<{
 }>()
 
 const { width: screenWidth, height: screenHeight, isResizing } = useWindowResizing()
-
-const enabledTransformTransition = ref(false)
-const currentSlideContentTransform = ref<string>()
 
 const prevSlideControlRef = ref<HTMLElement>()
 const nextSlideControlRef = ref<HTMLElement>()
@@ -100,35 +97,45 @@ function onIntersectionObserver([{ isIntersecting }]: IntersectionObserverEntry[
 }
 
 const currentSlideThumbnailBounding = useElementBounding(props.thumbnail)
-const currentSlideContentBounding = useElementBounding(slideContentRef)
 
-const startScaleX = computed(() => currentSlideThumbnailBounding.width.value / props.item.width)
-const startScaleY = computed(() => currentSlideThumbnailBounding.height.value / props.item.height)
-const endTranslateX = computed(() => (screenWidth.value / 2) - (props.item.width / 2))
-const endTranslateY = computed(() => (screenHeight.value / 2) - (props.item.height / 2))
+const slideContentWidth = computed(() => slideContentRef.value?.offsetWidth!)
+const slideContentHeight = computed(() => slideContentRef.value?.offsetHeight!)
+const translateX = ref(0)
+const translateY = ref(0)
+const scaleX = ref(0)
+const scaleY = ref(0)
 
-async function setTransform() {
-  const {
-    top: thumbnailTop,
-    left: thumbnailLeft,
-  } = currentSlideThumbnailBounding
+const enabledTransformTransition = ref(false)
 
-  const startTranslateX = thumbnailLeft.value
-  const startTranslateY = thumbnailTop.value
+const currentSlideContentTransform = computed(() => `transform: translate(${translateX.value}px, ${translateY.value}px) scale(${scaleX.value}, ${scaleY.value})`)
 
-  if (!props.isActiveSlide) {
-    currentSlideContentTransform.value = `transform: translate(${endTranslateX.value}px, ${endTranslateY.value}px) scale(1, 1)`
+const isMounted = ref(false)
 
-    return
-  }
-
-  currentSlideContentTransform.value = `transform: translate(${startTranslateX}px, ${startTranslateY}px) scale(${startScaleX.value}, ${startScaleY.value})`
+onMounted(async () => {
+  translateX.value = currentSlideThumbnailBounding.left.value
+  translateY.value = currentSlideThumbnailBounding.top.value
+  scaleX.value = currentSlideThumbnailBounding.width.value / props.item.width
+  scaleY.value = currentSlideThumbnailBounding.height.value / props.item.height
 
   await promiseTimeout(0)
+  enabledTransformTransition.value = props.isActiveSlide ? true : false
 
-  enabledTransformTransition.value = true
-  currentSlideContentTransform.value = `transform: translate(${endTranslateX.value}px, ${endTranslateY.value}px) scale(1, 1)`
-}
+  translateX.value = (screenWidth.value / 2) - (slideContentWidth.value / 2)
+  translateY.value = (screenHeight.value / 2) - (slideContentHeight.value / 2)
+  scaleX.value = 1
+  scaleY.value = 1
 
-onMounted(setTransform)
+  await promiseTimeout(300)
+  enabledTransformTransition.value = false
+  isMounted.value = true
+})
+
+watchEffect(() => {
+  if (!isMounted.value) return
+
+  const { width, height } = useElementBounding(slideContentRef)
+
+  translateX.value = (screenWidth.value / 2) - (width.value / 2)
+  translateY.value = (screenHeight.value / 2) - (height.value / 2)
+})
 </script>
