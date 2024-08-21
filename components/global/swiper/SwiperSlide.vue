@@ -1,26 +1,26 @@
 <template>
   <div
     class="swiper-slide"
-    v-intersection-observer="[onIntersectionObserver, { threshold: 1 }]"
+    v-intersection-observer="onIntersectionObserver"
   >
     <div
-      class="origin-top-left"
-      :class="{ 'transition-transform duration-300': enabledTransformTransition && !screenIsResizing }"
-      :style="currentSlideContentTransform"
+      class="max-w-fit origin-top-left"
+      :class="{ 'transition-[transform,width,height] duration-300': enabledTransformTransition && !screenIsResizing }"
+      :style="[slideContentWrapperTransform, croppedSize]"
     >
       <img
-        v-if="['image', 'gif'].includes(item.type)"
+        v-if="isImage"
         :src="item.src"
         :alt="item.alt"
         loading="lazy"
-        class="max-h-screen touch-none"
+        class="w-full h-full max-h-screen object-cover object-center touch-none"
         ref="slideContentRef"
       />
 
       <video
         v-else
         :src="item.src"
-        class="w-full h-full max-w-[1000px] bg-black aspect-video touch-none"
+        class="w-full h-full max-w-[1000px] max-h-screen bg-black aspect-video touch-none"
         controls
         muted
         playsinline
@@ -53,6 +53,8 @@ const {
   height: screenHeight,
   isResizing: screenIsResizing
 } = useWindowResizing()
+
+const isImage = computed(() => ['image', 'gif'].includes(props.item.type))
 
 const prevSlideControlRef = ref<HTMLElement>()
 const nextSlideControlRef = ref<HTMLElement>()
@@ -94,8 +96,8 @@ function stopVideo() {
   el.currentTime = 0
 }
 
-async function onIntersectionObserver([{ isIntersecting }]: IntersectionObserverEntry[]) {
-  if (props.item.type === 'image' || screenIsResizing.value) return
+const onIntersectionObserver = [async ([{ isIntersecting }]: IntersectionObserverEntry[]) => {
+  if (isImage.value || screenIsResizing.value) return
 
   const el = slideContentRef.value as HTMLVideoElement
 
@@ -103,60 +105,80 @@ async function onIntersectionObserver([{ isIntersecting }]: IntersectionObserver
 
   if (isIntersecting) el.play()
   else stopVideo()
-}
+}, { threshold: 1 }]
 
-const currentSlideThumbnailBounding = useElementBounding(props.thumbnail)
-
+const slideThumbnailTop = computed(() => props.thumbnail.getBoundingClientRect().top)
+const slideThumbnailLeft = computed(() => props.thumbnail.getBoundingClientRect().left)
+const slideThumbnailWidth = computed(() => props.thumbnail.getBoundingClientRect().width)
+const slideThumbnailHeight = computed(() => props.thumbnail.getBoundingClientRect().height)
 const slideContentWidth = computed(() => slideContentRef.value?.offsetWidth!)
 const slideContentHeight = computed(() => slideContentRef.value?.offsetHeight!)
+const slideContentRealSizes = computed(() =>
+  calculateMaxSize(
+    props.item.width,
+    props.item.height,
+    Math.min(props.item.width, screenWidth.value),
+    Math.min(props.item.height, screenHeight.value)
+  )
+)
+
 const translateX = ref(0)
 const translateY = ref(0)
-const scaleX = ref(0)
-const scaleY = ref(0)
+const croppedWidth = ref(0)
+const croppedHeight = ref(0)
 
 const enabledTransformTransition = ref(false)
 const isMounted = ref(false)
 
-const currentSlideContentTransform = computed(() => `transform: translate(${translateX.value}px, ${translateY.value}px) scale(${scaleX.value}, ${scaleY.value})`)
+const slideContentWrapperTransform = computed(() => `transform: translate(${translateX.value}px, ${translateY.value}px)`)
+const croppedSize = computed(() => {
+  if (enabledTransformTransition.value) {
+    return `width: ${croppedWidth.value}px; height: ${croppedHeight.value}px`
+  } else return `width: auto; height: auto`
+})
 
 async function close() {
   if (!isMounted.value) return
-  
+
   playCloseAnimation()
   await promiseTimeout(300)
   emits('close')
 }
 
 async function playOpenAnimation() {
-  translateX.value = currentSlideThumbnailBounding.left.value
-  translateY.value = currentSlideThumbnailBounding.top.value
-  scaleX.value = currentSlideThumbnailBounding.width.value / props.item.width
-  scaleY.value = currentSlideThumbnailBounding.height.value / props.item.height
+  translateX.value = slideThumbnailLeft.value
+  translateY.value = slideThumbnailTop.value
+  croppedWidth.value = slideThumbnailWidth.value
+  croppedHeight.value = slideThumbnailHeight.value
 
-  await promiseTimeout(0)
+  await nextTick()
+
   enabledTransformTransition.value = props.isActiveSlide ? true : false
 
   translateX.value = (screenWidth.value / 2) - (slideContentWidth.value / 2)
   translateY.value = (screenHeight.value / 2) - (slideContentHeight.value / 2)
-  scaleX.value = 1
-  scaleY.value = 1
+  croppedWidth.value = Math.max(slideThumbnailWidth.value, slideContentRealSizes.value.width)
+  croppedHeight.value = Math.max(slideThumbnailHeight.value, slideContentRealSizes.value.height)
 
-  await promiseTimeout(300)
-
-  enabledTransformTransition.value = false
+  // await promiseTimeout(300)
+  
+  // enabledTransformTransition.value = false
 }
 
-function playCloseAnimation() {
+async function playCloseAnimation() {
   isMounted.value = false
+
+  await nextTick()
+
   enabledTransformTransition.value = props.isActiveSlide ? true : false
 
-  translateX.value = currentSlideThumbnailBounding.left.value
-  translateY.value = currentSlideThumbnailBounding.top.value
-  scaleX.value = currentSlideThumbnailBounding.width.value / props.item.width
-  scaleY.value = currentSlideThumbnailBounding.height.value / props.item.height
+  translateX.value = slideThumbnailLeft.value
+  translateY.value = slideThumbnailTop.value
+  croppedWidth.value = slideThumbnailWidth.value
+  croppedHeight.value = slideThumbnailHeight.value
 }
 
-function recalculateSizes() {
+function recalculateTransform() {
   if (!isMounted.value) return
 
   const {
@@ -165,7 +187,8 @@ function recalculateSizes() {
   } = useElementBounding(slideContentRef)
 
   translateX.value = Math.max(0, (screenWidth.value / 2) - (slideContentWidth.value / 2))
-  translateY.value = (screenHeight.value / 2) - (slideContentHeight.value / 2)
+  translateY.value = Math.max(0, (screenHeight.value / 2) - (slideContentHeight.value / 2))
+
 }
 
 onMounted(async () => {
@@ -174,5 +197,5 @@ onMounted(async () => {
   isMounted.value = true
 })
 
-watchEffect(recalculateSizes)
+watchEffect(recalculateTransform)
 </script>
