@@ -9,17 +9,13 @@
         aria-describedby=""
         class="absolute inset-0 overflow-hidden"
         @closeAutoFocus="(e) => e.preventDefault()"
-        @escapeKeyDown="close"
-        @pointerDownOutside="() => close()"
+        @escapeKeyDown="(e) => e.preventDefault()"
       >
         <VisuallyHidden>
           <DialogTitle />
         </VisuallyHidden>
 
-        <button
-          class="absolute top-0 right-0 p-4 z-10"
-          @click="() => close()"
-        >
+        <button class="absolute top-0 right-0 p-4 z-10">
           <ITablerX class="!size-8 text-white/30 hover:text-white transition-colors" />
         </button>
 
@@ -80,7 +76,6 @@
 import Flex from '~/components/global/Flex.vue'
 import type Swiper from '~/components/global/swiper/Swiper.vue'
 import type SwiperSlide from '~/components/global/swiper/SwiperSlide.vue'
-import { promiseTimeout } from '@vueuse/core'
 
 export type Item = {
   src: string
@@ -157,11 +152,7 @@ function initLightbox() {
 
 watchEffect(initLightbox)
 
-async function close(e?: KeyboardEvent) {
-  if (e) e.preventDefault()
-
-  await promiseTimeout(300)
-
+function close() {
   open.value = false
 }
 </script>
