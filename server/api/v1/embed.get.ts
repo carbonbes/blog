@@ -226,4 +226,4 @@ export default defineApiEndpoint(async ({ event }) => {
       url
     }
   }
-})
+}, { requireAuth: true })
