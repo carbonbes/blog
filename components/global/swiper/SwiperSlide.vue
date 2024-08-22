@@ -132,24 +132,30 @@ async function close() {
   if (!isMounted.value) return
 
   playCloseAnimation()
-  await promiseTimeout(300)
   emits('close')
 }
 
-async function playOpenAnimation() {
+function setStartStyles() {
   translateX.value = slideThumbnailBounding.left.value
   translateY.value = slideThumbnailBounding.top.value
   croppedWidth.value = slideThumbnailBounding.width.value
   croppedHeight.value = slideThumbnailBounding.height.value
+}
 
-  await nextTick()
-
-  enabledTransformTransition.value = props.isActiveSlide ? true : false
-
+function setEndStyles() {
   translateX.value = (screenWidth.value / 2) - (slideContentSize.value.width / 2)
   translateY.value = (screenHeight.value / 2) - (slideContentSize.value.height / 2)
   croppedWidth.value = slideContentSize.value.width
   croppedHeight.value = slideContentSize.value.height
+}
+
+async function playOpenAnimation() {
+  setStartStyles()
+
+  await nextTick()
+
+  enabledTransformTransition.value = props.isActiveSlide ? true : false
+  setEndStyles()
 
   await promiseTimeout(300)
   
@@ -163,29 +169,18 @@ async function playCloseAnimation() {
   await nextTick()
 
   enabledTransformTransition.value = props.isActiveSlide ? true : false
-
-  translateX.value = slideThumbnailBounding.left.value
-  translateY.value = slideThumbnailBounding.top.value
-  croppedWidth.value = slideThumbnailBounding.width.value
-  croppedHeight.value = slideThumbnailBounding.height.value
+  setStartStyles()
 }
 
 function recalculateTransform() {
   if (!isMounted.value) return
 
-  const {
-    width: slideContentWidth,
-    height: slideContentHeight
-  } = useElementBounding(slideContentRef)
-
-  translateX.value = Math.max(0, (screenWidth.value / 2) - (slideContentWidth.value / 2))
-  translateY.value = Math.max(0, (screenHeight.value / 2) - (slideContentHeight.value / 2))
-
+  setEndStyles()
 }
 
 onMounted(async () => {
   setSlideControlsRefs()
-  await playOpenAnimation()
+  playOpenAnimation()
 })
 
 watchEffect(recalculateTransform)

@@ -1,9 +1,12 @@
 <template>
-  <DialogRoot v-model:open="open">
+  <DialogRoot v-model:open="isOpen">
     <DialogPortal>
-      <FadeInOpacityTransition>
-        <DialogOverlay class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1]" />
-      </FadeInOpacityTransition>
+      <Transition @enter="onOverlayOpen">
+        <DialogOverlay
+          class="fixed inset-0 transition-[background-color,backdrop-filter] duration-300 z-[1]"
+          :style="dialogOverlayStyles"
+        />
+      </Transition>
 
       <DialogContent
         aria-describedby=""
@@ -76,6 +79,7 @@
 import Flex from '~/components/global/Flex.vue'
 import type Swiper from '~/components/global/swiper/Swiper.vue'
 import type SwiperSlide from '~/components/global/swiper/SwiperSlide.vue'
+import { promiseTimeout } from '@vueuse/core'
 
 export type Item = {
   src: string
@@ -88,7 +92,27 @@ export type Item = {
 
 const { items: thumbnails } = useLightboxDialog()
 
-const open = ref(false)
+const isOpen = ref(false)
+
+function open() {
+  isOpen.value = true
+}
+
+async function close() {
+  overlayBg.value = 'rgba(0, 0, 0, 0)'
+  overlayBlurSize.value = 0
+  await promiseTimeout(300)
+  isOpen.value = false
+}
+
+function onOverlayOpen() {
+  overlayBg.value = 'rgba(0, 0, 0, 0.5)',
+  overlayBlurSize.value = 4
+}
+
+const overlayBg = ref('')
+const overlayBlurSize = ref(0)
+const dialogOverlayStyles = computed(() => `background-color: ${overlayBg.value}; backdrop-filter: blur(${overlayBlurSize.value}px)`)
 
 const swiperRef = ref<InstanceType<typeof Swiper>>()
 const swiper = computed(() => {
@@ -106,7 +130,7 @@ onKeyStroke(['a', 'A', 'ArrowLeft'], previousItem)
 
 function openItem(i: number) {
   activeItemIndex.value = i
-  open.value = true
+  open()
 }
 
 function nextItem() {
@@ -151,8 +175,4 @@ function initLightbox() {
 }
 
 watchEffect(initLightbox)
-
-function close() {
-  open.value = false
-}
 </script>
