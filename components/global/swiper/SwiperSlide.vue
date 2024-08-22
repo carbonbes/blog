@@ -4,9 +4,9 @@
     v-intersection-observer="onIntersectionObserver"
   >
     <div
-      class="max-w-fit origin-top-left"
+      class="origin-top-left"
       :class="{ 'transition-[transform,width,height] duration-300': enabledTransformTransition && !screenIsResizing }"
-      :style="[slideContentWrapperTransform, croppedSize]"
+      :style="[slideContentWrapperTransform, slideContentWrapperSize]"
     >
       <img
         v-if="isImage"
@@ -112,8 +112,8 @@ const slideContentSize = computed(() =>
   calculateMaxSize(
     props.item.width,
     props.item.height,
-    Math.min(props.item.width, screenWidth.value),
-    Math.min(props.item.height, screenHeight.value)
+    screenWidth.value,
+    screenHeight.value
   )
 )
 
@@ -125,11 +125,8 @@ const croppedHeight = ref(0)
 const enabledTransformTransition = ref(false)
 const isMounted = ref(false)
 
-const slideContentWrapperTransform = computed(() => {
-  return `transform: translate(${translateX.value}px, ${translateY.value}px)`
-})
-
-const croppedSize = computed(() => `width: ${croppedWidth.value}px; height: ${croppedHeight.value}px`)
+const slideContentWrapperTransform = computed(() => `transform: translate(${translateX.value}px, ${translateY.value}px)`)
+const slideContentWrapperSize = computed(() => `width: ${croppedWidth.value}px; height: ${croppedHeight.value}px`)
 
 async function close() {
   if (!isMounted.value) return
@@ -151,12 +148,13 @@ async function playOpenAnimation() {
 
   translateX.value = (screenWidth.value / 2) - (slideContentSize.value.width / 2)
   translateY.value = (screenHeight.value / 2) - (slideContentSize.value.height / 2)
-  croppedWidth.value = Math.max(slideThumbnailBounding.width.value, slideContentSize.value.width)
-  croppedHeight.value = Math.max(slideThumbnailBounding.height.value, slideContentSize.value.height)
+  croppedWidth.value = slideContentSize.value.width
+  croppedHeight.value = slideContentSize.value.height
 
   await promiseTimeout(300)
   
   enabledTransformTransition.value = false
+  isMounted.value = true
 }
 
 async function playCloseAnimation() {
@@ -188,7 +186,6 @@ function recalculateTransform() {
 onMounted(async () => {
   setSlideControlsRefs()
   await playOpenAnimation()
-  isMounted.value = true
 })
 
 watchEffect(recalculateTransform)
