@@ -1,7 +1,8 @@
 <template>
   <div
-    class="swiper-slide"
+    class="swiper-slide touch-none"
     v-intersection-observer="onIntersectionObserver"
+    ref="slideRef"
   >
     <div
       class="origin-top-left"
@@ -13,14 +14,14 @@
         :src="item.src"
         :alt="item.alt"
         loading="lazy"
-        class="w-full h-full max-h-screen object-cover object-center touch-none"
+        class="w-full h-full max-h-screen object-cover object-center"
         ref="slideContentRef"
       />
 
       <video
         v-else
         :src="item.src"
-        class="w-full h-full max-w-[1000px] max-h-screen bg-black aspect-video touch-none"
+        class="w-full h-full max-w-[1000px] max-h-screen bg-black aspect-video"
         controls
         muted
         playsinline
@@ -78,23 +79,6 @@ onClickOutside(
 )
 
 onKeyStroke('Escape', close)
-
-useDragGesture(slideContentRef, (state) => {
-  if (!slideContentRef.value || props.swiper.animating) return
-
-  const { movement: [, y] } = state
-
-  slideContentRef.value.style.transform = `translateY(${y}px)`
-}, { axis: 'y', delay: true })
-
-function stopVideo() {
-  if (!slideContentRef.value) return
-
-  const el = slideContentRef.value as HTMLVideoElement
-  
-  el.pause()
-  el.currentTime = 0
-}
 
 const onIntersectionObserver = [async ([{ isIntersecting }]: IntersectionObserverEntry[]) => {
   if (isImage.value || screenIsResizing.value) return
@@ -184,4 +168,25 @@ onMounted(async () => {
 })
 
 watchEffect(recalculateTransform)
+
+const slideRef = ref()
+
+useDragGesture(slideRef, (state) => {
+  if (!slideRef.value || props.swiper.animating) return
+
+  const { active, movement: [, y] } = state
+
+  translateY.value = (screenHeight.value / 2) - (slideContentSize.value.height / 2) + y
+
+  if (Math.abs(y) >= 100 && !active) close()
+}, { axis: 'y', delay: true })
+
+function stopVideo() {
+  if (!slideContentRef.value) return
+
+  const el = slideContentRef.value as HTMLVideoElement
+  
+  el.pause()
+  el.currentTime = 0
+}
 </script>
