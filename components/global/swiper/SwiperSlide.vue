@@ -6,10 +6,12 @@
   >
     <div
       class="origin-top-left"
-      :class="{ 'transition-[transform,width,height] duration-300': enabledTransformTransition && !screenIsResizing }"
+      :class="{
+        'transition-[transform,width,height] duration-300': enabledTransformTransition && !screenIsResizing
+      }"
       :style="[slideContentWrapperTransform, slideContentWrapperSize]"
     >
-      <img
+      <NuxtImg
         v-if="isImage"
         :src="item.src"
         :alt="item.alt"
@@ -21,7 +23,7 @@
       <video
         v-else
         :src="item.src"
-        class="w-full h-full max-w-[1000px] max-h-screen bg-black aspect-video"
+        class="w-full h-full bg-black aspect-video"
         controls
         muted
         playsinline
@@ -101,11 +103,12 @@ const onIntersectionObserver = [async ([{ isIntersecting }]: IntersectionObserve
 
 const slideThumbnailBounding = useElementBounding(props.thumbnail)
 const slideContentSize = computed(() =>
-  calculateMaxSize(
+  calculateSize(
     props.item.width,
     props.item.height,
-    Math.min(props.item.width, screenWidth.value),
-    Math.min(props.item.height, screenHeight.value)
+    Math.min(!isImage.value ? 1000 : props.item.width, screenWidth.value),
+    Math.min(props.item.height, screenHeight.value),
+    !isImage.value ? 16/9 : undefined
   )
 )
 

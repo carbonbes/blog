@@ -51,11 +51,24 @@ const data = {
                   "type": "image"
                 },
                 {
-                  "url": "https://res.cloudinary.com/dkmur8a20/image/upload/v1723893274/oqh6vv5m5fz1avsyjxph.jpg",
+                  "url": "https://res.cloudinary.com/dkmur8a20/video/upload/v1723893533/r9waskk3sbixvyzffdqh.mp4",
+                  "thumbnail": "https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/r9waskk3sbixvyzffdqh.mp4",
+                  "width": 1080,
+                  "height": 1080,
+                  "type": "video"
+                },
+                {
+                  "url": "https://res.cloudinary.com/dkmur8a20/image/upload/v1723893274/xy9jul1tvbzqnn4kuz4l.jpg",
                   "width": 1280,
-                  "height": 853,
+                  "height": 1280,
                   "type": "image"
-                }
+                },
+                {
+                  "url": "https://res.cloudinary.com/dkmur8a20/image/upload/v1723893274/qt7pkcobezexxcper1pi.jpg",
+                  "width": 1200,
+                  "height": 675,
+                  "type": "image"
+                },
               ],
               "published": 1723727190000,
               "type": "telegram",
