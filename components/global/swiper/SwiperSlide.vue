@@ -107,13 +107,8 @@ const onIntersectionObserver = [async ([{ isIntersecting }]: IntersectionObserve
   else stopVideo()
 }, { threshold: 1 }]
 
-const slideThumbnailTop = computed(() => props.thumbnail.getBoundingClientRect().top)
-const slideThumbnailLeft = computed(() => props.thumbnail.getBoundingClientRect().left)
-const slideThumbnailWidth = computed(() => props.thumbnail.getBoundingClientRect().width)
-const slideThumbnailHeight = computed(() => props.thumbnail.getBoundingClientRect().height)
-const slideContentWidth = computed(() => slideContentRef.value?.offsetWidth!)
-const slideContentHeight = computed(() => slideContentRef.value?.offsetHeight!)
-const slideContentRealSizes = computed(() =>
+const slideThumbnailBounding = useElementBounding(props.thumbnail)
+const slideContentSize = computed(() =>
   calculateMaxSize(
     props.item.width,
     props.item.height,
@@ -130,12 +125,11 @@ const croppedHeight = ref(0)
 const enabledTransformTransition = ref(false)
 const isMounted = ref(false)
 
-const slideContentWrapperTransform = computed(() => `transform: translate(${translateX.value}px, ${translateY.value}px)`)
-const croppedSize = computed(() => {
-  if (enabledTransformTransition.value) {
-    return `width: ${croppedWidth.value}px; height: ${croppedHeight.value}px`
-  } else return `width: auto; height: auto`
+const slideContentWrapperTransform = computed(() => {
+  return `transform: translate(${translateX.value}px, ${translateY.value}px)`
 })
+
+const croppedSize = computed(() => `width: ${croppedWidth.value}px; height: ${croppedHeight.value}px`)
 
 async function close() {
   if (!isMounted.value) return
@@ -146,23 +140,23 @@ async function close() {
 }
 
 async function playOpenAnimation() {
-  translateX.value = slideThumbnailLeft.value
-  translateY.value = slideThumbnailTop.value
-  croppedWidth.value = slideThumbnailWidth.value
-  croppedHeight.value = slideThumbnailHeight.value
+  translateX.value = slideThumbnailBounding.left.value
+  translateY.value = slideThumbnailBounding.top.value
+  croppedWidth.value = slideThumbnailBounding.width.value
+  croppedHeight.value = slideThumbnailBounding.height.value
 
   await nextTick()
 
   enabledTransformTransition.value = props.isActiveSlide ? true : false
 
-  translateX.value = (screenWidth.value / 2) - (slideContentWidth.value / 2)
-  translateY.value = (screenHeight.value / 2) - (slideContentHeight.value / 2)
-  croppedWidth.value = Math.max(slideThumbnailWidth.value, slideContentRealSizes.value.width)
-  croppedHeight.value = Math.max(slideThumbnailHeight.value, slideContentRealSizes.value.height)
+  translateX.value = (screenWidth.value / 2) - (slideContentSize.value.width / 2)
+  translateY.value = (screenHeight.value / 2) - (slideContentSize.value.height / 2)
+  croppedWidth.value = Math.max(slideThumbnailBounding.width.value, slideContentSize.value.width)
+  croppedHeight.value = Math.max(slideThumbnailBounding.height.value, slideContentSize.value.height)
 
-  // await promiseTimeout(300)
+  await promiseTimeout(300)
   
-  // enabledTransformTransition.value = false
+  enabledTransformTransition.value = false
 }
 
 async function playCloseAnimation() {
@@ -172,10 +166,10 @@ async function playCloseAnimation() {
 
   enabledTransformTransition.value = props.isActiveSlide ? true : false
 
-  translateX.value = slideThumbnailLeft.value
-  translateY.value = slideThumbnailTop.value
-  croppedWidth.value = slideThumbnailWidth.value
-  croppedHeight.value = slideThumbnailHeight.value
+  translateX.value = slideThumbnailBounding.left.value
+  translateY.value = slideThumbnailBounding.top.value
+  croppedWidth.value = slideThumbnailBounding.width.value
+  croppedHeight.value = slideThumbnailBounding.height.value
 }
 
 function recalculateTransform() {
