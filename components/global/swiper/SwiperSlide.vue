@@ -38,7 +38,6 @@ import type Swiper from 'swiper'
 import { promiseTimeout } from '@vueuse/core'
 
 const props = defineProps<{
-  index: number
   item: Item
   thumbnail: HTMLElement
   isActiveSlide: boolean
@@ -80,6 +79,15 @@ onClickOutside(
 
 onKeyStroke('Escape', close)
 
+function stopVideo() {
+  if (!slideContentRef.value) return
+
+  const el = slideContentRef.value as HTMLVideoElement
+  
+  el.pause()
+  el.currentTime = 0
+}
+
 const onIntersectionObserver = [async ([{ isIntersecting }]: IntersectionObserverEntry[]) => {
   if (isImage.value || screenIsResizing.value) return
 
@@ -96,8 +104,8 @@ const slideContentSize = computed(() =>
   calculateMaxSize(
     props.item.width,
     props.item.height,
-    screenWidth.value,
-    screenHeight.value
+    Math.min(props.item.width, screenWidth.value),
+    Math.min(props.item.height, screenHeight.value)
   )
 )
 
@@ -172,29 +180,22 @@ watchEffect(recalculateTransform)
 const slideRef = ref()
 
 useDragGesture(slideRef, async (state) => {
-  if (!slideRef.value || props.swiper.animating) return
+  if (!(slideRef.value || props.isActiveSlide) || props.swiper.animating) return
 
   const { active, movement: [, y] } = state
 
   const initialTranslateY = (screenHeight.value / 2) - (slideContentSize.value.height / 2)
   translateY.value = initialTranslateY + y
 
-  if (Math.abs(y) >= 100 && !active) {
-    close()
-  } else if (Math.abs(y) < 100 && !active) {
-    enabledTransformTransition.value = true
-    translateY.value = initialTranslateY
-    await promiseTimeout(300)
-    enabledTransformTransition.value = false
+  if (!active) {
+    if (Math.abs(y) >= 100) {
+      close()
+    } else {
+      enabledTransformTransition.value = true
+      translateY.value = initialTranslateY
+      await promiseTimeout(300)
+      enabledTransformTransition.value = false
+    }
   }
 }, { axis: 'y', delay: true })
-
-function stopVideo() {
-  if (!slideContentRef.value) return
-
-  const el = slideContentRef.value as HTMLVideoElement
-  
-  el.pause()
-  el.currentTime = 0
-}
 </script>
