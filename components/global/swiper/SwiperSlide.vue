@@ -171,14 +171,22 @@ watchEffect(recalculateTransform)
 
 const slideRef = ref()
 
-useDragGesture(slideRef, (state) => {
+useDragGesture(slideRef, async (state) => {
   if (!slideRef.value || props.swiper.animating) return
 
   const { active, movement: [, y] } = state
 
-  translateY.value = (screenHeight.value / 2) - (slideContentSize.value.height / 2) + y
+  const initialTranslateY = (screenHeight.value / 2) - (slideContentSize.value.height / 2)
+  translateY.value = initialTranslateY + y
 
-  if (Math.abs(y) >= 100 && !active) close()
+  if (Math.abs(y) >= 100 && !active) {
+    close()
+  } else if (Math.abs(y) < 100 && !active) {
+    enabledTransformTransition.value = true
+    translateY.value = initialTranslateY
+    await promiseTimeout(300)
+    enabledTransformTransition.value = false
+  }
 }, { axis: 'y', delay: true })
 
 function stopVideo() {
