@@ -11,7 +11,7 @@
     ]"
     v-bind="{ ...$attrs, ...lightboxAttrs }"
     ref="imgRef"
-    @click="setItems({ target: imgRef?.$el, zoomable, lightboxItem })"
+    @click="setItems({ target: imgRef?.$el, zoomable, lightboxItem, parent })"
   />
 </template>
 
@@ -30,6 +30,7 @@ const props = withDefaults(
     rounded?: string
     zoomable?: boolean
     lightboxItem?: boolean
+    parent?: HTMLElement
   }>(),
   {
     alt: '',

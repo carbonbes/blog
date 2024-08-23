@@ -69,6 +69,7 @@ const props = withDefaults(
     muted?: boolean
     zoomable?: boolean
     lightboxItem?: boolean
+    parent?: HTMLElement
   }>(),
   {
     type: 'video',
@@ -102,7 +103,8 @@ function onThumbnailClick() {
     setItems({
       target: thumbnailRef.value?.$el,
       zoomable: props.zoomable,
-      lightboxItem:props.lightboxItem
+      lightboxItem:props.lightboxItem,
+      parent: props.parent
     })
   } else {
     isPlaying.value = true
