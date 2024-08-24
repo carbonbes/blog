@@ -100,6 +100,7 @@ function open() {
 async function close() {
   overlayBg.value = 'rgba(0, 0, 0, 0)'
   overlayBlurSize.value = 0
+  overlayPointerEvents.value = 'none'
   await promiseTimeout(300)
   isOpen.value = false
 }
@@ -111,7 +112,8 @@ function onOverlayOpen() {
 
 const overlayBg = ref('')
 const overlayBlurSize = ref(0)
-const dialogOverlayStyles = computed(() => `background-color: ${overlayBg.value}; backdrop-filter: blur(${overlayBlurSize.value}px)`)
+const overlayPointerEvents = ref('auto')
+const dialogOverlayStyles = computed(() => `background-color: ${overlayBg.value}; backdrop-filter: blur(${overlayBlurSize.value}px); pointer-events: ${overlayPointerEvents.value}`)
 
 const swiperRef = ref<InstanceType<typeof Swiper>>()
 const swiper = computed(() => {
