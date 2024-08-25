@@ -1,8 +1,6 @@
 import Dialog from '~/components/global/Dialog.vue'
 
-export default function useEditorDialog(dialogRef?: Ref<InstanceType<typeof Dialog>>) {
-  const scrollIsLocked = useState('scroll-is-locked', () => false)
-
+export default function useEditorDialog(dialogRef?: Ref<InstanceType<typeof Dialog> | undefined>) {
   const router = useRouter()
   const route = useRoute()
 
@@ -19,16 +17,14 @@ export default function useEditorDialog(dialogRef?: Ref<InstanceType<typeof Dial
   }
 
   function setOpen(value: boolean) {
-    if (value) open()
-    else close()
+    value ? open() : close()
   }
 
   watchEffect(() => {
     if (!dialogRef?.value) return
 
-    if (route.query.dialog === 'editor') dialogRef.value?.setOpen(true)
-    else dialogRef.value?.setOpen(false)
+    dialogRef.value.setOpen(route.query.dialog === 'editor')
   })
 
-  return { setOpen, scrollIsLocked }
+  return { setOpen }
 }

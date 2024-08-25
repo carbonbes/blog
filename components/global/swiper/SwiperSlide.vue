@@ -182,23 +182,30 @@ watchEffect(recalculateTransform)
 
 const slideRef = ref()
 
-useDragGesture(slideRef, async (state) => {
-  if (!(slideRef.value || props.isActiveSlide) || props.swiper.animating) return
+useDragGesture(slideRef,
+  {
+    async onDrag(state) {
+      if (!(slideRef.value || props.isActiveSlide) || props.swiper.animating) return
 
-  const { active, movement: [, y] } = state
+      const { active, movement: [, y] } = state
 
-  const initialTranslateY = (screenHeight.value / 2) - (slideContentSize.value.height / 2)
-  translateY.value = initialTranslateY + y
+      const initialTranslateY = (screenHeight.value / 2) - (slideContentSize.value.height / 2)
+      translateY.value = initialTranslateY + y
 
-  if (!active) {
-    if (Math.abs(y) >= 100) {
-      close()
-    } else {
-      enabledTransformTransition.value = true
-      translateY.value = initialTranslateY
-      await promiseTimeout(300)
-      enabledTransformTransition.value = false
+      if (!active) {
+        if (Math.abs(y) >= 100) {
+          close()
+        } else {
+          enabledTransformTransition.value = true
+          translateY.value = initialTranslateY
+          await promiseTimeout(300)
+          enabledTransformTransition.value = false
+        }
+      }
     }
+  },
+  {
+    axis: 'y'
   }
-}, { axis: 'y', delay: true })
+)
 </script>

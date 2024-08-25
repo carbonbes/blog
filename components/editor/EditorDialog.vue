@@ -1,6 +1,6 @@
 <template>
   <Dialog :class="editorDialogClasses" @close="setOpen(false)" ref="dialogRef">
-    <Editor :data :disableScroll="scrollIsLocked" />
+    <Editor :data />
 
     <template #footer>
       <EditorPanel />
@@ -13,7 +13,7 @@ import type Dialog from '~/components/global/Dialog.vue'
 
 const dialogRef = ref<InstanceType<typeof Dialog>>()
 
-const { setOpen, scrollIsLocked } = useEditorDialog(dialogRef)
+const { setOpen } = useEditorDialog(dialogRef)
 
 const data = {
   type: 'doc',

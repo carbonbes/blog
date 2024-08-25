@@ -1,5 +1,5 @@
 import {
-  DragGesture,
+  Gesture,
   type FullGestureState,
   type UserDragConfig,
 } from '@use-gesture/vanilla'
@@ -8,28 +8,63 @@ type DragState = Omit<FullGestureState<'drag'>, 'event'> & {
   event: PointerEvent | MouseEvent | TouchEvent | KeyboardEvent
 }
 
+type DragHandlers = {
+  onDrag?: (state: DragState) => void
+  onDragStart?: (state: DragState) => void
+  onDragEnd?: (state: DragState) => void
+}
+
+type DragOptions = UserDragConfig & {
+  onlyTouchDevices?: boolean
+}
+
 export default function useDragGesture(
   target: Ref<MaybeRef>,
-  callback: (state: DragState) => void,
-  options?: UserDragConfig
+  handlers: DragHandlers,
+  options?: DragOptions
 ) {
-  const gesture = useState<DragGesture | null>('gesture', () => null)
+  const gesture = useState<Gesture | null>('gesture', () => null)
+
+  function isAllowedEventType(event: Event): boolean {
+    if (options?.onlyTouchDevices) {
+      return (event as PointerEvent).pointerType === 'touch'
+    }
+
+    return true
+  }
+
+  function createEventHandler(handler?: (state: DragState) => void) {
+    return (state: DragState) => {
+      if (isAllowedEventType(state.event)) {
+        handler?.(state)
+      }
+    }
+  }
 
   watchEffect(() => {
     if (!target.value) return
 
+    const { onDrag, onDragStart, onDragEnd } = handlers
+
     const el = (target.value.$el || target.value) as EventTarget
 
-    gesture.value = new DragGesture(
+    gesture.value = new Gesture(
       el,
-      (dragState) => {
-        callback(dragState)
+      {
+        onDrag: createEventHandler(onDrag),
+        onDragStart: createEventHandler(onDragStart),
+        onDragEnd: createEventHandler(onDragEnd),
       },
       {
-        axis: options?.axis || 'x',
+        drag: options,
       }
     )
   })
 
-  onUnmounted(() => gesture.value?.destroy())
+  onUnmounted(() => {
+    if (gesture.value) {
+      gesture.value.destroy()
+      gesture.value = null
+    }
+  })
 }

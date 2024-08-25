@@ -24,9 +24,9 @@
     </Flex>
 
     <Flex
-      class="relative w-full"
+      class="relative w-full touch-pan-y"
       :class="{ 'transition-transform': !isSwiping }"
-      :style="{ transform: transformX }"
+      :style="nodeContentStyles"
       ref="nodeContentRef"
     >
       <Flex
@@ -115,8 +115,11 @@ import NodeActionsButton from '~/components/editor/nodes/root-node/NodeActionsBu
 import NodesListBottomsheet from '~/components/editor/nodes/root-node/NodesListBottomsheet.vue'
 import NodeActionsBottomsheet from '~/components/editor/nodes/root-node/NodeActionsBottomsheet.vue'
 import type { HeadingLevel, NodeType } from '~/types'
+import type Flex from '~/components/global/Flex.vue'
 
 const props = defineProps<NodeViewProps>()
+
+const isSwiping = ref(false)
 
 const nodeSelected = ref(false)
 
@@ -161,7 +164,7 @@ const nodeClasses = computed(() => ({
   ['heading-' + props.node.content.content[0].attrs.level]: props.node.content.content[0].type.name === 'heading',
 }))
 
-const nodeContentRef = ref<HTMLDivElement>()
+const nodeContentRef = ref<InstanceType<typeof Flex>>()
 const nodesListBSRef = ref<InstanceType<typeof NodesListBottomsheet>>()
 const nodeActionsBSRef = ref<InstanceType<typeof NodesListBottomsheet>>()
 
@@ -259,64 +262,62 @@ function onOpen(value: boolean) {
 
 function onClose() {
   props.editor.commands.blur()
-  resetTransformX()
+  resetTranslateX()
 }
 
-const transformX = ref('0')
+const translateX = ref(0)
 
-function resetTransformX() {
-  transformX.value = 'translateX(0)'
+function resetTranslateX() {
+  translateX.value = 0
 }
 
-const { scrollIsLocked } = useEditorDialog()
+const nodeContentStyles = computed(() => `transform: translateX(${translateX.value}px)`)
 
-const { isSwiping, direction, lengthX } = useSwipe(nodeContentRef, {
-  onSwipe() {
-    if (!selectionIsEmpty.value) return
+useDragGesture(nodeContentRef,
+  {
+    onDrag(state) {
+      if (!selectionIsEmpty.value) return
 
-    if (['left', 'right'].includes(direction.value)) {
-      scrollIsLocked.value = true
-    }
+      const { movement: [x] } = state
 
-    if (direction.value === 'right') {
-      if (lengthX.value < 0) {
-        const value = Math.abs(lengthX.value)
-        transformX.value = `translateX(${value}px)`
-      } else {
-        resetTransformX()
+      isSwiping.value = true
+      translateX.value = x
+    },
+
+    onDragEnd(state) {
+      if (!selectionIsEmpty.value) return
+
+      const { movement: [x], direction: [xDir] } = state
+
+      const { clientWidth: nodeContentElWidth } = nodeContentRef.value?.$el as HTMLElement
+
+      isSwiping.value = false
+
+      const dir = xDir > 0 ? 'right' : xDir < 0 ? 'left' : undefined
+
+      if (dir === 'right') {
+        if (x > 0 && Math.abs(x) / nodeContentElWidth >= 0.25) {
+          resetTranslateX()
+          nodesListBSRef.value?.setOpen(true)
+        } else {
+          resetTranslateX()
+        }
+      } else if (dir === 'left') {
+        if (x < 0 && Math.abs(x) / nodeContentElWidth >= 0.25) {
+          resetTranslateX()
+          nodeActionsBSRef.value?.setOpen(true)
+        } else {
+          resetTranslateX()
+        }
       }
-    } else {
-      if (lengthX.value > 0) {
-        const value = Math.abs(lengthX.value)
-        transformX.value = `translateX(-${value}px)`
-      } else {
-        resetTransformX()
-      }
-    }
+    },
   },
-
-  onSwipeEnd() {
-    if (!selectionIsEmpty.value) return
-
-    scrollIsLocked.value = false
-
-    const el = nodeContentRef.value?.$el as HTMLElement
-
-    if (direction.value === 'right') {
-      if (lengthX.value < 0 && el.clientWidth && (Math.abs(lengthX.value) / el.clientWidth) >= 0.25) {
-        resetTransformX()
-        nodesListBSRef.value?.setOpen(true)
-      } else {
-        resetTransformX()
-      }
-    } else {
-      if (lengthX.value > 0 && el.clientWidth && (Math.abs(lengthX.value) / el.clientWidth) >= 0.25) {
-        resetTransformX()
-        nodeActionsBSRef.value?.setOpen(true)
-      } else {
-        resetTransformX()
-      }
-    }
-  },
-})
+  {
+    axis: 'x',
+    bounds: { left: -150, right: 150 },
+    rubberband: true,
+    from: [0, 0],
+    onlyTouchDevices: true
+  }
+)
 </script>
