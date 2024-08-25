@@ -41,12 +41,12 @@ export default function useDragGesture(
     }
   }
 
-  watchEffect(() => {
+  function init() {
     if (!target.value) return
 
-    const { onDrag, onDragStart, onDragEnd } = handlers
-
     const el = (target.value.$el || target.value) as EventTarget
+    
+    const { onDrag, onDragStart, onDragEnd } = handlers
 
     gesture.value = new Gesture(
       el,
@@ -59,12 +59,7 @@ export default function useDragGesture(
         drag: options,
       }
     )
-  })
+  }
 
-  onUnmounted(() => {
-    if (gesture.value) {
-      gesture.value.destroy()
-      gesture.value = null
-    }
-  })
+  onMounted(init)
 }
