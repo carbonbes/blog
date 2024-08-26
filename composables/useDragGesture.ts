@@ -16,6 +16,7 @@ type DragHandlers = {
 
 type DragOptions = UserDragConfig & {
   onlyTouchDevices?: boolean
+  manualInit?: boolean
 }
 
 export default function useDragGesture(
@@ -41,7 +42,9 @@ export default function useDragGesture(
     }
   }
 
-  function init() {
+  async function init() {
+    await nextTick()
+
     if (!target.value) return
 
     const el = (target.value.$el || target.value) as EventTarget
@@ -61,5 +64,11 @@ export default function useDragGesture(
     )
   }
 
-  onMounted(init)
+  onMounted(() => {
+    if (options?.manualInit) return
+
+    init()
+  })
+
+  return { init }
 }

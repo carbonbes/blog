@@ -7975,6 +7975,11 @@ vue-demi@>=0.13.0, vue-demi@>=0.14.7:
   resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.14.7.tgz#8317536b3ef74c5b09f268f7782e70194567d8f2"
   integrity sha512-EOG8KXDQNwkJILkx/gPcoL/7vH+hORoBaKgGe+6W7VFMvCYJfmF2dGbvgDroVnI8LU7/kTu8mbjRZGBU1z9NTA==
 
+vue-demi@latest:
+  version "0.14.10"
+  resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.14.10.tgz#afc78de3d6f9e11bf78c55e8510ee12814522f04"
+  integrity sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==
+
 vue-devtools-stub@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/vue-devtools-stub/-/vue-devtools-stub-0.1.0.tgz#a65b9485edecd4273cedcb8102c739b83add2c81"
@@ -7996,6 +8001,13 @@ vue-router@^4.3.0:
   integrity sha512-hKQJ1vDAZ5LVkKEnHhmm1f9pMiWIBNGF5AwU67PdH7TyXCj/a4hTccuUuYCAMgJK6rO/NVYtQIEN3yL8CECa7Q==
   dependencies:
     "@vue/devtools-api" "^6.5.1"
+
+vue-use-spring@^0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/vue-use-spring/-/vue-use-spring-0.3.3.tgz#7333a62e0c7c436314e616efbc9cf226e3e9ded7"
+  integrity sha512-738mdx7XwDHrmP22T5SqKltKTRfvjHS0D/4p9XEuxgUE/gYDC/PqlxUTnRtG3i05oT1cwwU1e9ZNLsxDbJJVvw==
+  dependencies:
+    vue-demi latest
 
 vue-virtual-scroller@2.0.0-beta.8:
   version "2.0.0-beta.8"
