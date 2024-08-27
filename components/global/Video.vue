@@ -70,6 +70,7 @@ const props = withDefaults(
     zoomable?: boolean
     lightboxItem?: boolean
     parent?: HTMLElement
+    ignoreThumbnailClick?: boolean
   }>(),
   {
     type: 'video',
@@ -99,6 +100,8 @@ const { setItems } = useLightboxDialog()
 const thumbnailRef = ref<InstanceType<typeof Flex>>()
 
 function onThumbnailClick() {
+  if (props.ignoreThumbnailClick) return
+
   if (props.zoomable || props.lightboxItem) {
     setItems({
       target: thumbnailRef.value?.$el,

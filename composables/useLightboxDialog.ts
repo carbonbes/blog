@@ -8,20 +8,20 @@ export default function useLightboxDialog() {
     lightboxItem,
   }: {
     parent?: HTMLElement
-    target: HTMLElement
+    target: HTMLElement | undefined
     zoomable?: boolean
     lightboxItem?: boolean
   }) {
     if (!(zoomable || lightboxItem)) return
 
     items.value = zoomable
-      ? [target]
+      ? [target!]
       : Array.from(parent
         ? parent.querySelectorAll('[data-lightbox-item]')!
-        : target.parentNode?.querySelectorAll('[data-lightbox-item]')!
+        : target?.parentNode?.querySelectorAll('[data-lightbox-item]')!
       )
 
-    target.dataset.wasClicked = ''
+    target!.dataset.wasClicked = ''
   }
 
   return { items, setItems }
