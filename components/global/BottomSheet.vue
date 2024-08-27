@@ -137,13 +137,11 @@ const canDialogContentScroll = computed(() => {
   return scrollHeight > clientHeight
 })
 
-const dialogContentScrollTop = ref(0)
-
 const { y } = useScroll(dialogScrollableContentRef, {
   onScroll() {
     console.log('scrolling')
     state.isScrolling = true
-    dialogContentScrollTop.value = y.value
+    state.scrollTop = y.value
   },
 
   async onStop() {
@@ -162,16 +160,19 @@ const { init: dialogContentDragGestureInit } = useDragGesture(dialogScrollableCo
     onDrag(gestureState) {
       state.isSwiping = true
 
-      const { direction: [, yDirection] } = gestureState
+      const { direction: [, yDirection], cancel } = gestureState
 
       const direction =
         yDirection > 0 ? 'down' : yDirection < 0 ? 'top' : undefined
 
       if (
-        (canDialogContentScroll.value && dialogContentScrollTop.value === 0 && direction === 'top')
-        || (canDialogContentScroll.value && dialogContentScrollTop.value > 0 && direction === 'down')
+        (canDialogContentScroll.value && state.scrollTop === 0 && direction === 'top')
+        || (canDialogContentScroll.value && state.scrollTop > 0 && direction === 'down')
         || state.isScrolling
-      ) return
+      ) {
+        cancel()
+        return
+      }
 
       console.log('dragging')
 

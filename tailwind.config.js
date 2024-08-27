@@ -6,7 +6,9 @@ export default {
     hoverOnlyWhenSupported: true,
   },
 
-  content: [],
+  content: [
+    "./src/**/*.{html,js,ts,vue}"
+  ],
 
   theme: {
     extend: {
