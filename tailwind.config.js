@@ -44,11 +44,9 @@ export default {
         },
         'fade-in-bottom-side': {
           '0%': { transform: 'translateY(100%)' },
-          '20%': { transform: 'translateY(80px)' },
-          '40%': { transform: 'translateY(50px)' },
-          '60%': { transform: 'translateY(62px)' },
-          '80%': { transform: 'translateY(60px)' },
-          '100%': { transform: 'translateY(60px)' },
+          '40%': { transform: 'translateY(-2.5%)' },
+          '80%': { transform: 'translateY(1%)' },
+          '100%': { transform: 'translateY(0%)' },
         },
         'fade-in-left-side': {
           '0%': { transform: 'translateX(-100%)' },

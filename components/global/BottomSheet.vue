@@ -5,36 +5,34 @@
         <DialogOverlay class="fixed inset-0 bg-black/50 backdrop-blur-sm" />
       </FadeInOpacityTransition>
 
-      <FadeInSideTransition>
-        <DialogContent
-          aria-describedby=""
-          class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen w-full h-[75vh] max-h-full flex flex-col bg-white rounded-t-2xl"
-          :style="dialogContentStyles"
-          v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
+      <DialogContent
+        aria-describedby=""
+        class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen w-full h-[75vh] max-h-full flex flex-col bg-white rounded-t-2xl"
+        :style="dialogContentStyles"
+        v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
+      >
+        <VisuallyHidden>
+          <DialogTitle />
+        </VisuallyHidden>
+
+        <Flex
+          itemsCenter
+          class="p-4 h-12 touch-none"
+          ref="dialogContentHeaderRef"
         >
-          <VisuallyHidden>
-            <DialogTitle />
-          </VisuallyHidden>
+          <div class="absolute left-1/2 -translate-x-1/2 w-10 h-1 bg-gray-400 rounded-full" />
+          <slot name="header" />
+        </Flex>
 
-          <Flex
-            itemsCenter
-            class="p-4 h-12 touch-none"
-            ref="dialogContentHeaderRef"
-          >
-            <div class="absolute left-1/2 -translate-x-1/2 w-10 h-1 bg-gray-400 rounded-full" />
-            <slot name="header" />
-          </Flex>
-
-          <div
-            class="px-4 touch-pan-y overflow-auto overscroll-y-none"
-            ref="dialogScrollableContentRef"
-            @touchstart="dialogScrollableContentIsHovered = true"
-            @touchend="dialogScrollableContentIsHovered = false"
-          >
-            <slot />
-          </div>
-        </DialogContent>
-      </FadeInSideTransition>
+        <div
+          class="px-4 touch-pan-y overflow-auto overscroll-y-none"
+          ref="dialogScrollableContentRef"
+          @touchstart="dialogScrollableContentIsHovered = true"
+          @touchend="dialogScrollableContentIsHovered = false"
+        >
+          <slot />
+        </div>
+      </DialogContent>
     </DialogPortal>
   </DialogRoot>
 </template>
@@ -72,6 +70,12 @@ function resetState() {
   state.scrollTop = 0
   state.isSwiping = false
   translate.y = 0
+}
+
+const { height: screenHeight } = useWindowResizing()
+
+function setTranslateY() {
+  translate.y = (75 / screenHeight.value) * 100
 }
 
 async function onDragEndHandler(dragState: DragState) {
@@ -139,14 +143,12 @@ const canDialogContentScroll = computed(() => {
 
 const { y } = useScroll(dialogScrollableContentRef, {
   onScroll() {
-    console.log('scrolling')
     state.isScrolling = true
     state.scrollTop = y.value
   },
 
   async onStop() {
     await until(dialogScrollableContentIsHovered).toBe(false)
-    console.log('scroll end')
     state.isScrolling = false
   },
 })
@@ -174,16 +176,12 @@ const { init: dialogContentDragGestureInit } = useDragGesture(dialogScrollableCo
         return
       }
 
-      console.log('dragging')
-
       const { movement: [, movementY] } = gestureState
 
       translate.y = movementY
     },
 
     onDragEnd(gestureState) {
-      console.log('drag end')
-
       onDragEndHandler(gestureState)
     }
   },
@@ -206,6 +204,7 @@ watch(isOpen, (v) => {
   if (v) {
     dialogContentHeaderDragGestureInit()
     dialogContentDragGestureInit()
+    setTranslateY()
   } else if (!v) {
     emits('close')
     resetState()
