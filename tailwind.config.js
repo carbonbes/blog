@@ -42,8 +42,11 @@ export default {
         },
         'fade-in-bottom-side': {
           '0%': { transform: 'translateY(100%)' },
-          '70%': { transform: 'translateY(-5%)' },
-          '100%': { transform: 'translateY(0)' },
+          '20%': { transform: 'translateY(80px)' },
+          '40%': { transform: 'translateY(50px)' },
+          '60%': { transform: 'translateY(62px)' },
+          '80%': { transform: 'translateY(60px)' },
+          '100%': { transform: 'translateY(60px)' },
         },
         'fade-in-left-side': {
           '0%': { transform: 'translateX(-100%)' },
@@ -64,10 +67,10 @@ export default {
         previous: 'previous .25s',
         'previous-reverse': 'previous reverse .25s',
         notification: 'notification .25s ease',
-        'fade-in-top-side': 'fade-in-top-side .25s',
-        'fade-in-right-side': 'fade-in-right-side .25s',
-        'fade-in-bottom-side': 'fade-in-bottom-side .25s',
-        'fade-in-left-side': 'fade-in-left-side .25s',
+        'fade-in-top-side': 'fade-in-top-side',
+        'fade-in-right-side': 'fade-in-right-side',
+        'fade-in-bottom-side': 'fade-in-bottom-side',
+        'fade-in-left-side': 'fade-in-left-side',
         pulse: 'pulse infinite 3s'
       },
 

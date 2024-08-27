@@ -5,28 +5,36 @@
         <DialogOverlay class="fixed inset-0 bg-black/50 backdrop-blur-sm" />
       </FadeInOpacityTransition>
 
-      <DialogContent
-        aria-describedby=""
-        class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen w-full h-[75vh] max-h-full flex flex-col bg-white rounded-t-2xl"
-        :style="dialogContentStyles"
-        v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
-      >
-        <VisuallyHidden>
-          <DialogTitle />
-        </VisuallyHidden>
-
-        <Flex itemsCenter class="p-4 h-12">
-          <div class="absolute left-1/2 -translate-x-1/2 w-10 h-1 bg-gray-400 rounded-full" />
-          <slot name="header" />
-        </Flex>
-
-        <div
-          class="px-4 touch-pan-x overflow-auto"
-          ref="dialogScrollableContentRef"
+      <FadeInSideTransition>
+        <DialogContent
+          aria-describedby=""
+          class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen w-full h-[75vh] max-h-full flex flex-col bg-white rounded-t-2xl"
+          :style="dialogContentStyles"
+          v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
         >
-          <slot />
-        </div>
-      </DialogContent>
+          <VisuallyHidden>
+            <DialogTitle />
+          </VisuallyHidden>
+
+          <Flex
+            itemsCenter
+            class="p-4 h-12 touch-none"
+            ref="dialogContentHeaderRef"
+          >
+            <div class="absolute left-1/2 -translate-x-1/2 w-10 h-1 bg-gray-400 rounded-full" />
+            <slot name="header" />
+          </Flex>
+
+          <div
+            class="px-4 touch-pan-y overflow-auto overscroll-y-none"
+            ref="dialogScrollableContentRef"
+            @touchstart="dialogScrollableContentIsHovered = true"
+            @touchend="dialogScrollableContentIsHovered = false"
+          >
+            <slot />
+          </div>
+        </DialogContent>
+      </FadeInSideTransition>
     </DialogPortal>
   </DialogRoot>
 </template>
@@ -39,6 +47,7 @@ import {
   type DialogContentProps
 } from 'radix-vue'
 import { useSpring } from 'vue-use-spring'
+import type { DragState } from '~/composables/useDragGesture'
 
 const props = defineProps<DialogContentProps & {
   class?: string
@@ -52,44 +61,94 @@ const emits = defineEmits<DialogContentEmits & {
 const emitsAsProps = useEmitAsProps(emits)
 
 const state = reactive({
-  isScrollable: false,
   isScrolling: false,
   scrollTop: 0,
   scrollDirection: null,
   isSwiping: false,
-  touchStartY: 0,
-  touchEndY: 0,
-  touchDeltaY: 0,
 })
 
 function resetState() {
-  state.isScrollable = false
   state.isScrolling = false
   state.scrollTop = 0
   state.isSwiping = false
-  state.touchStartY = 0
-  state.touchEndY = 0
-  state.touchDeltaY = 0
   translate.y = 0
 }
 
+async function onDragEndHandler(dragState: DragState) {
+  state.isSwiping = false
+
+  const {
+    movement: [, movementY],
+    direction: [, directionY],
+  } = dragState
+
+  const direction =
+    directionY > 0 ? 'down' : directionY < 0 ? 'top' : undefined
+
+  if (direction === 'down') {
+    if (Math.abs(movementY) <= 150) {
+      translate.y = 0
+    } else {
+      setOpen(false)
+      translate.y = 0
+    }
+  } else {
+    translate.y = 0
+  }
+}
+
+const dialogContentHeaderRef = ref<HTMLDivElement>()
+
+const { init: dialogContentHeaderDragGestureInit } = useDragGesture(
+  dialogContentHeaderRef,
+  {
+    onDrag(gestureState) {
+      const {
+        movement: [, movementY],
+      } = gestureState
+
+      translate.y = movementY
+    },
+
+    onDragEnd(gestureState) {
+      onDragEndHandler(gestureState)
+    },
+  },
+  {
+    axis: 'y',
+    bounds: { top: 0 },
+    rubberband: [0, 0.125],
+    from: [0, 0],
+    filterTaps: true,
+    pointer: { touch: true },
+    manualInit: true,
+  }
+)
+
 const dialogScrollableContentRef = ref<HTMLDivElement>()
 
-const {
-  y,
-  isScrolling,
-  directions,
-} = useScroll(dialogScrollableContentRef, {
+const dialogScrollableContentIsHovered = ref(false)
+
+const canDialogContentScroll = computed(() => {
+  if (!dialogScrollableContentRef.value) return false
+
+  const { scrollHeight, clientHeight } = dialogScrollableContentRef.value
+
+  return scrollHeight > clientHeight
+})
+
+const dialogContentScrollTop = ref(0)
+
+const { y } = useScroll(dialogScrollableContentRef, {
   onScroll() {
     console.log('scrolling')
     state.isScrolling = true
-    state.scrollTop = y.value
-    state.scrollDirection = directions.top ? 'top' : directions.bottom ? 'bottom' : undefined
-
-    console.log(state.isScrolling)
+    dialogContentScrollTop.value = y.value
   },
 
-  onStop() {
+  async onStop() {
+    await until(dialogScrollableContentIsHovered).toBe(false)
+    console.log('scroll end')
     state.isScrolling = false
   },
 })
@@ -98,12 +157,19 @@ const translate = useSpring({ y: 0 })
 
 const dialogContentStyles = computed(() => `transform: translateY(${translate.y}px)`)
 
-const { init: dragGestureInit } = useDragGesture(dialogScrollableContentRef,
+const { init: dialogContentDragGestureInit } = useDragGesture(dialogScrollableContentRef,
   {
     onDrag(gestureState) {
+      state.isSwiping = true
+
+      const { direction: [, yDirection] } = gestureState
+
+      const direction =
+        yDirection > 0 ? 'down' : yDirection < 0 ? 'top' : undefined
+
       if (
-        state.isScrolling && state.scrollTop === 0 && state.scrollDirection === 'top'
-        || state.isScrolling && state.scrollTop > 0 && state.scrollDirection === 'bottom'
+        (canDialogContentScroll.value && dialogContentScrollTop.value === 0 && direction === 'top')
+        || (canDialogContentScroll.value && dialogContentScrollTop.value > 0 && direction === 'down')
         || state.isScrolling
       ) return
 
@@ -112,86 +178,34 @@ const { init: dragGestureInit } = useDragGesture(dialogScrollableContentRef,
       const { movement: [, movementY] } = gestureState
 
       translate.y = movementY
-      state.isSwiping = true
     },
 
     onDragEnd(gestureState) {
       console.log('drag end')
 
-      state.isSwiping = false
-
-      const { movement: [, movementY], direction: [, yDirection] } = gestureState
-
-      const dir = yDirection > 0 ? 'down' : yDirection < 0 ? 'top' : undefined
-
-      if (dir === 'down') {
-        translate.y = 0
-      }
+      onDragEndHandler(gestureState)
     }
   },
   {
     axis: 'y',
     bounds: { top: 0 },
-    rubberband: true,
+    rubberband: [0, 0.125],
     from: [0, 0],
+    filterTaps: true,
+    pointer: { touch: true },
     manualInit: true,
   }
 )
-
-/* function onTouchStart(e: TouchEvent) {
-  if (state.isScrolling) return
-
-  state.touchStartY = e.touches[0].clientY
-}
-
-function onTouchMove(e: TouchEvent) {
-  const direction = Math.abs(e.touches[0].clientY) - Math.abs(state.touchStartY) > 0 ? 'down' : 'up'
-
-  if ((state.isScrollable && state.scrollTop === 0 && direction === 'up') ||
-    (state.isScrollable && state.scrollTop > 0 && direction === 'down') ||
-    state.isScrolling
-  ) return
-
-  state.isSwiping = true
-  state.touchDeltaY = state.touchStartY - e.touches[0].clientY
-  state.touchEndY = e.touches[0].clientY
-
-  state.translateY = `translateY(${state.touchDeltaY * -1}px)`
-}
-
-function onTouchEnd() {
-  state.isSwiping = false
-
-  const direction = Math.abs(state.touchEndY) - Math.abs(state.touchStartY) > 0 ? 'down' : 'up'
-
-  if (direction === 'down') {
-    if (Math.abs(state.touchDeltaY) <= 150) {
-      state.translateY = ''
-    } else {
-      setOpen(false)
-      state.translateY = ''
-    }
-  } else {
-    state.translateY = ''
-  }
-}
-
-function onScroll() {
-  state.isScrolling = true
-}
-
-function onScrollEnd() {
-  state.isScrolling = false
-} */
 
 const isOpen = ref(false)
 
 watch(isOpen, (v) => {
   emits('isOpen', v)
 
-  if (v) dragGestureInit()
-
-  if (!v) {
+  if (v) {
+    dialogContentHeaderDragGestureInit()
+    dialogContentDragGestureInit()
+  } else if (!v) {
     emits('close')
     resetState()
   }

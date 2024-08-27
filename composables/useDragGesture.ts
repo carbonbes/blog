@@ -4,7 +4,7 @@ import {
   type UserDragConfig,
 } from '@use-gesture/vanilla'
 
-type DragState = Omit<FullGestureState<'drag'>, 'event'> & {
+export type DragState = Omit<FullGestureState<'drag'>, 'event'> & {
   event: PointerEvent | MouseEvent | TouchEvent | KeyboardEvent
 }
 
