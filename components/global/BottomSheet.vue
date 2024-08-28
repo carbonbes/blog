@@ -25,10 +25,11 @@
         </Flex>
 
         <div
-          class="px-4 touch-pan-y overflow-auto overscroll-y-none"
+          class="px-4 w-full h-full touch-pan-y overflow-y-auto"
+          :class="{ 'overflow-y-hidden': state.isSwiping }"
           ref="dialogScrollableContentRef"
-          @touchstart="dialogScrollableContentIsHovered = true"
-          @touchend="dialogScrollableContentIsHovered = false"
+          @touchstart="state.isHovered = true"
+          @touchend="state.isHovered = false"
         >
           <slot />
         </div>
@@ -45,7 +46,7 @@ import {
   type DialogContentProps
 } from 'radix-vue'
 import { useSpring } from 'vue-use-spring'
-import type { DragState } from '~/composables/useDragGesture'
+import type { DragGestureState } from '~/composables/useGesture'
 
 const props = defineProps<DialogContentProps & {
   class?: string
@@ -58,8 +59,11 @@ const emits = defineEmits<DialogContentEmits & {
 
 const emitsAsProps = useEmitAsProps(emits)
 
+const isOpen = ref(false)
+
 const state = reactive({
   isScrolling: false,
+  isHovered: false,
   scrollTop: 0,
   scrollDirection: null,
   isSwiping: false,
@@ -67,18 +71,13 @@ const state = reactive({
 
 function resetState() {
   state.isScrolling = false
+  state.isHovered = false
   state.scrollTop = 0
   state.isSwiping = false
   translate.y = 0
 }
 
-const { height: screenHeight } = useWindowResizing()
-
-function setTranslateY() {
-  translate.y = (75 / screenHeight.value) * 100
-}
-
-async function onDragEndHandler(dragState: DragState) {
+async function onDragEndHandler(dragState: DragGestureState) {
   state.isSwiping = false
 
   const {
@@ -103,35 +102,7 @@ async function onDragEndHandler(dragState: DragState) {
 
 const dialogContentHeaderRef = ref<HTMLDivElement>()
 
-const { init: dialogContentHeaderDragGestureInit } = useDragGesture(
-  dialogContentHeaderRef,
-  {
-    onDrag(gestureState) {
-      const {
-        movement: [, movementY],
-      } = gestureState
-
-      translate.y = movementY
-    },
-
-    onDragEnd(gestureState) {
-      onDragEndHandler(gestureState)
-    },
-  },
-  {
-    axis: 'y',
-    bounds: { top: 0 },
-    rubberband: [0, 0.125],
-    from: [0, 0],
-    filterTaps: true,
-    pointer: { touch: true },
-    manualInit: true,
-  }
-)
-
 const dialogScrollableContentRef = ref<HTMLDivElement>()
-
-const dialogScrollableContentIsHovered = ref(false)
 
 const canDialogContentScroll = computed(() => {
   if (!dialogScrollableContentRef.value) return false
@@ -141,70 +112,101 @@ const canDialogContentScroll = computed(() => {
   return scrollHeight > clientHeight
 })
 
-const { y } = useScroll(dialogScrollableContentRef, {
-  onScroll() {
-    state.isScrolling = true
-    state.scrollTop = y.value
-  },
-
-  async onStop() {
-    await until(dialogScrollableContentIsHovered).toBe(false)
-    state.isScrolling = false
-  },
-})
-
 const translate = useSpring({ y: 0 })
 
 const dialogContentStyles = computed(() => `transform: translateY(${translate.y}px)`)
 
-const { init: dialogContentDragGestureInit } = useDragGesture(dialogScrollableContentRef,
-  {
-    onDrag(gestureState) {
-      state.isSwiping = true
+function initDialogContentHeaderDragGesture() {
+  useGesture(dialogContentHeaderRef,
+    {
+      onDrag(dragState) {
+        const {
+          movement: [, movementY],
+        } = dragState
 
-      const { direction: [, yDirection], cancel } = gestureState
+        translate.y = movementY
+      },
 
-      const direction =
-        yDirection > 0 ? 'down' : yDirection < 0 ? 'top' : undefined
-
-      if (
-        (canDialogContentScroll.value && state.scrollTop === 0 && direction === 'top')
-        || (canDialogContentScroll.value && state.scrollTop > 0 && direction === 'down')
-        || state.isScrolling
-      ) {
-        cancel()
-        return
-      }
-
-      const { movement: [, movementY] } = gestureState
-
-      translate.y = movementY
+      onDragEnd(dragState) {
+        onDragEndHandler(dragState)
+      },
     },
-
-    onDragEnd(gestureState) {
-      onDragEndHandler(gestureState)
+    {
+      drag: {
+        axis: 'y',
+        bounds: { top: 0 },
+        rubberband: true,
+        from: [0, 0],
+        filterTaps: true,
+        pointer: { touch: true },
+      }
     }
-  },
-  {
-    axis: 'y',
-    bounds: { top: 0 },
-    rubberband: [0, 0.125],
-    from: [0, 0],
-    filterTaps: true,
-    pointer: { touch: true },
-    manualInit: true,
-  }
-)
+  )
+}
 
-const isOpen = ref(false)
+function initDialogContentGestures() {
+  useGesture(dialogScrollableContentRef,
+    {
+      onScrollStart() {
+        state.isScrolling = true
+      },
+
+      onScroll(scrollState) {
+        const { offset: [, offsetY] } = scrollState
+
+        state.scrollTop = offsetY
+      },
+
+      async onScrollEnd() {
+        await until(() => state.isHovered).toBe(false)
+        state.isScrolling = false
+      },
+
+      onDrag(dragState) {
+        const { direction: [, directionY], cancel } = dragState
+
+        const direction =
+          directionY > 0 ? 'down' : directionY < 0 ? 'top' : undefined
+
+        if (
+          (canDialogContentScroll.value && state.scrollTop === 0 && direction === 'top')
+          || (canDialogContentScroll.value && state.scrollTop > 0 && direction === 'down')
+          || state.isScrolling
+        ) {
+          cancel()
+          return
+        }
+
+        state.isSwiping = true
+
+        const { movement: [, movementY] } = dragState
+
+        translate.y = movementY
+      },
+
+      onDragEnd(dragState) {
+        state.isHovered = true
+        onDragEndHandler(dragState)
+      }
+    },
+    {
+      drag: {
+        axis: 'y',
+        bounds: { top: 0 },
+        rubberband: true,
+        from: [0, 0],
+        filterTaps: true,
+        pointer: { touch: true },
+      },
+    }
+  )
+}
 
 watch(isOpen, (v) => {
   emits('isOpen', v)
-
   if (v) {
-    dialogContentHeaderDragGestureInit()
-    dialogContentDragGestureInit()
-    setTranslateY()
+    initDialogContentHeaderDragGesture()
+    initDialogContentGestures()
   } else if (!v) {
     emits('close')
     resetState()
