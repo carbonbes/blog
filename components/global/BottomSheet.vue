@@ -1,15 +1,18 @@
 <template>
   <DialogRoot v-model:open="isOpen">
     <DialogPortal>
-      <FadeInOpacityTransition>
-        <DialogOverlay class="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-      </FadeInOpacityTransition>
+      <DialogOverlay
+        class="fixed inset-0"
+        :style="dialogOverlayStyles"
+      />
 
       <DialogContent
         aria-describedby=""
         class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen w-full h-[75vh] max-h-full flex flex-col bg-white rounded-t-2xl"
         :style="dialogContentStyles"
         v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
+        @closeAutoFocus="(e) => e.preventDefault()"
+        @pointerDownOutside="(e) => e.preventDefault()"
       >
         <VisuallyHidden>
           <DialogTitle />
@@ -47,6 +50,7 @@ import {
 } from 'radix-vue'
 import { useSpring } from 'vue-use-spring'
 import type { DragGestureState } from '~/composables/useGesture'
+import { promiseTimeout } from '@vueuse/core'
 
 const props = defineProps<DialogContentProps & {
   class?: string
@@ -66,6 +70,7 @@ const state = reactive({
   isHovered: false,
   scrollTop: 0,
   scrollDirection: null,
+  dragMovementY: 0,
   isSwiping: false,
 })
 
@@ -74,6 +79,7 @@ function resetState() {
   state.isHovered = false
   state.scrollTop = 0
   state.isSwiping = false
+  state.dragMovementY = 0
   translate.y = 0
 }
 
@@ -90,13 +96,12 @@ async function onDragEndHandler(dragState: DragGestureState) {
 
   if (direction === 'down') {
     if (Math.abs(movementY) <= 150) {
-      translate.y = 0
+      playOpenAnimation()
     } else {
-      setOpen(false)
-      translate.y = 0
+      playCloseAnimation()
     }
   } else {
-    translate.y = 0
+    playOpenAnimation()
   }
 }
 
@@ -112,7 +117,56 @@ const canDialogContentScroll = computed(() => {
   return scrollHeight > clientHeight
 })
 
-const translate = useSpring({ y: 0 })
+const translate = useSpring({ y: 0 }, {
+  mass: 1.75,
+  tension: 500,
+  friction: 40,
+})
+
+const { height: screenHeight } = useWindowResizing()
+
+const dialogOverlayBgOpacity = ref(0)
+const dialogOverlayBlurSize = ref(0)
+
+function setDialogOverlayStyles() {
+  const thresholdHeight = (screenHeight.value / 100) * 75
+  const maxBlur = 4
+  const maxOpacity = 0.5
+
+  if (translate.y <= -thresholdHeight) {
+    dialogOverlayBgOpacity.value = maxOpacity
+    dialogOverlayBlurSize.value = maxBlur
+  } else {
+    const scrollPercentage = Math.min(1, Math.max(0, (translate.y + thresholdHeight) / thresholdHeight))
+    
+    dialogOverlayBgOpacity.value = maxOpacity * (1 - scrollPercentage)
+    dialogOverlayBlurSize.value = maxBlur * (1 - scrollPercentage)
+  }
+}
+
+watch(() => translate.y, setDialogOverlayStyles)
+
+function playOpenAnimation() {
+  translate.y = ((screenHeight.value / 100) * 75 ) * -1
+}
+
+function playCloseAnimation() {
+  translate.y = 0
+  dialogOverlayBgOpacity.value = 0
+  dialogOverlayBlurSize.value = 0
+
+  setOpen(false)
+}
+
+watch(isOpen, (v) => {
+  if (v) {
+    playOpenAnimation()
+  } else {
+    playCloseAnimation()
+  }
+})
+
+const dialogOverlayStyles = computed(() => `background-color: rgba(0, 0, 0, ${dialogOverlayBgOpacity.value}); backdrop-filter: blur(${dialogOverlayBlurSize.value}px)`)
 
 const dialogContentStyles = computed(() => `transform: translateY(${translate.y}px)`)
 
@@ -124,7 +178,9 @@ function initDialogContentHeaderDragGesture() {
           movement: [, movementY],
         } = dragState
 
-        translate.y = movementY
+        state.dragMovementY = movementY
+
+        translate.y = (((screenHeight.value / 100) * 75) * -1) + movementY
       },
 
       onDragEnd(dragState) {
@@ -163,7 +219,9 @@ function initDialogContentGestures() {
       },
 
       onDrag(dragState) {
-        const { direction: [, directionY], cancel } = dragState
+        const { movement: [, movementY], direction: [, directionY], cancel } = dragState
+
+        state.dragMovementY = movementY
 
         const direction =
           directionY > 0 ? 'down' : directionY < 0 ? 'top' : undefined
@@ -179,9 +237,7 @@ function initDialogContentGestures() {
 
         state.isSwiping = true
 
-        const { movement: [, movementY] } = dragState
-
-        translate.y = movementY
+        translate.y = (((screenHeight.value / 100) * 75 ) * -1) + movementY
       },
 
       onDragEnd(dragState) {

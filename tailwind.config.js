@@ -34,23 +34,18 @@ export default {
         },
         'fade-in-top-side': {
           '0%': { transform: 'translateY(-100%)' },
-          '70%': { transform: 'translateY(5%)' },
           '100%': { transform: 'translateY(0)' },
         },
         'fade-in-right-side': {
           '0%': { transform: 'translateX(100%)' },
-          '70%': { transform: 'translateX(-5%)' },
           '100%': { transform: 'translateX(0)' },
         },
         'fade-in-bottom-side': {
           '0%': { transform: 'translateY(100%)' },
-          '40%': { transform: 'translateY(-2.5%)' },
-          '80%': { transform: 'translateY(1%)' },
           '100%': { transform: 'translateY(0%)' },
         },
         'fade-in-left-side': {
           '0%': { transform: 'translateX(-100%)' },
-          '70%': { transform: 'translateX(5%)' },
           '100%': { transform: 'translateX(0)' },
         },
         pulse: {

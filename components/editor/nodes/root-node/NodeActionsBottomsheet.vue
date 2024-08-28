@@ -1,6 +1,6 @@
 <template>
   <BottomSheet
-    class="!bg-gray-100 after:!bg-gray-100"
+    class="top-full !bg-gray-100 after:!bg-gray-100"
     @isOpen="(value) => emit('onOpen', value)"
     @close="onClose"
     ref="bottomsheetRef"
@@ -14,7 +14,7 @@
     </template>
 
     <SlideTransition :initialIndex="state.view">
-      <Flex v-if="state.view === 1" col class="pb-[25vh] !flex gap-4">
+      <Flex v-if="state.view === 1" col class="w-full pb-[25vh] !flex gap-4">
         <UIButton
           v-for="(button, i) in buttons"
           :key="i"
@@ -31,7 +31,7 @@
         </UIButton>
       </Flex>
 
-      <Flex v-else col class="pb-[25vh] !flex gap-4">
+      <Flex v-else col class="w-full pb-[25vh] !flex gap-4">
         <UIButton
           v-for="(button, i) in changeNodeTypeButtons"
           :key="i"

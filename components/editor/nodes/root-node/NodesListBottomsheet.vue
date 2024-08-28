@@ -1,6 +1,6 @@
 <template>
-  <BottomSheet class="!bg-gray-100 after:!bg-gray-100" @close="emit('close')" ref="bottomsheetRef">
-    <Flex col class="pb-[25vh] !flex gap-4">
+  <BottomSheet class="top-full !bg-gray-100 after:!bg-gray-100" @close="emit('close')" ref="bottomsheetRef">
+    <Flex col class="w-full pb-[25vh] !flex gap-4">
       <UIButton
         v-for="(button, i) in buttons"
         :key="i"
