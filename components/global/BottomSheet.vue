@@ -1,46 +1,43 @@
 <template>
   <DialogRoot v-model:open="isOpen">
     <DialogPortal>
-      <FadeInOpacityTransition>
-        <DialogOverlay class="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-      </FadeInOpacityTransition>
+      <DialogOverlay class="fixed inset-0" :style="dialogOverlayStyles" />
 
-      <FadeInSideTransition>
-        <DialogContent
-          aria-describedby=""
-          class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen p-4 w-full h-[75vh] max-h-full flex flex-col bg-white rounded-t-2xl"
-          :class="{ 'transition-transform': !state.isSwiping }"
-          :style="{ transform: state.translateY }"
-          v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
-          @touchstart="onTouchStart"
-          @touchmove.passive="onTouchMove"
-          @touchend="onTouchEnd"
-          :data-state-scrolling="state.isScrolling"
-          :data-state-swiping="state.isSwiping"
-          ref="dialogContentRef"
+      <DialogContent
+        aria-describedby=""
+        class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen w-full h-3/4 max-h-full flex flex-col bg-white rounded-t-2xl will-change-transform"
+        :style="dialogContentStyles"
+        v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
+        @closeAutoFocus="(e) => e.preventDefault()"
+        @pointerDownOutside="
+          (e) => {
+            e.preventDefault()
+            setOpen(false)
+          }
+        "
+      >
+        <VisuallyHidden>
+          <DialogTitle />
+        </VisuallyHidden>
+
+        <Flex center class="p-4 pb-8 touch-none" ref="dialogContentHeaderRef">
+          <div class="w-10 h-1 bg-gray-400 rounded-full" />
+        </Flex>
+
+        <div
+          class="px-4 w-full h-full touch-pan-y overflow-y-auto"
+          :class="{ 'overflow-y-hidden': state.isSwiping }"
+          ref="dialogScrollableContentRef"
+          @touchstart="state.isHovered = true"
+          @touchend="state.isHovered = false"
         >
-          <div class="absolute left-1/2 -translate-x-1/2 w-10 h-1 bg-gray-400 rounded-full" />
+          <slot />
+        </div>
 
-          <VisuallyHidden>
-            <DialogTitle />
-          </VisuallyHidden>
-
-          <Flex itemsCenter class="pb-4 h-12">
-            <slot name="header" />
-          </Flex>
-
-          <ScrollArea
-            :disableScroll="state.isSwiping"
-            ref="scrollAreaRef"
-            @onScroll="onScroll"
-            @onScrollEnd="onScrollEnd"
-            @isScrollable="(value) => state.isScrollable = value"
-            @scrollTop="(value) => state.scrollTop = value"
-          >
-            <slot />
-          </ScrollArea>
-        </DialogContent>
-      </FadeInSideTransition>
+        <Flex v-if="$slots.footer" class="p-4 h-20">
+          <slot name="footer" />
+        </Flex>
+      </DialogContent>
     </DialogPortal>
   </DialogRoot>
 </template>
@@ -50,119 +47,224 @@ import {
   DialogContent,
   useEmitAsProps,
   type DialogContentEmits,
-  type DialogContentProps
+  type DialogContentProps,
 } from 'radix-vue'
-import type ScrollArea from '~/components/global/ScrollArea.vue'
+import { useSpring } from 'vue-use-spring'
+import type { DragGestureState } from '~/composables/useGesture'
+import { promiseTimeout } from '@vueuse/core'
 
-const props = defineProps<DialogContentProps & {
-  class?: string
-}>()
+const props = defineProps<
+  DialogContentProps & {
+    class?: string
+  }
+>()
 
-const emits = defineEmits<DialogContentEmits & {
-  isOpen: [boolean]
-  close: any
-}>()
+const emits = defineEmits<
+  DialogContentEmits & {
+    isOpen: [boolean]
+    close: any
+  }
+>()
 
 const emitsAsProps = useEmitAsProps(emits)
 
-const state: {
-  isScrollable: boolean
-  isScrolling: boolean
-  scrollTop: number
-  isSwiping: boolean
-  touchStartY: number
-  touchEndY: number
-  touchDeltaY: number
-  translateY: string
-} = reactive({
-  isScrollable: false,
-  isScrolling: false,
-  scrollTop: 0,
-  isSwiping: false,
-  touchStartY: 0,
-  touchEndY: 0,
-  touchDeltaY: 0,
-  translateY: ''
-})
-
-function resetState() {
-  state.isScrollable = false
-  state.isScrolling = false
-  state.scrollTop = 0
-  state.isSwiping = false
-  state.touchStartY = 0
-  state.touchEndY = 0
-  state.touchDeltaY = 0
-  state.translateY = ''
-}
-
-const dialogContentRef = ref<InstanceType<typeof DialogContent>>()
-const scrollAreaRef = ref<InstanceType<typeof ScrollArea>>()
-
-function onTouchStart(e: TouchEvent) {
-  if (state.isScrolling) return
-
-  state.touchStartY = e.touches[0].clientY
-}
-
-function onTouchMove(e: TouchEvent) {
-  const direction = Math.abs(e.touches[0].clientY) - Math.abs(state.touchStartY) > 0 ? 'down' : 'up'
-
-  if ((state.isScrollable && state.scrollTop === 0 && direction === 'up') ||
-    (state.isScrollable && state.scrollTop > 0 && direction === 'down') ||
-    state.isScrolling
-  ) return
-
-  state.isSwiping = true
-  state.touchDeltaY = state.touchStartY - e.touches[0].clientY
-  state.touchEndY = e.touches[0].clientY
-
-  state.translateY = `translateY(${state.touchDeltaY * -1}px)`
-}
-
-function onTouchEnd() {
-  state.isSwiping = false
-
-  const direction = Math.abs(state.touchEndY) - Math.abs(state.touchStartY) > 0 ? 'down' : 'up'
-
-  if (direction === 'down') {
-    if (Math.abs(state.touchDeltaY) <= 150) {
-      state.translateY = ''
-    } else {
-      setOpen(false)
-      state.translateY = ''
-    }
-  } else {
-    state.translateY = ''
-  }
-}
-
-function onScroll() {
-  state.isScrolling = true
-}
-
-function onScrollEnd() {
-  state.isScrolling = false
-}
-
 const isOpen = ref(false)
 
-watch(isOpen, (v) => emits('isOpen', v))
-
-function setOpen(value: boolean) {
-  isOpen.value = value
-}
-
-function toggleOpen() {
-  isOpen.value = !isOpen.value
+async function setOpen(value: boolean) {
+  if (!value) {
+    playCloseAnimation()
+    await promiseTimeout(150)
+    isOpen.value = false
+  } else {
+    playOpenAnimation()
+    isOpen.value = true
+  }
 }
 
 watch(isOpen, (v) => {
-  if (!v) {
-    emits('close')
-    resetState()
+  emits('isOpen', v)
+  if (v) {
+    playOpenAnimation()
+    initDialogContentHeaderDragGesture()
+    initDialogContentGestures()
   }
 })
 
-defineExpose({ setOpen, toggleOpen })
+const state = reactive({
+  isScrolling: false,
+  isHovered: false,
+  scrollTop: 0,
+  isSwiping: false,
+})
+
+const dialogContentHeaderRef = ref<HTMLDivElement>()
+const dialogScrollableContentRef = ref<HTMLDivElement>()
+
+const canDialogContentScroll = computed(() => {
+  const contentRef = dialogScrollableContentRef.value
+  return contentRef ? contentRef.scrollHeight > contentRef.clientHeight : false
+})
+
+const translate = useSpring(
+  { y: 0 },
+  {
+    mass: 1.75,
+    tension: 500,
+    friction: 40,
+  }
+)
+
+const { height: screenHeight } = useWindowResizing()
+
+watch(screenHeight, () => translate.y = -screenHeight.value * 0.75)
+
+const dialogOverlayBgOpacity = ref(0)
+const dialogOverlayBlurSize = ref(0)
+
+function setDialogOverlayStyles() {
+  const thresholdHeight = screenHeight.value * 0.75
+  const maxBlur = 4
+  const maxOpacity = 0.5
+
+  const scrollPercentage = Math.min(
+    1,
+    Math.max(0, (translate.y + thresholdHeight) / thresholdHeight)
+  )
+
+  dialogOverlayBgOpacity.value = maxOpacity * (1 - scrollPercentage)
+  dialogOverlayBlurSize.value = maxBlur * (1 - scrollPercentage)
+}
+
+watch(() => translate.y, setDialogOverlayStyles)
+
+function playOpenAnimation() {
+  translate.y = -screenHeight.value * 0.75
+}
+
+function playCloseAnimation() {
+  translate.y = 0
+  dialogOverlayBgOpacity.value = 0
+  dialogOverlayBlurSize.value = 0
+}
+
+const dialogOverlayStyles = computed(
+  () =>
+    `background-color: rgba(0, 0, 0, ${dialogOverlayBgOpacity.value}); backdrop-filter: blur(${dialogOverlayBlurSize.value}px)`
+)
+
+const dialogContentStyles = computed(
+  () => `transform: translate3d(0, ${translate.y}px, 0)`
+)
+
+function getGestureDirection(value: number) {
+  return value > 0 ? 'down' : value < 0 ? 'top' : undefined
+}
+
+async function onDragEndHandler(dragState: DragGestureState) {
+  state.isSwiping = false
+
+  const {
+    movement: [, movementY],
+    direction: [, directionY],
+  } = dragState
+
+  const direction = getGestureDirection(directionY)
+
+  if (direction === 'down') {
+    if (Math.abs(movementY) <= 150) {
+      playOpenAnimation()
+    } else {
+      setOpen(false)
+    }
+  } else {
+    playOpenAnimation()
+  }
+}
+
+function initDialogContentHeaderDragGesture() {
+  useGesture(
+    dialogContentHeaderRef,
+    {
+      onDrag({ movement: [, movementY] }) {
+        translate.y = -screenHeight.value * 0.75 + movementY
+      },
+
+      onDragEnd: onDragEndHandler,
+    },
+    {
+      drag: {
+        axis: 'y',
+        bounds: { top: 0 },
+        rubberband: true,
+        from: [0, 0],
+        filterTaps: true,
+        pointer: { touch: true },
+      },
+    }
+  )
+}
+
+function initDialogContentGestures() {
+  useGesture(
+    dialogScrollableContentRef,
+    {
+      onScrollStart() {
+        state.isScrolling = true
+      },
+
+      onScroll({ offset: [, offsetY] }) {
+        state.scrollTop = offsetY
+      },
+
+      async onScrollEnd() {
+        await until(() => state.isHovered).toBe(false)
+        state.isScrolling = false
+      },
+
+      onDrag(dragState) {
+        const {
+          movement: [, movementY],
+          direction: [, directionY],
+          cancel,
+        } = dragState
+
+        const direction = getGestureDirection(directionY)
+
+        if (
+          (canDialogContentScroll.value &&
+            state.scrollTop === 0 &&
+            direction === 'top') ||
+          (canDialogContentScroll.value &&
+            state.scrollTop > 0 &&
+            direction === 'down')
+        ) {
+          cancel()
+          return
+        }
+
+        state.isSwiping = true
+        translate.y = -screenHeight.value * 0.75 + movementY
+      },
+
+      onDragEnd(dragState) {
+        onDragEndHandler(dragState)
+      },
+    },
+    {
+      drag: {
+        axis: 'y',
+        bounds: { top: 0 },
+        rubberband: true,
+        from: [0, 0],
+        filterTaps: true,
+        pointer: { touch: true },
+        eventOptions: {
+          passive: false
+        }
+      },
+    }
+  )
+}
+
+defineExpose({ setOpen })
 </script>

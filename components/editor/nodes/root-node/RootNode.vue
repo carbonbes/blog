@@ -273,7 +273,7 @@ function resetTranslateX() {
 
 const nodeContentStyles = computed(() => `transform: translateX(${translateX.value}px)`)
 
-useDragGesture(nodeContentRef,
+useGesture(nodeContentRef,
   {
     onDrag(state) {
       if (!selectionIsEmpty.value) return
@@ -313,10 +313,12 @@ useDragGesture(nodeContentRef,
     },
   },
   {
-    axis: 'x',
-    bounds: { left: -150, right: 150 },
-    rubberband: true,
-    from: [0, 0],
+    drag: {
+      axis: 'x',
+      bounds: { left: -150, right: 150 },
+      rubberband: true,
+      from: [0, 0],
+    },
     onlyTouchDevices: true
   }
 )

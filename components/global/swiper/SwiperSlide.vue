@@ -182,7 +182,7 @@ watchEffect(recalculateTransform)
 
 const slideRef = ref()
 
-useDragGesture(slideRef,
+useGesture(slideRef,
   {
     async onDrag(state) {
       if (!(slideRef.value || props.isActiveSlide) || props.swiper.animating) return
@@ -205,7 +205,10 @@ useDragGesture(slideRef,
     }
   },
   {
-    axis: 'y'
+    drag: {
+      axis: 'y'
+    },
+    onlyTouchDevices: true
   }
 )
 </script>
