@@ -8,7 +8,7 @@
 
       <DialogContent
         aria-describedby=""
-        class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen w-full h-[75vh] max-h-full flex flex-col bg-white rounded-t-2xl"
+        class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen w-full h-[75vh] max-h-full flex flex-col bg-white rounded-t-2xl will-change-transform"
         :style="dialogContentStyles"
         v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
         @closeAutoFocus="(e) => e.preventDefault()"
@@ -19,12 +19,11 @@
         </VisuallyHidden>
 
         <Flex
-          itemsCenter
+          center
           class="p-4 h-12 touch-none"
           ref="dialogContentHeaderRef"
         >
-          <div class="absolute left-1/2 -translate-x-1/2 w-10 h-1 bg-gray-400 rounded-full" />
-          <slot name="header" />
+          <div class="w-10 h-1 bg-gray-400 rounded-full" />
         </Flex>
 
         <div
@@ -65,22 +64,35 @@ const emitsAsProps = useEmitAsProps(emits)
 
 const isOpen = ref(false)
 
+function setOpen(value: boolean) {
+  isOpen.value = value
+}
+
+function toggleOpen() {
+  isOpen.value = !isOpen.value
+}
+
+watch(isOpen, (v) => {
+  emits('isOpen', v)
+  if (v) {
+    playOpenAnimation()
+    initDialogContentHeaderDragGesture()
+    initDialogContentGestures()
+  } else if (!v) {
+    emits('close')
+    playCloseAnimation()
+  }
+})
+
 const state = reactive({
   isScrolling: false,
   isHovered: false,
   scrollTop: 0,
-  scrollDirection: null,
-  dragMovementY: 0,
   isSwiping: false,
 })
 
-function resetState() {
-  state.isScrolling = false
-  state.isHovered = false
-  state.scrollTop = 0
-  state.isSwiping = false
-  state.dragMovementY = 0
-  translate.y = 0
+function getGestureDirection(value: number) {
+  return value > 0 ? 'down' : value < 0 ? 'top' : undefined
 }
 
 async function onDragEndHandler(dragState: DragGestureState) {
@@ -91,8 +103,7 @@ async function onDragEndHandler(dragState: DragGestureState) {
     direction: [, directionY],
   } = dragState
 
-  const direction =
-    directionY > 0 ? 'down' : directionY < 0 ? 'top' : undefined
+  const direction = getGestureDirection(directionY)
 
   if (direction === 'down') {
     if (Math.abs(movementY) <= 150) {
@@ -147,7 +158,7 @@ function setDialogOverlayStyles() {
 watch(() => translate.y, setDialogOverlayStyles)
 
 function playOpenAnimation() {
-  translate.y = ((screenHeight.value / 100) * 75 ) * -1
+  translate.y = ((screenHeight.value / 100) * 75) * -1
 }
 
 function playCloseAnimation() {
@@ -158,17 +169,9 @@ function playCloseAnimation() {
   setOpen(false)
 }
 
-watch(isOpen, (v) => {
-  if (v) {
-    playOpenAnimation()
-  } else {
-    playCloseAnimation()
-  }
-})
-
 const dialogOverlayStyles = computed(() => `background-color: rgba(0, 0, 0, ${dialogOverlayBgOpacity.value}); backdrop-filter: blur(${dialogOverlayBlurSize.value}px)`)
 
-const dialogContentStyles = computed(() => `transform: translateY(${translate.y}px)`)
+const dialogContentStyles = computed(() => `transform: translate3d(0, ${translate.y}px, 0)`)
 
 function initDialogContentHeaderDragGesture() {
   useGesture(dialogContentHeaderRef,
@@ -177,8 +180,6 @@ function initDialogContentHeaderDragGesture() {
         const {
           movement: [, movementY],
         } = dragState
-
-        state.dragMovementY = movementY
 
         translate.y = (((screenHeight.value / 100) * 75) * -1) + movementY
       },
@@ -221,10 +222,7 @@ function initDialogContentGestures() {
       onDrag(dragState) {
         const { movement: [, movementY], direction: [, directionY], cancel } = dragState
 
-        state.dragMovementY = movementY
-
-        const direction =
-          directionY > 0 ? 'down' : directionY < 0 ? 'top' : undefined
+        const direction = getGestureDirection(directionY)
 
         if (
           (canDialogContentScroll.value && state.scrollTop === 0 && direction === 'top')
@@ -256,25 +254,6 @@ function initDialogContentGestures() {
       },
     }
   )
-}
-
-watch(isOpen, (v) => {
-  emits('isOpen', v)
-  if (v) {
-    initDialogContentHeaderDragGesture()
-    initDialogContentGestures()
-  } else if (!v) {
-    emits('close')
-    resetState()
-  }
-})
-
-function setOpen(value: boolean) {
-  isOpen.value = value
-}
-
-function toggleOpen() {
-  isOpen.value = !isOpen.value
 }
 
 defineExpose({ setOpen, toggleOpen })
