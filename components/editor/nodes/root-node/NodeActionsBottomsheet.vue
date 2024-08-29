@@ -5,11 +5,17 @@
     @close="onClose"
     ref="bottomsheetRef"
   >
-    <template #header>
+    <template #footer>
       <FadeInOpacityTransition>
-        <button v-if="state.view === 2" @click="state.view = 1">
-          <ITablerArrowLeft />
-        </button>
+        <UIButton
+          v-if="state.view === 2"
+          size="l"
+          class="w-full flex items-center justify-center gap-3"
+          @click="state.view = 1"
+        >
+          <ArrowLeft />
+          Назад
+        </UIButton>
       </FadeInOpacityTransition>
     </template>
 
@@ -21,7 +27,7 @@
           variant="secondary"
           size="l"
           class="flex items-center gap-3"
-          :class="{ 'text-blue-500': button.active }"
+          :class="[{ 'text-blue-500': button.active }]"
           @click="button.action"
           :disabled="button.disabled"
         >
@@ -56,6 +62,7 @@ import Pin from '~icons/tabler/pin'
 import EyeOff from '~icons/tabler/eye-off'
 import ArrowUp from '~icons/tabler/arrow-up'
 import ArrowDown from '~icons/tabler/arrow-down'
+import ArrowLeft from '~icons/tabler/arrow-left'
 import Refresh from '~icons/tabler/refresh'
 import Heading1 from '~icons/tabler/h1'
 import Heading2 from '~icons/tabler/h2'
