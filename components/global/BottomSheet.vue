@@ -5,7 +5,7 @@
 
       <DialogContent
         aria-describedby=""
-        class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen w-full h-3/4 max-h-full flex flex-col bg-white rounded-t-2xl will-change-transform"
+        class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen w-full h-3/4 max-h-full flex flex-col bg-white rounded-t-3xl will-change-transform"
         :style="dialogContentStyles"
         v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
         @closeAutoFocus="(e) => e.preventDefault()"
@@ -26,7 +26,7 @@
 
         <div
           class="px-4 w-full h-full touch-pan-y overflow-y-auto"
-          :class="{ 'overflow-y-hidden': state.isSwiping }"
+          :class="[contentClass, { 'overflow-y-hidden': state.isSwiping }]"
           ref="dialogScrollableContentRef"
           @touchstart="state.isHovered = true"
           @touchend="state.isHovered = false"
@@ -56,6 +56,7 @@ import { promiseTimeout } from '@vueuse/core'
 const props = defineProps<
   DialogContentProps & {
     class?: string
+    contentClass?: string
   }
 >()
 

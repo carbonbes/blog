@@ -1,6 +1,7 @@
 <template>
   <BottomSheet
     class="top-full !bg-gray-100 after:!bg-gray-100"
+    contentClass="relative overflow-x-hidden"
     @isOpen="(value) => emit('onOpen', value)"
     @close="onClose"
     ref="bottomsheetRef"
@@ -19,7 +20,7 @@
       </FadeInOpacityTransition>
     </template>
 
-    <SlideTransition :initialIndex="state.view">
+    <SlideTransition :index="state.view">
       <Flex v-if="state.view === 1" col class="w-full pb-[25vh] !flex gap-4">
         <UIButton
           v-for="(button, i) in buttons"

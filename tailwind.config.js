@@ -57,10 +57,10 @@ export default {
 
       animation: {
         shake: 'shake 0.6s cubic-bezier(.36,.07,.19,.97) both',
-        next: 'next .25s',
-        'next-reverse': 'next reverse .25s',
-        previous: 'previous .25s',
-        'previous-reverse': 'previous reverse .25s',
+        next: 'next',
+        'next-reverse': 'next reverse',
+        previous: 'previous',
+        'previous-reverse': 'previous reverse',
         notification: 'notification .25s ease',
         'fade-in-top-side': 'fade-in-top-side',
         'fade-in-right-side': 'fade-in-right-side',

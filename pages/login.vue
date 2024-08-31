@@ -1,18 +1,29 @@
 <template>
   <Flex center class="h-[calc(100vh_-_60px)]">
-    <Flex center :class="loginFormClasses">
-      <SlideTransition :initialIndex="state.tab">
-        <Flex col :class="tabClasses" v-if="state.tab === 1">
-          <SlideTransition :initialIndex="state.signInStep">
-            <Flex col justifyCenter :class="stepClasses" v-if="state.signInStep === 1">
+    <Flex
+      center
+      class="relative w-full h-full sm:w-96 sm:h-96 bg-white sm:ring-1 sm:ring-gray-200 sm:rounded-xl sm:shadow-md overflow-hidden"
+    >
+      <SlideTransition
+        :index="state.tab"
+        @afterEnter="emailInputFocus"
+        @onEnterCancelled="emailInputFocus"
+      >
+        <Flex
+          v-if="state.tab === 1"
+          col
+          class="relative w-full h-full overflow-hidden"
+        >
+          <SlideTransition :index="state.signInStep">
+            <Flex v-if="state.signInStep === 1" col justifyCenter :class="stepClasses">
               <Flex col class="mt-auto gap-4">
                 <p class="text-center text-lg font-bold">Вход</p>
                 <UIInput
                   type="email"
                   placeholder="Почта"
-                  autofocus
                   :disabled="state.signInRequesting"
                   v-model.trim="signInEmail"
+                  ref="signInEmailInput"
                 />
                 <UIButton
                   class="font-medium"
@@ -33,7 +44,7 @@
               </UIButton>
             </Flex>
 
-            <Flex col center :class="stepClasses" v-else>
+            <Flex v-else col center :class="stepClasses">
               <Flex col class="mt-auto gap-4">
                 <p class="font-medium text-center">Введите код из письма</p>
                 <PinInput
@@ -53,28 +64,32 @@
                   Выслать повторно
                 </UIButton>
                 <Countdown
+                  v-if="!state.canResendOtp"
                   :initial="Date.now() + 60000"
                   @complete="state.canResendOtp = true"
                   class="text-center"
                   ref="countdownRef"
-                  v-if="!state.canResendOtp"
                 />
               </Flex>
             </Flex>
           </SlideTransition>
         </Flex>
 
-        <Flex col :class="tabClasses" v-else>
-          <SlideTransition :initialIndex="state.signUpStep">
-            <Flex col justifyCenter :class="stepClasses" v-if="state.signUpStep === 1">
+        <Flex
+          v-else
+          col
+          class="relative w-full h-full overflow-hidden"
+        >
+          <SlideTransition :index="state.signUpStep">
+            <Flex v-if="state.signUpStep === 1" col justifyCenter :class="stepClasses">
               <Flex col class="mt-auto gap-4">
                 <p class="text-center text-lg font-bold">Регистрация</p>
                 <UIInput
                   type="email"
                   placeholder="Почта"
-                  autofocus
                   :disabled="state.signUpRequesting"
                   v-model.trim="signUpFormData.email"
+                  ref="signUpEmailInput"
                 />
                 <UIInput
                   placeholder="Имя"
@@ -102,7 +117,7 @@
               </UIButton>
             </Flex>
 
-            <Flex col center :class="stepClasses" v-else>
+            <Flex v-else col center :class="stepClasses">
               <Flex col class="mt-auto gap-4">
                 <p class="font-medium text-center">Введите код из письма</p>
                 <PinInput
@@ -122,11 +137,11 @@
                   Выслать повторно
                 </UIButton>
                 <Countdown
+                  v-if="!state.canResendOtp"
                   :initial="Date.now() + 60000"
                   @complete="state.canResendOtp = true"
                   class="text-center"
                   ref="countdownRef"
-                  v-if="!state.canResendOtp"
                 />
               </Flex>
             </Flex>
@@ -166,6 +181,19 @@ const state: {
   canResendOtp: false
 })
 
+const signInEmailInput = ref<HTMLInputElement>()
+const signUpEmailInput = ref<HTMLInputElement>()
+
+function emailInputFocus() {
+  if (state.tab === 1 && state.signInStep === 1 && signInEmailInput.value) {
+    signInEmailInput.value.focus()
+  } else if (state.tab === 2 && state.signUpStep === 1 && signUpEmailInput.value) {
+    signUpEmailInput.value.focus()
+  }
+}
+
+onMounted(emailInputFocus)
+
 const signInEmail = ref('')
 
 const signUpFormData = reactive({
@@ -173,9 +201,7 @@ const signUpFormData = reactive({
   name: '',
 })
 
-const loginFormClasses = computed(() => 'relative w-full h-full sm:w-80 sm:h-96 bg-white sm:ring-1 sm:ring-gray-200 sm:rounded-xl sm:shadow-md overflow-hidden')
-const tabClasses = computed(() => 'relative w-full h-full overflow-hidden')
-const stepClasses = computed(() => 'p-8 h-full')
+const stepClasses = 'p-8 h-full'
 
 const countdownRef = ref<typeof Countdown>()
 
