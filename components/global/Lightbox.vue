@@ -49,7 +49,7 @@
             ref="swiperRef"
             @realIndexChange="(value) => activeItemIndex = value"
           >
-            <SwiperSlide
+            <LightboxSlide
               v-for="(item, i) in items"
               :key="i"
               :item
@@ -77,7 +77,7 @@
 <script lang="ts" setup>
 import Flex from '~/components/global/Flex.vue'
 import type Swiper from '~/components/global/swiper/Swiper.vue'
-import type SwiperSlide from '~/components/global/swiper/SwiperSlide.vue'
+import type LightboxSlide from '~/components/global/swiper/LightboxSlide.vue'
 import { promiseTimeout } from '@vueuse/core'
 
 export type Item = {

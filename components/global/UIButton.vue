@@ -12,13 +12,15 @@
 </template>
 
 <script lang="ts" setup>
+export type UIButtonProps = {
+  to?: string
+  variant?: 'primary' | 'secondary'
+  size?: 's' | 'm' | 'l'
+  disabled?: boolean
+}
+
 const props = withDefaults(
-  defineProps<{
-    to?: string
-    variant?: 'primary' | 'secondary'
-    size?: 's' | 'm' | 'l'
-    disabled?: boolean
-  }>(),
+  defineProps<UIButtonProps>(),
   {
     variant: 'primary',
     size: 'm',

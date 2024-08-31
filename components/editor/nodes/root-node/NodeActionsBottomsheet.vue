@@ -9,24 +9,26 @@
       <FadeInOpacityTransition>
         <UIButton
           v-if="state.view === 2"
+          class="w-full flex items-center justify-center gap-3 !rounded-2xl !shadow"
           size="l"
-          class="w-full flex items-center justify-center gap-3"
-          @click="state.view = 1"
+          @click="previousView"
         >
-          <ArrowLeft />
           Назад
         </UIButton>
       </FadeInOpacityTransition>
     </template>
 
-    <SlideTransition :initialIndex="state.view">
-      <Flex v-if="state.view === 1" col class="w-full pb-[25vh] !flex gap-4">
+    <SlideTransition
+      :spaceBetween="100"
+      ref="tabsViewRef"
+    >
+      <Flex col class="w-full pb-[25%] !flex gap-4">
         <UIButton
           v-for="(button, i) in buttons"
           :key="i"
           variant="secondary"
           size="l"
-          class="flex items-center gap-3"
+          class="flex items-center gap-3 !rounded-2xl !shadow"
           :class="[{ 'text-blue-500': button.active }]"
           @click="button.action"
           :disabled="button.disabled"
@@ -37,13 +39,13 @@
         </UIButton>
       </Flex>
 
-      <Flex v-else col class="w-full pb-[25vh] !flex gap-4">
+      <Flex col class="w-full pb-[25%] !flex gap-4">
         <UIButton
           v-for="(button, i) in changeNodeTypeButtons"
           :key="i"
           variant="secondary"
           size="l"
-          class="flex items-center gap-3"
+          class="flex items-center gap-3 !rounded-2xl !shadow"
           @click="button.action"
         >
           <Component :is="button.icon" />
@@ -56,13 +58,13 @@
 
 <script lang="ts" setup>
 import type BottomSheet from '~/components/global/BottomSheet.vue'
+import SlideTransition from '~/components/global/SlideTransition.vue'
 import type { HeadingLevel, NodeType } from '~/types'
 import type { Node } from '@tiptap/pm/model'
 import Pin from '~icons/tabler/pin'
 import EyeOff from '~icons/tabler/eye-off'
 import ArrowUp from '~icons/tabler/arrow-up'
 import ArrowDown from '~icons/tabler/arrow-down'
-import ArrowLeft from '~icons/tabler/arrow-left'
 import Refresh from '~icons/tabler/refresh'
 import Heading1 from '~icons/tabler/h1'
 import Heading2 from '~icons/tabler/h2'
@@ -93,9 +95,21 @@ const state: {
   view: 1
 })
 
-function onClose() {
-  emit('close')
+const tabsViewRef = ref<InstanceType<typeof SlideTransition>>()
+
+function nextView() {
+  state.view = 2
+  tabsViewRef.value?.next()
+}
+
+function previousView() {
   state.view = 1
+  tabsViewRef.value?.previous()
+}
+
+function onClose() {
+  state.view = 1
+  emit('close')
 }
 
 const buttons = computed(() => [
@@ -138,9 +152,7 @@ const buttons = computed(() => [
   {
     icon: Refresh,
     label: 'Поменять на',
-    action: () => {
-      state.view = 2
-    },
+    action: nextView,
     additional: true
   },
   {

@@ -5,7 +5,7 @@
 
       <DialogContent
         aria-describedby=""
-        class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen w-full h-3/4 max-h-full flex flex-col bg-white rounded-t-2xl will-change-transform"
+        class="fixed bottom-0 after:content-[''] after:absolute after:top-full after:right-0 after:left-0 after:h-screen w-full h-3/4 max-h-full flex flex-col bg-white rounded-t-3xl will-change-transform"
         :style="dialogContentStyles"
         v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
         @closeAutoFocus="(e) => e.preventDefault()"
