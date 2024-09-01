@@ -79,7 +79,7 @@ const props = defineProps<
 
 const emits = defineEmits<
   DialogContentEmits & {
-    isOpen: [boolean]
+    onOpen: [boolean]
     close: any
   }
 >()
@@ -100,7 +100,7 @@ async function setOpen(value: boolean) {
 }
 
 watch(isOpen, (v) => {
-  emits('isOpen', v)
+  emits('onOpen', v)
   if (v) {
     playOpenAnimation()
     initDialogContentHeaderDragGesture()

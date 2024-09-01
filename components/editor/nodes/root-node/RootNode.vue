@@ -9,16 +9,9 @@
       </UIButton>
 
       <NodeActionsButton
-        :editor
-        :nodeIsPinned
-        :nodeIsSpoilered
-        :nodeType
-        :nodeAttrs
-        :neighborNodes
         @onOpen="onOpen"
         @changeNodeType="changeNodeType"
         @toggleAttribute="toggleAttribute"
-        @moveNode="moveNode"
         @removeNode="deleteNode"
       />
     </Flex>
@@ -40,7 +33,7 @@
 
       <NodeViewContent
         class="sm:py-2 sm:px-3 rounded-xl w-full [&_ol]:pl-4 [&_ul]:pl-4 not-first:[&_ul_>_li]:mt-2 not-first:[&_ol_>_li]:mt-2 [&_ol]:list-decimal [&_ul]:list-disc outline-none transition-colors"
-        :class="{ 'bg-blue-100/50': nodeSelected }"
+        :class="{ 'bg-blue-100/50': selectedNode }"
       />
 
       <Flex
@@ -50,19 +43,25 @@
 
       <Flex col class="absolute top-0 right-0 gap-2 sm:hidden">
         <UIButton
-          v-if="nodeIsPinned"
+          v-if="selectedNodeAttrs?.pin"
           size="s"
           variant="secondary"
         >
-          <ITablerPin class="!size-4" :class="{ 'text-blue-700': nodeIsPinned }" />
+          <ITablerPin
+            class="!size-4"
+            :class="{ 'text-blue-700': selectedNodeAttrs?.pin }"
+          />
         </UIButton>
 
         <UIButton
-          v-if="nodeIsSpoilered"
+          v-if="selectedNodeAttrs?.spoiler"
           size="s"
           variant="secondary"
         >
-          <ITablerEyeOff class="!size-4" :class="{ 'text-blue-700': nodeIsSpoilered }" />
+          <ITablerEyeOff
+            class="!size-4"
+            :class="{ 'text-blue-700': selectedNodeAttrs?.spoiler }"
+          />
         </UIButton>
       </Flex>
     </Flex>
@@ -74,31 +73,29 @@
       <UIButton
         size="s"
         variant="secondary"
-        :class="{ '!opacity-100': nodeIsPinned }"
+        :class="{ '!opacity-100': selectedNodeAttrs?.pin }"
         @click="toggleAttribute('pin')"
       >
-        <ITablerPin class="!size-4" :class="{ 'text-blue-700': nodeIsPinned }" />
+        <ITablerPin class="!size-4" :class="{ 'text-blue-700': selectedNodeAttrs?.pin }" />
       </UIButton>
 
       <UIButton
         size="s"
         variant="secondary"
-        :class="{ '!opacity-100': nodeIsSpoilered }"
+        :class="{ '!opacity-100': selectedNodeAttrs?.spoiler }"
         @click="toggleAttribute('spoiler')"
       >
-        <ITablerEyeOff class="!size-4" :class="{ 'text-blue-700': nodeIsSpoilered }" />
+        <ITablerEyeOff
+          class="!size-4"
+          :class="{ 'text-blue-700': selectedNodeAttrs?.spoiler }"
+        />
       </UIButton>
     </Flex>
 
     <NodesListBottomsheet @insertNode="insertNode" ref="nodesListBSRef" />
 
     <NodeActionsBottomsheet
-      :nodeIsPinned
-      :nodeIsSpoilered
-      :nodeType
-      :neighborNodes
       @onOpen="onOpen"
-      @close="onClose"
       @moveNode="moveNode"
       @changeNodeType="changeNodeType"
       @toggleAttribute="toggleAttribute"
@@ -119,9 +116,9 @@ import type Flex from '~/components/global/Flex.vue'
 
 const props = defineProps<NodeViewProps>()
 
-const isSwiping = ref(false)
+const { selectedNode, selectedNodeAttrs,  moveNode } = useEditor()
 
-const nodeSelected = ref(false)
+const isSwiping = ref(false)
 
 const nodePos = computed(() => {
   if (!props.selected) return null
@@ -132,28 +129,6 @@ const nodePos = computed(() => {
     from: (selection as NodeSelection).from,
     to: (selection as NodeSelection).to
   }
-})
-
-const nodeType = computed(() => props.node.content.content[0].type.name as NodeType)
-const nodeAttrs = computed(() => props.node.content.content[0].attrs)
-const nodeIsPinned = computed<boolean>(() => props.node.attrs.pin)
-const nodeIsSpoilered = computed<boolean>(() => props.node.attrs.spoiler)
-
-const neighborNodes = computed(() => {
-  if (!props.selected) return null
-
-  const { doc } = props.editor.state
-
-  const startPos = nodePos.value?.from!
-  const endPos = nodePos.value?.to!
-
-  let prevNode = null
-  let nextNode = null
-
-  if (startPos > 0) prevNode = doc.resolve(startPos).nodeBefore
-  if (endPos < doc.content.size) nextNode = doc.resolve(endPos).nodeAfter
-
-  return { prevNode, nextNode }
 })
 
 const { selectionIsEmpty } = useEditor()
@@ -219,50 +194,17 @@ function changeNodeType({
   props.editor.commands.blur()
 }
 
-function moveNode(direction: 'up' | 'down') {
-  const { view } = props.editor
-  let tr = props.editor.state.tr
-
-  const currentNodeSize = props.node.nodeSize
-
-  if (direction === 'up') {
-    const previousNodeStartPos = nodePos.value!.from - neighborNodes.value!.prevNode!.nodeSize
-    const previousNodeEndPos = nodePos.value!.from
-    const previousNodeSize = neighborNodes.value!.prevNode!.nodeSize
-
-    tr = tr
-      .delete(previousNodeStartPos, previousNodeEndPos)
-      .insert(nodePos.value!.from - previousNodeSize + currentNodeSize, neighborNodes.value?.prevNode!)
-      .scrollIntoView()
-
-    view.dispatch(tr)
-  } else {
-    const nextNodeStartPos = nodePos.value!.to
-    const nextNodeEndPos = nodePos.value!.to + neighborNodes.value!.nextNode!.nodeSize
-    const nextNodeSize = neighborNodes.value!.nextNode!.nodeSize
-
-    tr = tr
-      .delete(nextNodeStartPos, nextNodeEndPos)
-      .insert(nodePos.value!.from - nextNodeSize + currentNodeSize, neighborNodes.value?.nextNode!)
-      .scrollIntoView()
-
-    view.dispatch(tr)
-  }
-}
-
 function toggleAttribute(attr: 'pin' | 'spoiler') {
   const value = props.node.attrs[attr]
   props.updateAttributes({ [attr]: !value })
 }
 
 function onOpen(value: boolean) {
-  value && props.editor.commands.setNodeSelection(props.getPos())
-  nodeSelected.value = value
-}
-
-function onClose() {
-  props.editor.commands.blur()
-  resetTranslateX()
+  if (value) {
+    props.editor.commands.setNodeSelection(props.getPos())
+  } else {
+    resetTranslateX()
+  }
 }
 
 const translateX = ref(0)

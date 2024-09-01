@@ -14,8 +14,7 @@
 
 <script lang="ts" setup>
 import type Dropdown from '~/components/global/dropdown/Dropdown.vue'
-import type { Editor } from '@tiptap/core'
-import type { HeadingLevel, NodeAttrs, NodeType } from '~/types'
+import type { HeadingLevel, NodeType } from '~/types'
 import Paragraph from '~icons/tabler/letter-case'
 import Heading from '~icons/tabler/heading'
 import List from '~icons/tabler/list'
@@ -28,24 +27,20 @@ import Heading1 from '~icons/tabler/h1'
 import Heading2 from '~icons/tabler/h2'
 import ListNumbers from '~icons/tabler/list-numbers'
 import Trash from '~icons/tabler/trash'
-import type { Node } from '@tiptap/pm/model'
-
-const props = defineProps<{
-  editor: Editor
-  nodeIsPinned: boolean
-  nodeIsSpoilered: boolean
-  nodeType: NodeType
-  nodeAttrs: NodeAttrs
-  neighborNodes: { prevNode: Node | null, nextNode: Node | null } | null
-}>()
 
 const emit = defineEmits<{
   onOpen: [boolean]
   changeNodeType: [{ type: NodeType, level?: HeadingLevel }]
   toggleAttribute: [attr: 'pin' | 'spoiler']
-  moveNode: [dir: 'up' | 'down']
   removeNode: [void]
 }>()
+
+const {
+  selectedNodeType,
+  selectedNodeAttrs,
+  selectedNodeNeighbors,
+  moveNode
+} = useEditor()
 
 const dropdownRef = ref<InstanceType<typeof Dropdown>>()
 
@@ -68,14 +63,14 @@ const nodeActions = computed(() => [
     icon: Pin,
     label: 'Вывести в карточке',
     action: () => emit('toggleAttribute', 'pin'),
-    active: props.nodeIsPinned,
+    active: selectedNodeAttrs.value?.pin,
     // disabled: !props.nodeIsPinned && props.editor.extensionStorage.rootNode.pinned === 2
   },
   {
     icon: EyeOff,
     label: 'Скрыть',
     action: () => emit('toggleAttribute', 'spoiler'),
-    active: props.nodeIsSpoilered,
+    active: selectedNodeAttrs.value?.spoiler,
   },
   {
     separator: true,
@@ -83,14 +78,14 @@ const nodeActions = computed(() => [
   {
     icon: ArrowUp,
     label: 'Вверх',
-    action: () => emit('moveNode', 'up'),
-    disabled: !props.neighborNodes?.prevNode
+    action: () => moveNode('up'),
+    disabled: !selectedNodeNeighbors.value?.prevNode
   },
   {
     icon: ArrowDown,
     label: 'Вниз',
-    action: () => emit('moveNode', 'down'),
-    disabled: !props.neighborNodes?.nextNode
+    action: () => moveNode('down'),
+    disabled: !selectedNodeNeighbors.value?.nextNode
   },
   {
     separator: true,
@@ -102,20 +97,20 @@ const nodeActions = computed(() => [
       {
         icon: Heading,
         label: 'Заголовок',
-        hide: ['bulletList', 'orderedList'].includes(props.nodeType),
+        hide: ['bulletList', 'orderedList'].includes(selectedNodeType.value),
         action: () => emit('changeNodeType', { type: 'heading', level: 2 }),
         subitems: [
           {
             icon: Heading1,
             label: '1 уровня',
             action: () => emit('changeNodeType', { type: 'heading', level: 1 }),
-            hide: props.nodeAttrs.level === 1,
+            hide: selectedNodeAttrs.value?.level === 1,
           },
           {
             icon: Heading2,
             label: '2 уровня',
             action: () => emit('changeNodeType', { type: 'heading', level: 2 }),
-            hide: props.nodeAttrs.level === 2,
+            hide: selectedNodeAttrs.value?.level === 2,
           },
         ],
       },
@@ -123,7 +118,7 @@ const nodeActions = computed(() => [
         icon: Paragraph,
         label: 'Текст',
         action: () => emit('changeNodeType', { type: 'paragraph' }),
-        hide: props.nodeType === 'paragraph',
+        hide: selectedNodeType.value === 'paragraph',
       },
       {
         icon: List,
@@ -134,13 +129,13 @@ const nodeActions = computed(() => [
             icon: List,
             label: 'Маркированный',
             action: () => emit('changeNodeType', { type: 'bulletList' }),
-            hide: props.nodeType === 'bulletList',
+            hide: selectedNodeType.value === 'bulletList',
           },
           {
             icon: ListNumbers,
             label: 'Нумерованный',
             action: () => emit('changeNodeType', { type: 'orderedList' }),
-            hide: props.nodeType === 'orderedList',
+            hide: selectedNodeType.value === 'orderedList',
           },
         ],
       },

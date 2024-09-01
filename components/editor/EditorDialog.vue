@@ -1,6 +1,6 @@
 <template>
   <Dialog :class="editorDialogClasses" @close="setOpen(false)" ref="dialogRef">
-    <Editor :data />
+    <Editor />
 
     <template #footer>
       <EditorPanel />

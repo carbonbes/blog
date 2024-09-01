@@ -4,7 +4,7 @@
     contentClass="relative overflow-x-hidden"
     withSlideTransition
     :slideTransitionIndex="state.view"
-    @isOpen="(value) => emit('onOpen', value)"
+    @onOpen="(value) => emit('onOpen', value)"
     @close="onClose"
     ref="bottomsheetRef"
   >
@@ -57,7 +57,6 @@
 <script lang="ts" setup>
 import type BottomSheet from '~/components/global/BottomSheet.vue'
 import type { HeadingLevel, NodeType } from '~/types'
-import type { Node } from '@tiptap/pm/model'
 import Pin from '~icons/tabler/pin'
 import EyeOff from '~icons/tabler/eye-off'
 import ArrowUp from '~icons/tabler/arrow-up'
@@ -70,30 +69,22 @@ import List from '~icons/tabler/list'
 import ListNumbers from '~icons/tabler/list-numbers'
 import Trash from '~icons/tabler/trash'
 
-const props = defineProps<{
-  nodeIsPinned: boolean
-  nodeIsSpoilered: boolean
-  nodeType: NodeType
-  neighborNodes: { prevNode: Node | null, nextNode: Node | null } | null
-}>()
-
 const emit = defineEmits<{
   onOpen: [boolean]
-  close: [void]
   moveNode: [direction: 'up' | 'down']
   toggleAttribute: [attr: 'pin' | 'spoiler']
   changeNodeType: [{ type: NodeType, level?: HeadingLevel }]
   removeNode: [void]
 }>()
 
-const state: {
-  view: 1 | 2
-} = reactive({
+const { selectedNodeAttrs, selectedNodeNeighbors } = useEditor()
+
+const state = reactive({
   view: 1
 })
 
 function onClose() {
-  emit('close')
+  emit('onOpen', false)
   state.view = 1
 }
 
@@ -101,7 +92,7 @@ const buttons = computed(() => [
   {
     icon: Pin,
     label: 'Вывести в карточке',
-    active: props.nodeIsPinned,
+    active: selectedNodeAttrs.value?.pin,
     action: () => {
       emit('toggleAttribute', 'pin')
       setOpen(false)
@@ -110,7 +101,7 @@ const buttons = computed(() => [
   {
     icon: EyeOff,
     label: 'Скрыть',
-    active: props.nodeIsSpoilered,
+    active: selectedNodeAttrs.value?.spoiler,
     action: () => {
       emit('toggleAttribute', 'spoiler')
       setOpen(false)
@@ -119,7 +110,7 @@ const buttons = computed(() => [
   {
     icon: ArrowUp,
     label: 'Поднять наверх',
-    disabled: !props.neighborNodes?.prevNode,
+    disabled: !selectedNodeNeighbors.value?.prevNode,
     action: () => {
       emit('moveNode', 'up')
       setOpen(false)
@@ -128,7 +119,7 @@ const buttons = computed(() => [
   {
     icon: ArrowDown,
     label: 'Опустить вниз',
-    disabled: !props.neighborNodes?.nextNode,
+    disabled: !selectedNodeNeighbors.value?.nextNode,
     action: () => {
       emit('moveNode', 'down')
       setOpen(false)
