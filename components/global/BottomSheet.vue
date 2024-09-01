@@ -22,7 +22,7 @@
 
         <Flex
           center
-          class="p-4 pb-8 touch-none"
+          class="py-4 pb-8 touch-none"
           ref="dialogContentHeaderRef"
         >
           <div class="w-10 h-1 bg-gray-400 rounded-full" />

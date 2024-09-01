@@ -2,6 +2,7 @@
   <input
     :type
     :placeholder
+    :autofocus
     :disabled
     :class="classes"
     v-model="model"
