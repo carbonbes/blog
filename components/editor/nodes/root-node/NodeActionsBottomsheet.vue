@@ -2,7 +2,8 @@
   <BottomSheet
     class="top-full !bg-gray-100 after:!bg-gray-100"
     contentClass="relative overflow-x-hidden"
-    footerClass="p-4"
+    withSlideTransition
+    :slideTransitionIndex="state.view"
     @isOpen="(value) => emit('onOpen', value)"
     @close="onClose"
     ref="bottomsheetRef"
@@ -20,38 +21,36 @@
       </FadeInOpacityTransition>
     </template>
 
-    <SlideTransition :index="state.view">
-      <Flex v-if="state.view === 1" col class="px-4 w-full pb-[25%] !flex gap-4">
-        <UIButton
-          v-for="(button, i) in buttons"
-          :key="i"
-          variant="secondary"
-          size="l"
-          class="flex items-center gap-3 !rounded-2xl !shadow"
-          :class="[{ 'text-blue-500': button.active }]"
-          @click="button.action"
-          :disabled="button.disabled"
-        >
-          <Component :is="button.icon" />
-          {{ button.label }}
-          <ITablerChevronRight v-if="button.additional" class="ml-auto" />
-        </UIButton>
-      </Flex>
+    <Flex v-if="state.view === 1" col class="w-full pb-[25%] !flex gap-4">
+      <UIButton
+        v-for="(button, i) in buttons"
+        :key="i"
+        variant="secondary"
+        size="l"
+        class="flex items-center gap-3 !rounded-2xl !shadow"
+        :class="[{ 'text-blue-500': button.active }]"
+        @click="button.action"
+        :disabled="button.disabled"
+      >
+        <Component :is="button.icon" />
+        {{ button.label }}
+        <ITablerChevronRight v-if="button.additional" class="ml-auto" />
+      </UIButton>
+    </Flex>
 
-      <Flex v-else col class="px-4 w-full pb-[25%] !flex gap-4">
-        <UIButton
-          v-for="(button, i) in changeNodeTypeButtons"
-          :key="i"
-          variant="secondary"
-          size="l"
-          class="flex items-center gap-3 !rounded-2xl !shadow"
-          @click="button.action"
-        >
-          <Component :is="button.icon" />
-          {{ button.label }}
-        </UIButton>
-      </Flex>
-    </SlideTransition>
+    <Flex v-else col class="w-full pb-[25%] !flex gap-4">
+      <UIButton
+        v-for="(button, i) in changeNodeTypeButtons"
+        :key="i"
+        variant="secondary"
+        size="l"
+        class="flex items-center gap-3 !rounded-2xl !shadow"
+        @click="button.action"
+      >
+        <Component :is="button.icon" />
+        {{ button.label }}
+      </UIButton>
+    </Flex>
   </BottomSheet>
 </template>
 
@@ -63,7 +62,6 @@ import Pin from '~icons/tabler/pin'
 import EyeOff from '~icons/tabler/eye-off'
 import ArrowUp from '~icons/tabler/arrow-up'
 import ArrowDown from '~icons/tabler/arrow-down'
-import ArrowLeft from '~icons/tabler/arrow-left'
 import Refresh from '~icons/tabler/refresh'
 import Heading1 from '~icons/tabler/h1'
 import Heading2 from '~icons/tabler/h2'

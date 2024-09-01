@@ -35,12 +35,18 @@
           @touchstart="state.isHovered = true"
           @touchend="state.isHovered = false"
         >
-          <slot />
+          <Component
+            :is="withSlideTransition ? 'SlideTransition' : 'div'"
+            :index="withSlideTransition ? slideTransitionIndex : undefined"
+            class="px-4"
+          >
+            <slot />
+          </Component>
         </div>
 
         <Flex
           v-if="$slots.footer"
-          class="h-20"
+          class="p-4 h-20"
           :class="[footerClass]"
         >
           <slot name="footer" />
@@ -66,6 +72,8 @@ const props = defineProps<
     class?: string
     contentClass?: string
     footerClass?: string
+    withSlideTransition?: boolean
+    slideTransitionIndex?: number
   }
 >()
 

@@ -5,7 +5,7 @@
     @close="emit('close')"
     ref="bottomsheetRef"
   >
-    <Flex col class="px-4 w-full pb-[25%] !flex gap-4">
+    <Flex col class="w-full pb-[25%] !flex gap-4">
       <UIButton
         v-for="(button, i) in buttons"
         :key="i"
