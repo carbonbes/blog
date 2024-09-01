@@ -2,6 +2,7 @@
   <BottomSheet
     class="top-full !bg-gray-100 after:!bg-gray-100"
     contentClass="relative overflow-x-hidden"
+    footerClass="p-4"
     @isOpen="(value) => emit('onOpen', value)"
     @close="onClose"
     ref="bottomsheetRef"
@@ -11,23 +12,22 @@
         <UIButton
           v-if="state.view === 2"
           size="l"
-          class="w-full flex items-center justify-center gap-3"
+          class="w-full flex items-center justify-center gap-3 !rounded-2xl !shadow"
           @click="state.view = 1"
         >
-          <ArrowLeft />
           Назад
         </UIButton>
       </FadeInOpacityTransition>
     </template>
 
     <SlideTransition :index="state.view">
-      <Flex v-if="state.view === 1" col class="w-full pb-[25vh] !flex gap-4">
+      <Flex v-if="state.view === 1" col class="px-4 w-full pb-[25%] !flex gap-4">
         <UIButton
           v-for="(button, i) in buttons"
           :key="i"
           variant="secondary"
           size="l"
-          class="flex items-center gap-3"
+          class="flex items-center gap-3 !rounded-2xl !shadow"
           :class="[{ 'text-blue-500': button.active }]"
           @click="button.action"
           :disabled="button.disabled"
@@ -38,13 +38,13 @@
         </UIButton>
       </Flex>
 
-      <Flex v-else col class="w-full pb-[25vh] !flex gap-4">
+      <Flex v-else col class="px-4 w-full pb-[25%] !flex gap-4">
         <UIButton
           v-for="(button, i) in changeNodeTypeButtons"
           :key="i"
           variant="secondary"
           size="l"
-          class="flex items-center gap-3"
+          class="flex items-center gap-3 !rounded-2xl !shadow"
           @click="button.action"
         >
           <Component :is="button.icon" />

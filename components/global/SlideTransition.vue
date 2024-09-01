@@ -16,15 +16,9 @@
 </template>
 
 <script lang="ts" setup>
-const props = withDefaults(
-  defineProps<{
-    index: number
-    duration?: number
-  }>(),
-  {
-    duration: 200
-  }
-)
+const props = defineProps<{
+  index: number
+}>()
 
 const emits = defineEmits<{
   onBeforeEnter: [void]
@@ -36,13 +30,6 @@ const emits = defineEmits<{
   onAfterLeave: [void]
   onLeaveCancelled: [void]
 }>()
-
-watchEffect(() => {
-  if (process.server) return
-
-  const html = document.querySelector('html')
-  html?.style.setProperty('--slideTransitionDuration', `${props.duration}ms`)
-})
 
 const name = ref('')
 
@@ -56,13 +43,13 @@ watch(
 
 const enterActiveClass = computed(() =>
   name.value === 'next'
-    ? '!absolute animate-[next_var(--slideTransitionDuration)]'
-    : '!absolute animate-[previous-reverse_var(--slideTransitionDuration)]'
+    ? '!absolute animate-next'
+    : '!absolute animate-previous-reverse'
 )
 
 const leaveActiveClass = computed(() =>
   name.value === 'next'
-    ? '!absolute animate-[previous_var(--slideTransitionDuration)]'
-    : '!absolute animate-[next-reverse_var(--slideTransitionDuration)]'
+    ? '!absolute animate-previous'
+    : '!absolute animate-next-reverse'
 )
 </script>

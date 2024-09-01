@@ -20,12 +20,12 @@ export default {
           '40%, 60%': { transform: 'translate3d(4px, 0, 0)' },
         },
         next: {
-          '0%': { opacity: 0, transform: 'translateX(100%)' },
-          '100%': { opacity: 1, transform: 'translateX(0)' },
+          '0%': { opacity: 0, transform: 'translate3d(100%, 0, 0)' },
+          '100%': { opacity: 1, transform: 'translate3d(0, 0, 0)' },
         },
         previous: {
-          '0%': { opacity: 1, transform: 'translateX(0)' },
-          '100%': { opacity: 0, transform: 'translateX(-100%)' },
+          '0%': { opacity: 1, transform: 'translate3d(0, 0, 0)' },
+          '100%': { opacity: 0, transform: 'translate3d(-100%, 0, 0)' },
         },
         notification: {
           '0%': { opacity: 0, transform: 'translateX(100%)' },
@@ -57,10 +57,10 @@ export default {
 
       animation: {
         shake: 'shake 0.6s cubic-bezier(.36,.07,.19,.97) both',
-        next: 'next',
-        'next-reverse': 'next reverse',
-        previous: 'previous',
-        'previous-reverse': 'previous reverse',
+        next: 'next 0.2s ease',
+        'next-reverse': 'next reverse 0.2s ease',
+        previous: 'previous 0.2s ease',
+        'previous-reverse': 'previous reverse 0.2s ease',
         notification: 'notification .25s ease',
         'fade-in-top-side': 'fade-in-top-side',
         'fade-in-right-side': 'fade-in-right-side',

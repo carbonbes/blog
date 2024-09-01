@@ -4,7 +4,7 @@
     otp
     type="number"
     v-model="code"
-    class="flex gap-3 items-center"
+    class="flex gap-3"
     :class="[state]"
     @complete="(e) => emit('complete', e.join(''))"
   >
@@ -12,6 +12,7 @@
       v-for="(id, index) in length"
       :key="id"
       :index="index"
+      class="w-10 h-10 sm:w-8 sm:h-8 rounded-lg placeholder:text-gray-400 text-center outline-none border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 disabled:opacity-25 disabled:pointer-events-none transition"
       :class="pinInputInputClasses"
       :disabled
       ref="pinInputs"
@@ -23,9 +24,10 @@
 import { promiseTimeout } from '@vueuse/core'
 import type { PinInputInput } from 'radix-vue'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   length?: number
   disabled?: boolean
+  autofocus?: boolean
 }>(), {
   length: 6
 })
@@ -37,16 +39,12 @@ const emit = defineEmits<{
 const code = ref<string[]>([])
 const pinInputs = ref<typeof PinInputInput[]>()
 
-const state: {
-  success: boolean
-  error: boolean
-} = reactive({
+const state = reactive({
   success: false,
   error: false
 })
 
 const pinInputInputClasses = computed(() => ({
-  'w-10 h-10 sm:w-8 sm:h-8 rounded-lg placeholder:text-gray-400 text-center outline-none border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 disabled:opacity-25 disabled:pointer-events-none transition': true,
   '!border-green-500': state.success,
   '!border-red-500 animate-shake': state.error
 }))
@@ -65,7 +63,15 @@ async function showError() {
   pinInputs.value![0].$el.focus()
 }
 
-onMounted(() => pinInputs.value![0].$el.focus())
+function focus() {
+  pinInputs.value![0].$el.focus()
+}
 
-defineExpose({ showSuccess, showError })
+onMounted(() => {
+  if (!props.autofocus) return
+
+  focus()
+})
+
+defineExpose({ focus, showSuccess, showError })
 </script>

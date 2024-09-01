@@ -7,15 +7,22 @@
       <SlideTransition
         :index="state.tab"
         @afterEnter="emailInputFocus"
-        @onEnterCancelled="emailInputFocus"
       >
         <Flex
           v-if="state.tab === 1"
           col
           class="relative w-full h-full overflow-hidden"
         >
-          <SlideTransition :index="state.signInStep">
-            <Flex v-if="state.signInStep === 1" col justifyCenter :class="stepClasses">
+          <SlideTransition
+            :index="state.signInStep"
+            @afterEnter="pinInputFocus"
+          >
+            <Flex
+              v-if="state.signInStep === 1"
+              col
+              justifyCenter
+              :class="stepClasses"
+            >
               <Flex col class="mt-auto gap-4">
                 <p class="text-center text-lg font-bold">Вход</p>
                 <UIInput
@@ -23,7 +30,7 @@
                   placeholder="Почта"
                   :disabled="state.signInRequesting"
                   v-model.trim="signInEmail"
-                  ref="signInEmailInput"
+                  ref="emailInputRef"
                 />
                 <UIButton
                   class="font-medium"
@@ -44,12 +51,18 @@
               </UIButton>
             </Flex>
 
-            <Flex v-else col center :class="stepClasses">
+            <Flex
+              v-else
+              col
+              justifyCenter
+              :class="stepClasses"
+            >
               <Flex col class="mt-auto gap-4">
                 <p class="font-medium text-center">Введите код из письма</p>
                 <PinInput
                   :disabled="state.otpVerifying || state.signInRequesting"
                   @complete="requestVerifySignInOtp"
+                  class="justify-center"
                   ref="pinInputRef"
                 />
               </Flex>
@@ -80,8 +93,16 @@
           col
           class="relative w-full h-full overflow-hidden"
         >
-          <SlideTransition :index="state.signUpStep">
-            <Flex v-if="state.signUpStep === 1" col justifyCenter :class="stepClasses">
+          <SlideTransition
+            :index="state.signUpStep"
+            @afterEnter="pinInputFocus"
+          >
+            <Flex
+              v-if="state.signUpStep === 1"
+              col
+              justifyCenter
+              :class="stepClasses"
+            >
               <Flex col class="mt-auto gap-4">
                 <p class="text-center text-lg font-bold">Регистрация</p>
                 <UIInput
@@ -89,7 +110,7 @@
                   placeholder="Почта"
                   :disabled="state.signUpRequesting"
                   v-model.trim="signUpFormData.email"
-                  ref="signUpEmailInput"
+                  ref="emailInputRef"
                 />
                 <UIInput
                   placeholder="Имя"
@@ -117,12 +138,18 @@
               </UIButton>
             </Flex>
 
-            <Flex v-else col center :class="stepClasses">
+            <Flex
+              v-else
+              col
+              justifyCenter
+              :class="stepClasses"
+            >
               <Flex col class="mt-auto gap-4">
                 <p class="font-medium text-center">Введите код из письма</p>
                 <PinInput
                   :disabled="state.otpVerifying || state.signUpRequesting"
                   @complete="requestVerifySignUpOtp"
+                  class="justify-center"
                   ref="pinInputRef"
                 />
               </Flex>
@@ -163,15 +190,7 @@ definePageMeta({
 const { getMe } = useMe()
 const { successNotify, errorNotify } = useNotifications()
 
-const state: {
-  tab: 1 | 2
-  signInStep: 1 | 2
-  signUpStep: 1 | 2
-  signInRequesting: boolean
-  signUpRequesting: boolean
-  otpVerifying: boolean
-  canResendOtp: boolean
-} = reactive({
+const state = reactive({
   tab: 1,
   signInStep: 1,
   signUpStep: 1,
@@ -181,18 +200,25 @@ const state: {
   canResendOtp: false
 })
 
-const signInEmailInput = ref<HTMLInputElement>()
-const signUpEmailInput = ref<HTMLInputElement>()
+const emailInputRef = ref<HTMLInputElement>()
 
 function emailInputFocus() {
-  if (state.tab === 1 && state.signInStep === 1 && signInEmailInput.value) {
-    signInEmailInput.value.focus()
-  } else if (state.tab === 2 && state.signUpStep === 1 && signUpEmailInput.value) {
-    signUpEmailInput.value.focus()
+  if (state.tab === 1 && state.signInStep === 1 && emailInputRef.value) {
+    emailInputRef.value.focus()
+  } else if (state.tab === 2 && state.signUpStep === 1 && emailInputRef.value) {
+    emailInputRef.value.focus()
   }
 }
 
 onMounted(emailInputFocus)
+
+function pinInputFocus() {
+  if (state.tab === 1 && state.signInStep === 2 && pinInputRef.value) {
+    pinInputRef.value.focus()
+  } else if (state.tab === 2 && state.signUpStep === 2 && pinInputRef.value) {
+    pinInputRef.value.focus()
+  }
+}
 
 const signInEmail = ref('')
 
@@ -201,9 +227,9 @@ const signUpFormData = reactive({
   name: '',
 })
 
-const stepClasses = 'p-8 h-full'
+const stepClasses = 'relative p-8 w-full h-full'
 
-const countdownRef = ref<typeof Countdown>()
+const countdownRef = ref<InstanceType<typeof Countdown>>()
 
 async function requestSignIn(resend?: boolean) {
   state.signInRequesting = true
@@ -241,7 +267,7 @@ async function requestSignUp(resend?: boolean) {
   }
 }
 
-const pinInputRef = ref<typeof PinInput>()
+const pinInputRef = ref<InstanceType<typeof PinInput>>()
 
 async function requestVerifySignInOtp(code: string) {
   state.otpVerifying = true

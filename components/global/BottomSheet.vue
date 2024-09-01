@@ -20,12 +20,16 @@
           <DialogTitle />
         </VisuallyHidden>
 
-        <Flex center class="p-4 pb-8 touch-none" ref="dialogContentHeaderRef">
+        <Flex
+          center
+          class="p-4 pb-8 touch-none"
+          ref="dialogContentHeaderRef"
+        >
           <div class="w-10 h-1 bg-gray-400 rounded-full" />
         </Flex>
 
         <div
-          class="px-4 w-full h-full touch-pan-y overflow-y-auto"
+          class="w-full h-full touch-pan-y overflow-y-auto"
           :class="[contentClass, { 'overflow-y-hidden': state.isSwiping }]"
           ref="dialogScrollableContentRef"
           @touchstart="state.isHovered = true"
@@ -34,7 +38,11 @@
           <slot />
         </div>
 
-        <Flex v-if="$slots.footer" class="p-4 h-20">
+        <Flex
+          v-if="$slots.footer"
+          class="h-20"
+          :class="[footerClass]"
+        >
           <slot name="footer" />
         </Flex>
       </DialogContent>
@@ -57,6 +65,7 @@ const props = defineProps<
   DialogContentProps & {
     class?: string
     contentClass?: string
+    footerClass?: string
   }
 >()
 
