@@ -1,5 +1,5 @@
 import { Editor, type Extensions, type JSONContent } from '@tiptap/vue-3'
-import { NodeSelection, NodeSelection } from '@tiptap/pm/state'
+import { NodeSelection } from '@tiptap/pm/state'
 import type { HeadingLevel, NodeType } from '~/types'
 import Document from '~/tiptap-extensions/document'
 import RootNode from '~/tiptap-extensions/root-node'
@@ -133,33 +133,35 @@ export default function useEditor() {
     const dispatch = editor.value?.view.dispatch!
     const tr = editor.value!.state.tr
 
-    const selectedNodeSize = selectedNode.value?.nodeSize!
-
+    const { nodeSize: selectedNodeSize } = selectedNode.value!
+    const { from: selectedNodeStartPos, to: selectedNodeEndPos } = selectedNodePos.value!
+    const { prevNode, nextNode } = selectedNodeNeighbors.value!
+    
     if (direction === 'up') {
-      const previousNodeStartPos = selectedNodePos.value!.from - selectedNodeNeighbors.value!.prevNode!.nodeSize
-      const previousNodeEndPos = selectedNodePos.value!.from
-      const previousNodeSize = selectedNodeNeighbors.value!.prevNode!.nodeSize
-      const prevNode = selectedNodeNeighbors.value?.prevNode!
+      if (!prevNode) return
+
+      const prevNodeSize = prevNode.nodeSize
+      const previousNodeStartPos = selectedNodeStartPos - prevNodeSize
+      const previousNodeEndPos = selectedNodeStartPos
 
       tr
         .delete(previousNodeStartPos, previousNodeEndPos)
-        .insert(selectedNodePos.value!.from - previousNodeSize + selectedNodeSize, prevNode)
+        .insert(selectedNodeStartPos - prevNodeSize + selectedNodeSize, prevNode)
         .scrollIntoView()
-
-      dispatch(tr)
     } else {
-      const nextNodeStartPos = selectedNodePos.value!.to
-      const nextNodeEndPos = selectedNodePos.value!.to + selectedNodeNeighbors.value!.nextNode!.nodeSize
-      const nextNodeSize = selectedNodeNeighbors.value!.nextNode!.nodeSize
-      const nextNode = selectedNodeNeighbors.value?.nextNode!
+      if (!nextNode) return
+
+      const nextNodeSize = nextNode.nodeSize
+      const nextNodeStartPos = selectedNodeEndPos
+      const nextNodeEndPos = selectedNodeEndPos + nextNodeSize
 
       tr
         .delete(nextNodeStartPos, nextNodeEndPos)
-        .insert(selectedNodePos.value!.from - nextNodeSize + selectedNodeSize, nextNode)
+        .insert(selectedNodeStartPos, nextNode)
         .scrollIntoView()
-
-      dispatch(tr)
     }
+
+    dispatch(tr)
   }
 
   function removeNode() {
