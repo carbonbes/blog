@@ -1,5 +1,10 @@
 <template>
-  <Dropdown :items="nodeActions" :side-offset="5" @isOpen="onOpen" ref="dropdownRef">
+  <Dropdown
+    :items="nodeActions"
+    :side-offset="5"
+    @isOpen="onOpen"
+    ref="dropdownRef"
+  >
     <UIButton
       size="s"
       variant="secondary"
@@ -7,14 +12,13 @@
       draggable
       data-drag-handle
     >
-      <ITablerGripVertical class="!size-4" />
+      <ITablerGripVertical class="!size-4 pointer-events-none" />
     </UIButton>
   </Dropdown>
 </template>
 
 <script lang="ts" setup>
 import type Dropdown from '~/components/global/dropdown/Dropdown.vue'
-import type { HeadingLevel, NodeType } from '~/types'
 import Paragraph from '~icons/tabler/letter-case'
 import Heading from '~icons/tabler/heading'
 import List from '~icons/tabler/list'
@@ -28,18 +32,23 @@ import Heading2 from '~icons/tabler/h2'
 import ListNumbers from '~icons/tabler/list-numbers'
 import Trash from '~icons/tabler/trash'
 
+const props = defineProps<{
+  pos: number
+  nodeAttrs: any
+}>()
+
 const emit = defineEmits<{
   onOpen: [boolean]
-  changeNodeType: [{ type: NodeType, level?: HeadingLevel }]
-  toggleAttribute: [attr: 'pin' | 'spoiler']
-  removeNode: [void]
 }>()
 
 const {
   selectedNodeType,
-  selectedNodeAttrs,
   selectedNodeNeighbors,
-  moveNode
+  setNodeSelection,
+  toggleNodeAttribute,
+  moveNode,
+  removeNode,
+  changeNodeType,
 } = useEditor()
 
 const dropdownRef = ref<InstanceType<typeof Dropdown>>()
@@ -51,9 +60,7 @@ function onOpen(value: boolean) {
   isOpen.value = value
 }
 
-function removeNode() {
-  emit('removeNode')
-
+function close() {
   dropdownRef.value?.setOpen(false)
   emit('onOpen', false)
 }
@@ -62,15 +69,20 @@ const nodeActions = computed(() => [
   {
     icon: Pin,
     label: 'Вывести в карточке',
-    action: () => emit('toggleAttribute', 'pin'),
-    active: selectedNodeAttrs.value?.pin,
-    // disabled: !props.nodeIsPinned && props.editor.extensionStorage.rootNode.pinned === 2
+    action: () => {
+      setNodeSelection(props.pos)
+      toggleNodeAttribute('pin')
+    },
+    active: props.nodeAttrs.pin,
   },
   {
     icon: EyeOff,
     label: 'Скрыть',
-    action: () => emit('toggleAttribute', 'spoiler'),
-    active: selectedNodeAttrs.value?.spoiler,
+    action: () => {
+      setNodeSelection(props.pos)
+      toggleNodeAttribute('spoiler')
+    },
+    active: props.nodeAttrs.spoiler,
   },
   {
     separator: true,
@@ -98,43 +110,43 @@ const nodeActions = computed(() => [
         icon: Heading,
         label: 'Заголовок',
         hide: ['bulletList', 'orderedList'].includes(selectedNodeType.value),
-        action: () => emit('changeNodeType', { type: 'heading', level: 2 }),
+        action: () => changeNodeType({ type: 'heading', level: 2 }),
         subitems: [
           {
             icon: Heading1,
             label: '1 уровня',
-            action: () => emit('changeNodeType', { type: 'heading', level: 1 }),
-            hide: selectedNodeAttrs.value?.level === 1,
+            action: () => changeNodeType({ type: 'heading', level: 1 }),
+            hide: props.nodeAttrs.level === 1,
           },
           {
             icon: Heading2,
             label: '2 уровня',
-            action: () => emit('changeNodeType', { type: 'heading', level: 2 }),
-            hide: selectedNodeAttrs.value?.level === 2,
+            action: () => changeNodeType({ type: 'heading', level: 2 }),
+            hide: props.nodeAttrs.level === 2,
           },
         ],
       },
       {
         icon: Paragraph,
         label: 'Текст',
-        action: () => emit('changeNodeType', { type: 'paragraph' }),
+        action: () => changeNodeType({ type: 'paragraph' }),
         hide: selectedNodeType.value === 'paragraph',
       },
       {
         icon: List,
         label: 'Список',
-        action: () => emit('changeNodeType', { type: 'bulletList' }),
+        action: () => changeNodeType({ type: 'bulletList' }),
         subitems: [
           {
             icon: List,
             label: 'Маркированный',
-            action: () => emit('changeNodeType', { type: 'bulletList' }),
+            action: () => changeNodeType({ type: 'bulletList' }),
             hide: selectedNodeType.value === 'bulletList',
           },
           {
             icon: ListNumbers,
             label: 'Нумерованный',
-            action: () => emit('changeNodeType', { type: 'orderedList' }),
+            action: () => changeNodeType({ type: 'orderedList' }),
             hide: selectedNodeType.value === 'orderedList',
           },
         ],
@@ -147,7 +159,10 @@ const nodeActions = computed(() => [
   {
     icon: Trash,
     label: 'Удалить',
-    action: removeNode,
+    action: () => {
+      removeNode()
+      close()
+    },
   },
 ])
 </script>

@@ -56,7 +56,6 @@
 
 <script lang="ts" setup>
 import type BottomSheet from '~/components/global/BottomSheet.vue'
-import type { HeadingLevel, NodeType } from '~/types'
 import Pin from '~icons/tabler/pin'
 import EyeOff from '~icons/tabler/eye-off'
 import ArrowUp from '~icons/tabler/arrow-up'
@@ -71,13 +70,16 @@ import Trash from '~icons/tabler/trash'
 
 const emit = defineEmits<{
   onOpen: [boolean]
-  moveNode: [direction: 'up' | 'down']
-  toggleAttribute: [attr: 'pin' | 'spoiler']
-  changeNodeType: [{ type: NodeType, level?: HeadingLevel }]
-  removeNode: [void]
 }>()
 
-const { selectedNodeAttrs, selectedNodeNeighbors } = useEditor()
+const {
+  selectedNodeAttrs,
+  selectedNodeNeighbors,
+  toggleNodeAttribute,
+  moveNode,
+  removeNode,
+  changeNodeType,
+} = useEditor()
 
 const state = reactive({
   view: 1
@@ -94,7 +96,7 @@ const buttons = computed(() => [
     label: 'Вывести в карточке',
     active: selectedNodeAttrs.value?.pin,
     action: () => {
-      emit('toggleAttribute', 'pin')
+      toggleNodeAttribute('pin')
       setOpen(false)
     }
   },
@@ -103,7 +105,7 @@ const buttons = computed(() => [
     label: 'Скрыть',
     active: selectedNodeAttrs.value?.spoiler,
     action: () => {
-      emit('toggleAttribute', 'spoiler')
+      toggleNodeAttribute('spoiler')
       setOpen(false)
     }
   },
@@ -112,7 +114,7 @@ const buttons = computed(() => [
     label: 'Поднять наверх',
     disabled: !selectedNodeNeighbors.value?.prevNode,
     action: () => {
-      emit('moveNode', 'up')
+      moveNode('up')
       setOpen(false)
     }
   },
@@ -121,7 +123,7 @@ const buttons = computed(() => [
     label: 'Опустить вниз',
     disabled: !selectedNodeNeighbors.value?.nextNode,
     action: () => {
-      emit('moveNode', 'down')
+      moveNode('down')
       setOpen(false)
     }
   },
@@ -137,7 +139,7 @@ const buttons = computed(() => [
     icon: Trash,
     label: 'Удалить',
     action: () => {
-      emit('removeNode')
+      removeNode()
       setOpen(false)
     }
   },
@@ -148,7 +150,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: Heading1,
     label: 'Заголовок 1',
     action: () => {
-      emit('changeNodeType', { type: 'heading', level: 1 })
+      changeNodeType({ type: 'heading', level: 1 })
       setOpen(false)
     }
   },
@@ -156,7 +158,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: Heading2,
     label: 'Заголовок 2',
     action: () => {
-      emit('changeNodeType', { type: 'heading', level: 2 })
+      changeNodeType({ type: 'heading', level: 2 })
       setOpen(false)
     }
   },
@@ -164,7 +166,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: Paragraph,
     label: 'Текст',
     action: () => {
-      emit('changeNodeType', { type: 'paragraph' })
+      changeNodeType({ type: 'paragraph' })
       setOpen(false)
     }
   },
@@ -172,7 +174,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: ListNumbers,
     label: 'Нумерованный список',
     action: () => {
-      emit('changeNodeType', { type: 'orderedList' })
+      changeNodeType({ type: 'orderedList' })
       setOpen(false)
     }
   },
@@ -180,7 +182,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: List,
     label: 'Маркированный список',
     action: () => {
-      emit('changeNodeType', { type: 'bulletList' })
+      changeNodeType({ type: 'bulletList' })
       setOpen(false)
     }
   },

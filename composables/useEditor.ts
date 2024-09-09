@@ -1,5 +1,5 @@
 import { Editor, type Extensions, type JSONContent } from '@tiptap/vue-3'
-import { NodeSelection } from '@tiptap/pm/state'
+import { NodeSelection, NodeSelection } from '@tiptap/pm/state'
 import type { HeadingLevel, NodeType } from '~/types'
 import Document from '~/tiptap-extensions/document'
 import RootNode from '~/tiptap-extensions/root-node'
@@ -84,7 +84,7 @@ export default function useEditor() {
       to: (selection as NodeSelection).to
     }
   })
-  
+
   const selectedNodeNeighbors = computed(() => {
     if (!selectedNode.value) return null
 
@@ -102,42 +102,71 @@ export default function useEditor() {
     return { prevNode, nextNode }
   })
 
+  function setNodeSelection(pos: number) {
+    editor.value?.commands.setNodeSelection(pos)
+    selectedNode.value = (editor.value?.state.selection as NodeSelection).node
+  }
+
   function toggleNodeAttribute(attr: 'pin' | 'spoiler') {
-    const value = selectedNode.value?.attrs[attr]
+    const tr = editor.value?.view.state.tr!
+    const dispatch = editor.value?.view.dispatch!
 
-
-    editor.value?.state.tr.setNodeMarkup(selectedNodePos.value?.from!, null, {
-      
+    tr.setNodeMarkup(selectedNodePos.value?.from!, null, {
+      ...selectedNode.value?.attrs,
+      [attr]: !selectedNode.value?.attrs[attr]
     })
+
+    dispatch(tr)
+  }
+
+  function insertNode(type: NodeType, level?: HeadingLevel) {
+    let content: JSONContent[] | undefined
+  
+    if (['bulletList', 'orderedList'].includes(type)) {
+      content = [{ type: 'listItem', content: [{ type: 'paragraph', content: [] }] }]
+    }
+  
+    editor.value?.chain().insertContentAt(selectedNodePos.value!.to, { type, attrs: { level }, content }).focus().run()
   }
 
   function moveNode(direction: 'up' | 'down') {
-    const { view } = editor.value!
-    let tr = editor.value!.state.tr
-  
+    const dispatch = editor.value?.view.dispatch!
+    const tr = editor.value!.state.tr
+
+    const selectedNodeSize = selectedNode.value?.nodeSize!
+
     if (direction === 'up') {
       const previousNodeStartPos = selectedNodePos.value!.from - selectedNodeNeighbors.value!.prevNode!.nodeSize
       const previousNodeEndPos = selectedNodePos.value!.from
       const previousNodeSize = selectedNodeNeighbors.value!.prevNode!.nodeSize
-  
-      tr = tr
+      const prevNode = selectedNodeNeighbors.value?.prevNode!
+
+      tr
         .delete(previousNodeStartPos, previousNodeEndPos)
-        .insert(selectedNodePos.value!.from - previousNodeSize + selectedNode.value?.nodeSize!, selectedNodeNeighbors.value?.prevNode!)
+        .insert(selectedNodePos.value!.from - previousNodeSize + selectedNodeSize, prevNode)
         .scrollIntoView()
-  
-      view.dispatch(tr)
+
+      dispatch(tr)
     } else {
       const nextNodeStartPos = selectedNodePos.value!.to
       const nextNodeEndPos = selectedNodePos.value!.to + selectedNodeNeighbors.value!.nextNode!.nodeSize
       const nextNodeSize = selectedNodeNeighbors.value!.nextNode!.nodeSize
-  
-      tr = tr
+      const nextNode = selectedNodeNeighbors.value?.nextNode!
+
+      tr
         .delete(nextNodeStartPos, nextNodeEndPos)
-        .insert(selectedNodePos.value!.from - nextNodeSize + selectedNode.value?.nodeSize!, selectedNodeNeighbors.value?.nextNode!)
+        .insert(selectedNodePos.value!.from - nextNodeSize + selectedNodeSize, nextNode)
         .scrollIntoView()
-  
-      view.dispatch(tr)
+
+      dispatch(tr)
     }
+  }
+
+  function removeNode() {
+    const { dispatch } = editor.value?.view!
+    const tr = editor.value!.state.tr
+
+    dispatch(tr.delete(selectedNodePos.value?.from!, selectedNodePos.value?.to!))
   }
 
   function changeNodeType({
@@ -191,7 +220,11 @@ export default function useEditor() {
         handleClickOn(view, pos, node, nodePos, event, direct) {
           if (['sn-embed'].includes(node.type.name)) {
             editor.value?.commands.blur()
+
+            return true
           }
+
+          return false
         },
       },
 
@@ -205,10 +238,6 @@ export default function useEditor() {
           state: { selection, selection: { from, to } },
         },
       }) {
-        if (from !== to && selection instanceof NodeSelection) {
-          selectedNode.value = selection.node
-        }
-
         selectionIsEmpty.value = from === to || selection instanceof NodeSelection
 
         selectionRect.value = {
@@ -247,7 +276,11 @@ export default function useEditor() {
     selectedNodeType,
     selectedNodePos,
     selectedNodeNeighbors,
+    setNodeSelection,
+    toggleNodeAttribute,
+    insertNode,
     moveNode,
+    removeNode,
     changeNodeType,
     selectionIsEmpty,
     selectionRect,

@@ -31,53 +31,77 @@ import List from '~icons/tabler/list'
 import Photo from '~icons/tabler/photo'
 import Link from '~icons/tabler/link'
 import Divider from '~icons/tabler/divide'
-import type { HeadingLevel, NodeType } from '~/types'
 
 const emit = defineEmits<{
   close: any
-  insertNode: [type: NodeType, level?: HeadingLevel]
 }>()
+
+const { insertNode } = useEditor()
 
 const buttons = markRaw([
   {
     icon: Heading1,
     label: 'Заголовок 1',
-    action: () => emit('insertNode', 'heading', 1)
+    action: () => {
+      insertNode('heading', 1)
+      setOpen(false)
+    }
   },
   {
     icon: Heading2,
     label: 'Заголовок 2',
-    action: () => emit('insertNode', 'heading', 2)
+    action: () => {
+      insertNode('heading', 2)
+      setOpen(false)
+    }
   },
   {
     icon: Paragraph,
     label: 'Текст',
-    action: () => emit('insertNode', 'paragraph')
+    action: () => {
+      insertNode('paragraph')
+      setOpen(false)
+    }
   },
   {
     icon: ListNumbers,
     label: 'Нумерованный список',
-    action: () => emit('insertNode', 'orderedList')
+    action: () => {
+      insertNode('orderedList')
+      setOpen(false)
+    }
   },
   {
     icon: List,
     label: 'Маркированный список',
-    action: () => emit('insertNode', 'bulletList')
+    action: () => {
+      insertNode('bulletList')
+      setOpen(false)
+    }
   },
   {
     icon: Photo,
     label: 'Картинка / Галерея',
-    action: () => emit('insertNode', 'gallery')
+    action: () => {
+      insertNode('gallery')
+      setOpen(false)
+    }
   },
   {
     icon: Link,
     label: 'Ссылка',
-    action: () => emit('insertNode', 'link')
+    action: () => {
+      insertNode('link')
+      setOpen(false)
+    }
   },
   {
     icon: Divider,
     label: 'Разделитель',
-    action: () => emit('insertNode', 'delimiter')
+    action: () => {
+      insertNode('delimiter')
+      setOpen(false)
+    }
   },
 ])
 
@@ -85,6 +109,7 @@ const bottomsheetRef = ref<InstanceType<typeof BottomSheet>>()
 
 function setOpen(value: boolean) {
   bottomsheetRef.value?.setOpen(value)
+  emit('close')
 }
 
 defineExpose({ setOpen })

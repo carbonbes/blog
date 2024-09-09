@@ -1,19 +1,14 @@
 <template>
   <NodeViewWrapper :class="nodeClasses" data-type="root-node">
     <Flex
-      class="pt-3 sm:items-center gap-1 self-start hidden sm:flex sm:[&>button]:opacity-0 sm:group-hover/node:[&>button]:opacity-100 [&>button]:transition-opacity"
+      class="pt-1.5 sm:items-center gap-1 self-start hidden sm:flex sm:[&>button]:opacity-0 sm:group-hover/node:[&>button]:opacity-100 [&>button]:transition-opacity"
       contentEditable="false"
     >
       <UIButton size="s" variant="secondary">
         <ITablerPlus class="!size-4" />
       </UIButton>
 
-      <NodeActionsButton
-        @onOpen="onOpen"
-        @changeNodeType="changeNodeType"
-        @toggleAttribute="toggleAttribute"
-        @removeNode="deleteNode"
-      />
+      <NodeActionsButton :pos="getPos()" :nodeAttrs="node.attrs" @onOpen="onOpen" />
     </Flex>
 
     <Flex
@@ -32,8 +27,8 @@
       </Flex>
 
       <NodeViewContent
-        class="sm:py-2 sm:px-3 rounded-xl w-full [&_ol]:pl-4 [&_ul]:pl-4 not-first:[&_ul_>_li]:mt-2 not-first:[&_ol_>_li]:mt-2 [&_ol]:list-decimal [&_ul]:list-disc outline-none transition-colors"
-        :class="{ 'bg-blue-100/50': selectedNode }"
+        class="sm:py-2 sm:px-3 rounded-xl w-full [&_ol]:pl-4 [&_ul]:pl-4 not-first:[&_ul_>_li]:mt-2 not-first:[&_ol_>_li]:mt-2 [&_ol]:list-decimal [&_ul]:list-disc outline-none transition-colors duration-300"
+        :class="{ '!bg-blue-100/50': nodeIsSelected }"
       />
 
       <Flex
@@ -43,93 +38,82 @@
 
       <Flex col class="absolute top-0 right-0 gap-2 sm:hidden">
         <UIButton
-          v-if="selectedNodeAttrs?.pin"
+          v-if="node.attrs?.pin"
           size="s"
           variant="secondary"
         >
           <ITablerPin
             class="!size-4"
-            :class="{ 'text-blue-700': selectedNodeAttrs?.pin }"
+            :class="{ 'text-blue-700': node.attrs?.pin }"
           />
         </UIButton>
 
         <UIButton
-          v-if="selectedNodeAttrs?.spoiler"
+          v-if="node.attrs?.spoiler"
           size="s"
           variant="secondary"
         >
           <ITablerEyeOff
             class="!size-4"
-            :class="{ 'text-blue-700': selectedNodeAttrs?.spoiler }"
+            :class="{ 'text-blue-700': node.attrs?.spoiler }"
           />
         </UIButton>
       </Flex>
     </Flex>
 
     <Flex
-      class="pt-3 sm:items-center gap-1 self-start hidden sm:flex sm:[&>button]:opacity-0 sm:group-hover/node:[&>button]:opacity-100 [&>button]:transition-opacity"
+      class="pt-1.5 sm:items-center gap-1 self-start hidden sm:flex sm:[&>button]:opacity-0 sm:group-hover/node:[&>button]:opacity-100 [&>button]:transition-opacity"
       contentEditable="false"
     >
       <UIButton
         size="s"
         variant="secondary"
-        :class="{ '!opacity-100': selectedNodeAttrs?.pin }"
-        @click="toggleAttribute('pin')"
+        :class="{ '!opacity-100': node.attrs?.pin }"
+        @click="selectNode(); toggleNodeAttribute('pin')"
       >
-        <ITablerPin class="!size-4" :class="{ 'text-blue-700': selectedNodeAttrs?.pin }" />
+        <ITablerPin class="!size-4" :class="{ 'text-blue-700': node.attrs?.pin }" />
       </UIButton>
 
       <UIButton
         size="s"
         variant="secondary"
-        :class="{ '!opacity-100': selectedNodeAttrs?.spoiler }"
-        @click="toggleAttribute('spoiler')"
+        :class="{ '!opacity-100': node.attrs?.spoiler }"
+        @click="selectNode(); toggleNodeAttribute('spoiler')"
       >
         <ITablerEyeOff
           class="!size-4"
-          :class="{ 'text-blue-700': selectedNodeAttrs?.spoiler }"
+          :class="{ 'text-blue-700': node.attrs?.spoiler }"
         />
       </UIButton>
     </Flex>
 
-    <NodesListBottomsheet @insertNode="insertNode" ref="nodesListBSRef" />
+    <NodesListBottomsheet
+      ref="nodesListBSRef"
+    />
 
     <NodeActionsBottomsheet
       @onOpen="onOpen"
-      @moveNode="moveNode"
-      @changeNodeType="changeNodeType"
-      @toggleAttribute="toggleAttribute"
-      @removeNode="deleteNode"
       ref="nodeActionsBSRef"
     />
   </NodeViewWrapper>
 </template>
 
 <script lang="ts" setup>
-import { NodeViewWrapper, NodeViewContent, type NodeViewProps, type JSONContent } from '@tiptap/vue-3'
-import { NodeSelection } from '@tiptap/pm/state'
+import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from '@tiptap/vue-3'
 import NodeActionsButton from '~/components/editor/nodes/root-node/NodeActionsButton.vue'
 import NodesListBottomsheet from '~/components/editor/nodes/root-node/NodesListBottomsheet.vue'
 import NodeActionsBottomsheet from '~/components/editor/nodes/root-node/NodeActionsBottomsheet.vue'
-import type { HeadingLevel, NodeType } from '~/types'
 import type Flex from '~/components/global/Flex.vue'
 
 const props = defineProps<NodeViewProps>()
 
-const { selectedNode, selectedNodeAttrs,  moveNode } = useEditor()
+const {
+  setNodeSelection,
+  toggleNodeAttribute
+} = useEditor()
 
+const nodeIsSelected = ref(false)
 const isSwiping = ref(false)
-
-const nodePos = computed(() => {
-  if (!props.selected) return null
-
-  const { selection } = props.editor.state
-  
-  return {
-    from: (selection as NodeSelection).from,
-    to: (selection as NodeSelection).to
-  }
-})
 
 const { selectionIsEmpty } = useEditor()
 
@@ -143,65 +127,15 @@ const nodeContentRef = ref<InstanceType<typeof Flex>>()
 const nodesListBSRef = ref<InstanceType<typeof NodesListBottomsheet>>()
 const nodeActionsBSRef = ref<InstanceType<typeof NodesListBottomsheet>>()
 
-function insertNode(type: NodeType, level?: HeadingLevel) {
-  let content: JSONContent[] | undefined
-
-  if (['bulletList', 'orderedList'].includes(type)) {
-    content = [{ type: 'listItem', content: [{ type: 'paragraph', content: [] }] }]
-  }
-
-  props.editor.chain().insertContentAt(nodePos.value!.to, { type, attrs: { level }, content }).focus().run()
-
-  nodesListBSRef.value?.setOpen(false)
-}
-
-function changeNodeType({
-  type,
-  level = 2,
-}: {
-  type: NodeType
-  level?: HeadingLevel
-}) {
-  if (type === 'heading')
-    props.editor.chain().focus(nodePos.value!.from + 3).toggleHeading({ level }).run()
-  
-  else if (type === 'paragraph') {
-    props.editor.commands.focus(nodePos.value!.from + 3)
-
-    if (props.editor.isActive('bulletList') || props.editor.isActive('orderedList')) {
-      const { state } = props.editor
-      const { doc } = state
-      const resolvedPos = doc.resolve(nodePos.value!.from + 1)
-
-      resolvedPos.nodeAfter?.descendants((node) => {
-        if (node.type.name === 'listItem') {
-          props.editor.chain().focus().liftListItem('listItem').run()
-        }
-
-        return false
-      })
-    } else {
-      props.editor.chain().focus(nodePos.value!.from + 3).setParagraph().run()
-    }
-  }
-
-  else if (type === 'bulletList')
-    props.editor.chain().focus(nodePos.value!.from + 3).toggleBulletList().run()
-
-  else if (type === 'orderedList')
-    props.editor.chain().focus(nodePos.value!.from + 3).toggleOrderedList().run()
-
-  props.editor.commands.blur()
-}
-
-function toggleAttribute(attr: 'pin' | 'spoiler') {
-  const value = props.node.attrs[attr]
-  props.updateAttributes({ [attr]: !value })
+function selectNode() {
+  setNodeSelection(props.getPos())
 }
 
 function onOpen(value: boolean) {
+  nodeIsSelected.value = value
+
   if (value) {
-    props.editor.commands.setNodeSelection(props.getPos())
+    selectNode()
   } else {
     resetTranslateX()
   }

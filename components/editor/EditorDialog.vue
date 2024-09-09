@@ -1,5 +1,9 @@
 <template>
-  <Dialog :class="editorDialogClasses" @close="setOpen(false)" ref="dialogRef">
+  <Dialog
+    :class="editorDialogClasses"
+    @close="setOpen(false)"
+    ref="dialogRef"
+  >
     <Editor />
 
     <template #footer>
