@@ -270,5 +270,15 @@ onMounted(async () => {
   } else {
     await uploadImages(files)
   }
+
+  if (props.node.attrs.galleryOpenFileDialog) {
+    open()
+    props.updateAttributes({ galleryOpenFileDialog: null })
+  }
+
+  if (props.node.attrs.galleryOpenFileByUrlDialog) {
+    dialogRef.value?.setOpen(true)
+    props.updateAttributes({ galleryOpenFileByUrlDialog: null })
+  }
 })
 </script>

@@ -43,7 +43,7 @@ const buttons = markRaw([
     icon: Heading1,
     label: 'Заголовок 1',
     action: () => {
-      insertNode('heading', 1)
+      insertNode({ type: 'heading', level: 1 })
       setOpen(false)
     }
   },
@@ -51,7 +51,7 @@ const buttons = markRaw([
     icon: Heading2,
     label: 'Заголовок 2',
     action: () => {
-      insertNode('heading', 2)
+      insertNode({ type: 'heading', level: 2 })
       setOpen(false)
     }
   },
@@ -59,7 +59,7 @@ const buttons = markRaw([
     icon: Paragraph,
     label: 'Текст',
     action: () => {
-      insertNode('paragraph')
+      insertNode({ type: 'paragraph' })
       setOpen(false)
     }
   },
@@ -67,7 +67,7 @@ const buttons = markRaw([
     icon: ListNumbers,
     label: 'Нумерованный список',
     action: () => {
-      insertNode('orderedList')
+      insertNode({ type: 'orderedList' })
       setOpen(false)
     }
   },
@@ -75,23 +75,31 @@ const buttons = markRaw([
     icon: List,
     label: 'Маркированный список',
     action: () => {
-      insertNode('bulletList')
+      insertNode({ type: 'bulletList' })
       setOpen(false)
     }
   },
   {
     icon: Photo,
-    label: 'Картинка / Галерея',
+    label: 'Медиа с устройства',
     action: () => {
-      insertNode('gallery')
+      insertNode({ type: 'gallery', galleryOpenFileDialog: true })
       setOpen(false)
-    }
+    },
+  },
+  {
+    icon: Photo,
+    label: 'Медиа по ссылке',
+    action: () => {
+      insertNode({ type: 'gallery', galleryOpenFileByUrlDialog: true })
+      setOpen(false)
+    },
   },
   {
     icon: Link,
     label: 'Ссылка',
     action: () => {
-      insertNode('link')
+      insertNode({ type: 'link' })
       setOpen(false)
     }
   },
@@ -99,7 +107,7 @@ const buttons = markRaw([
     icon: Divider,
     label: 'Разделитель',
     action: () => {
-      insertNode('delimiter')
+      insertNode({ type: 'delimiter' })
       setOpen(false)
     }
   },

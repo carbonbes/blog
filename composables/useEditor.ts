@@ -119,14 +119,31 @@ export default function useEditor() {
     dispatch(tr)
   }
 
-  function insertNode(type: NodeType, level?: HeadingLevel) {
+  function insertNode({
+    type,
+    level,
+    galleryOpenFileDialog,
+    galleryOpenFileByUrlDialog
+  }: {
+    type: NodeType,
+    level?: HeadingLevel,
+    galleryOpenFileDialog?: boolean,
+    galleryOpenFileByUrlDialog?: boolean
+  }) {
     let content: JSONContent[] | undefined
   
     if (['bulletList', 'orderedList'].includes(type)) {
       content = [{ type: 'listItem', content: [{ type: 'paragraph', content: [] }] }]
     }
   
-    editor.value?.chain().insertContentAt(selectedNodePos.value!.to, { type, attrs: { level }, content }).focus().run()
+    editor.value?.chain()
+      .insertContentAt(selectedNodePos.value!.to, {
+        type,
+        attrs: { level, galleryOpenFileDialog, galleryOpenFileByUrlDialog },
+        content
+      })
+      .focus()
+      .run()
   }
 
   function moveNode(direction: 'up' | 'down') {
