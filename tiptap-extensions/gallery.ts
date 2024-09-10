@@ -40,6 +40,14 @@ const GalleryNode = Node.create({
       forUpload: {
         default: [],
       },
+
+      galleryOpenFileFromDeviceDialog: {
+        default: false
+      },
+
+      galleryOpenFileFromUrlDialog: {
+        default: false
+      }
     }
   },
 

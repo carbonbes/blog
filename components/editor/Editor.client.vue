@@ -1,5 +1,5 @@
 <template>
-  <ScrollArea :disableScroll>
+  <ScrollArea scrollAreaClass="editor-scrollable-container" :disableScroll>
     <EditorContent :editor class="editor" />
   </ScrollArea>
 
@@ -30,12 +30,11 @@ watch(data, () => emit('update', data.value!))
 <style lang="sass" scoped>
 :deep()
   .tiptap
-    padding-bottom: 50vh
+    padding-bottom: 25vh
     outline: none
 
     @media (min-width: 780px)
       margin: 0 2rem
-      padding-bottom: 25vh
 
     h1, h2, p
       &.is-empty::before

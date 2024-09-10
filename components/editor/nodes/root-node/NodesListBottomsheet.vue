@@ -2,8 +2,8 @@
   <BottomSheet
     class="top-full !bg-gray-100 after:!bg-gray-100"
     footerClass="p-4"
-    @close="emit('close')"
     ref="bottomsheetRef"
+    @onOpen="onOpen"
   >
     <Flex col class="w-full pb-[25%] !flex gap-4">
       <UIButton
@@ -32,9 +32,13 @@ import Photo from '~icons/tabler/photo'
 import Link from '~icons/tabler/link'
 import Divider from '~icons/tabler/divide'
 
-const emit = defineEmits<{
-  close: any
+const emits = defineEmits<{
+  onOpen: [boolean]
 }>()
+
+function onOpen(value: boolean) {
+  emits('onOpen', value)
+}
 
 const { insertNode } = useEditor()
 
@@ -43,7 +47,7 @@ const buttons = markRaw([
     icon: Heading1,
     label: 'Заголовок 1',
     action: () => {
-      insertNode({ type: 'heading', level: 1 })
+      insertNode({ type: 'heading', attrs: { headingLevel: 1 } })
       setOpen(false)
     }
   },
@@ -51,7 +55,7 @@ const buttons = markRaw([
     icon: Heading2,
     label: 'Заголовок 2',
     action: () => {
-      insertNode({ type: 'heading', level: 2 })
+      insertNode({ type: 'heading', attrs: { headingLevel: 2 } })
       setOpen(false)
     }
   },
@@ -83,7 +87,7 @@ const buttons = markRaw([
     icon: Photo,
     label: 'Медиа с устройства',
     action: () => {
-      insertNode({ type: 'gallery', galleryOpenFileDialog: true })
+      insertNode({ type: 'gallery', attrs: { galleryOpenFileFromDeviceDialog: true } })
       setOpen(false)
     },
   },
@@ -91,7 +95,7 @@ const buttons = markRaw([
     icon: Photo,
     label: 'Медиа по ссылке',
     action: () => {
-      insertNode({ type: 'gallery', galleryOpenFileByUrlDialog: true })
+      insertNode({ type: 'gallery', attrs: { galleryOpenFileFromUrlDialog: true } })
       setOpen(false)
     },
   },
@@ -117,7 +121,7 @@ const bottomsheetRef = ref<InstanceType<typeof BottomSheet>>()
 
 function setOpen(value: boolean) {
   bottomsheetRef.value?.setOpen(value)
-  emit('close')
+  onOpen(false)
 }
 
 defineExpose({ setOpen })

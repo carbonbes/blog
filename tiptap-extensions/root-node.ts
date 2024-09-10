@@ -74,44 +74,6 @@ const rootNode = Node.create({
     }
   },
 
-  addCommands() {
-    return {
-      setRootNode:
-        (pos) =>
-        ({ state, chain }) => {
-          const {
-            selection: { from },
-          } = state
-
-          const position = pos !== undefined || pos !== null ? from : pos
-
-          return chain()
-            .insertContentAt(position, {
-              type: this.name,
-              content: [
-                {
-                  type: 'paragraph',
-                },
-              ],
-            })
-            .focus(position + 2)
-            .run()
-        },
-
-      moveUp:
-        () =>
-        () => {
-
-        },
-
-      moveDown:
-        () =>
-        () => {
-
-        },
-    }
-  },
-
   addNodeView() {
     return VueNodeViewRenderer(RootNode)
   },
@@ -129,6 +91,8 @@ const rootNode = Node.create({
         const parent = $head.node($head.depth - 1)
 
         if (parent.type.name !== 'rootNode') return false
+
+        const textAfterCursor = parent.textBetween($head.parentOffset + 1, parent.content.size).trim()
 
         let currentActiveNodeTo = -1
 
@@ -154,6 +118,7 @@ const rootNode = Node.create({
               content,
             }
           )
+          .scrollIntoView()
           .focus(from + 4)
           .run()
       },

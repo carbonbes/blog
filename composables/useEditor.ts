@@ -1,3 +1,4 @@
+import { promiseTimeout } from '@vueuse/core'
 import { Editor, type Extensions, type JSONContent } from '@tiptap/vue-3'
 import { NodeSelection } from '@tiptap/pm/state'
 import type { HeadingLevel, NodeType } from '~/types'
@@ -67,21 +68,26 @@ const extensions: Extensions = [
 export default function useEditor() {
   const editor = useState<Editor | undefined>('editor')
   const data = useState<JSONContent | undefined>('data')
-  const selectedNode = useState<NodeSelection['node'] | null>('selected-node', () => null)
+  const selectedNode = useState<NodeSelection['node'] | null>(
+    'selected-node',
+    () => null
+  )
   const selectionIsEmpty = useState('empty-selection', () => true)
   const selectionRect = useState('selection-rect')
 
   const selectedNodeAttrs = computed(() => selectedNode.value?.attrs)
-  const selectedNodeType = computed(() => selectedNode.value?.content.content[0].type.name as NodeType)
+  const selectedNodeType = computed(
+    () => selectedNode.value?.content.content[0].type.name as NodeType
+  )
 
   const selectedNodePos = computed(() => {
     if (!selectedNode.value) return null
-  
+
     const { selection } = editor.value?.state!
-    
+
     return {
       from: (selection as NodeSelection).from,
-      to: (selection as NodeSelection).to
+      to: (selection as NodeSelection).to,
     }
   })
 
@@ -89,16 +95,16 @@ export default function useEditor() {
     if (!selectedNode.value) return null
 
     const { doc } = editor.value?.state!
-  
+
     const startPos = selectedNodePos.value?.from!
     const endPos = selectedNodePos.value?.to!
-  
+
     let prevNode = null
     let nextNode = null
-  
+
     if (startPos > 0) prevNode = doc.resolve(startPos).nodeBefore
     if (endPos < doc.content.size) nextNode = doc.resolve(endPos).nodeAfter
-  
+
     return { prevNode, nextNode }
   })
 
@@ -113,7 +119,7 @@ export default function useEditor() {
 
     tr.setNodeMarkup(selectedNodePos.value?.from!, null, {
       ...selectedNode.value?.attrs,
-      [attr]: !selectedNode.value?.attrs[attr]
+      [attr]: !selectedNode.value?.attrs[attr],
     })
 
     dispatch(tr)
@@ -121,39 +127,94 @@ export default function useEditor() {
 
   function insertNode({
     type,
-    level,
-    galleryOpenFileDialog,
-    galleryOpenFileByUrlDialog
+    attrs,
   }: {
-    type: NodeType,
-    level?: HeadingLevel,
-    galleryOpenFileDialog?: boolean,
-    galleryOpenFileByUrlDialog?: boolean
-  }) {
-    let content: JSONContent[] | undefined
-  
-    if (['bulletList', 'orderedList'].includes(type)) {
-      content = [{ type: 'listItem', content: [{ type: 'paragraph', content: [] }] }]
+    type: NodeType
+    attrs?: {
+      headingLevel?: HeadingLevel
+      galleryOpenFileFromDeviceDialog?: boolean
+      galleryOpenFileFromUrlDialog?: boolean
     }
-  
-    editor.value?.chain()
-      .insertContentAt(selectedNodePos.value!.to, {
-        type,
-        attrs: { level, galleryOpenFileDialog, galleryOpenFileByUrlDialog },
-        content
-      })
-      .focus()
-      .run()
+  }) {
+    const dispatch = editor.value?.view.dispatch!
+    const {
+      state,
+      state: { tr },
+    } = editor.value!
+
+    function scrollToNode(pos: number) {
+      const editorScrollableContainer = document.querySelector('.editor-scrollable-container') as HTMLElement
+
+      const node = editor.value?.view.domAtPos(pos + 1).node as HTMLElement
+
+      const elementRect = node.getBoundingClientRect()
+      const elementTop = elementRect.top + editorScrollableContainer?.scrollTop
+      const containerHeight = editorScrollableContainer?.clientHeight
+
+      if (node) {
+        editorScrollableContainer?.scrollTo({
+          top: elementTop - (containerHeight / 2) + (elementRect.height / 2)
+        })
+
+        editor.value?.commands.setTextSelection(pos + 2)
+      }
+    }
+
+    let content: JSONContent[] | undefined
+
+    if (['bulletList', 'orderedList'].includes(type)) {
+      content = [
+        {
+          type: 'listItem',
+          content: [{ type: 'paragraph', content: [] }],
+        },
+      ]
+    }
+
+    const newNode = state.schema.nodes[type].create(
+      attrs,
+      content ? content.map((item) => state.schema.nodeFromJSON(item)) : null
+    )
+
+    if (
+      ['paragraph', 'heading', 'bulletList', 'orderedList'].includes(
+        selectedNodeType.value
+      ) &&
+      !selectedNode.value?.content.content[0].textContent
+    ) {
+      tr
+        .replaceRangeWith(
+          selectedNodePos.value?.from!,
+          selectedNodePos.value?.to!,
+          newNode
+        )
+        .scrollIntoView()
+
+      dispatch(tr)
+    } else {
+      editor.value!
+        .chain()
+        .insertContentAt(selectedNodePos.value?.to!, {
+          type,
+          attrs,
+          content
+        })
+        .focus()
+        .run()
+
+      scrollToNode(selectedNodePos.value?.to!)
+    }
   }
 
   function moveNode(direction: 'up' | 'down') {
     const dispatch = editor.value?.view.dispatch!
-    const tr = editor.value!.state.tr
+    const tr = editor.value?.state.tr!
 
     const { nodeSize: selectedNodeSize } = selectedNode.value!
-    const { from: selectedNodeStartPos, to: selectedNodeEndPos } = selectedNodePos.value!
+    const { from: selectedNodeStartPos, to: selectedNodeEndPos } =
+      selectedNodePos.value!
     const { prevNode, nextNode } = selectedNodeNeighbors.value!
-    
+
     if (direction === 'up') {
       if (!prevNode) return
 
@@ -163,7 +224,10 @@ export default function useEditor() {
 
       tr
         .delete(previousNodeStartPos, previousNodeEndPos)
-        .insert(selectedNodeStartPos - prevNodeSize + selectedNodeSize, prevNode)
+        .insert(
+          selectedNodeStartPos - prevNodeSize + selectedNodeSize,
+          prevNode
+        )
         .scrollIntoView()
     } else {
       if (!nextNode) return
@@ -185,45 +249,64 @@ export default function useEditor() {
     const { dispatch } = editor.value?.view!
     const tr = editor.value!.state.tr
 
-    dispatch(tr.delete(selectedNodePos.value?.from!, selectedNodePos.value?.to!))
+    dispatch(
+      tr.delete(selectedNodePos.value?.from!, selectedNodePos.value?.to!)
+    )
   }
 
   function changeNodeType({
     type,
-    level = 2,
+    attrs,
   }: {
     type: NodeType
-    level?: HeadingLevel
+    attrs?: {
+      headingLevel?: HeadingLevel
+    }
   }) {
     if (type === 'heading')
-      editor.value?.chain().focus(selectedNodePos.value!.from + 3).toggleHeading({ level }).run()
-    
+      editor.value
+        ?.chain()
+        .focus(selectedNodePos.value!.from + 3)
+        .toggleHeading({ level: attrs?.headingLevel! })
+        .run()
     else if (type === 'paragraph') {
       editor.value?.commands.focus(selectedNodePos.value!.from + 3)
-  
-      if (editor.value?.isActive('bulletList') || editor.value?.isActive('orderedList')) {
+
+      if (
+        editor.value?.isActive('bulletList') ||
+        editor.value?.isActive('orderedList')
+      ) {
         const { state } = editor.value
         const { doc } = state
         const resolvedPos = doc.resolve(selectedNodePos.value!.from + 1)
-  
+
         resolvedPos.nodeAfter?.descendants((node) => {
           if (node.type.name === 'listItem') {
             editor.value?.chain().focus().liftListItem('listItem').run()
           }
-  
+
           return false
         })
       } else {
-        editor.value?.chain().focus(selectedNodePos.value!.from + 3).setParagraph().run()
+        editor.value
+          ?.chain()
+          .focus(selectedNodePos.value!.from + 3)
+          .setParagraph()
+          .run()
       }
-    }
-  
-    else if (type === 'bulletList')
-      editor.value?.chain().focus(selectedNodePos.value!.from + 3).toggleBulletList().run()
-  
+    } else if (type === 'bulletList')
+      editor.value
+        ?.chain()
+        .focus(selectedNodePos.value!.from + 3)
+        .toggleBulletList()
+        .run()
     else if (type === 'orderedList')
-      editor.value?.chain().focus(selectedNodePos.value!.from + 3).toggleOrderedList().run()
-  
+      editor.value
+        ?.chain()
+        .focus(selectedNodePos.value!.from + 3)
+        .toggleOrderedList()
+        .run()
+
     editor.value?.commands.blur()
   }
 
@@ -254,10 +337,14 @@ export default function useEditor() {
 
       onSelectionUpdate({
         editor: {
-          state: { selection, selection: { from, to } },
+          state: {
+            selection,
+            selection: { from, to },
+          },
         },
       }) {
-        selectionIsEmpty.value = from === to || selection instanceof NodeSelection
+        selectionIsEmpty.value =
+          from === to || selection instanceof NodeSelection
 
         selectionRect.value = {
           getBoundingClientRect() {

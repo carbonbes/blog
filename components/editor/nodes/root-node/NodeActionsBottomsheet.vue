@@ -4,8 +4,7 @@
     contentClass="relative overflow-x-hidden"
     withSlideTransition
     :slideTransitionIndex="state.view"
-    @onOpen="(value) => emit('onOpen', value)"
-    @close="onClose"
+    @onOpen="onOpen"
     ref="bottomsheetRef"
   >
     <template #footer>
@@ -23,12 +22,12 @@
 
     <Flex v-if="state.view === 1" col class="w-full pb-[25%] !flex gap-4">
       <UIButton
-        v-for="(button, i) in buttons"
+        v-for="(button, i) in nodeActionButtons"
         :key="i"
         variant="secondary"
         size="l"
         class="flex items-center gap-3 !rounded-2xl !shadow"
-        :class="[{ 'text-blue-500': button.active }]"
+        :class="{ 'text-blue-500': button.active }"
         @click="button.action"
         :disabled="button.disabled"
       >
@@ -85,12 +84,13 @@ const state = reactive({
   view: 1
 })
 
-function onClose() {
-  emit('onOpen', false)
-  state.view = 1
+function onOpen(value: boolean) {
+  emit('onOpen', value)
+
+  if (!value) state.view = 1
 }
 
-const buttons = computed(() => [
+const nodeActionButtons = computed(() => [
   {
     icon: Pin,
     label: 'Вывести в карточке',
@@ -150,7 +150,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: Heading1,
     label: 'Заголовок 1',
     action: () => {
-      changeNodeType({ type: 'heading', level: 1 })
+      changeNodeType({ type: 'heading', attrs: { headingLevel: 1 } })
       setOpen(false)
     }
   },
@@ -158,7 +158,7 @@ const changeNodeTypeButtons = computed(() => [
     icon: Heading2,
     label: 'Заголовок 2',
     action: () => {
-      changeNodeType({ type: 'heading', level: 2 })
+      changeNodeType({ type: 'heading', attrs: { headingLevel: 2 } })
       setOpen(false)
     }
   },

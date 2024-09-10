@@ -80,7 +80,6 @@ const props = defineProps<
 const emits = defineEmits<
   DialogContentEmits & {
     onOpen: [boolean]
-    close: any
   }
 >()
 

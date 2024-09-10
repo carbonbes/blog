@@ -260,7 +260,7 @@ function remove(i: number) {
   props.updateAttributes({ images: images.value })
 }
 
-onMounted(async () => {
+async function tryUploadImages() {
   const files: File[] | string = props.node.attrs.forUpload
 
   if (!files.length) return
@@ -270,15 +270,21 @@ onMounted(async () => {
   } else {
     await uploadImages(files)
   }
+}
 
-  if (props.node.attrs.galleryOpenFileDialog) {
+onMounted(async () => {
+  tryUploadImages()
+
+  await nextTick()
+
+  if (props.node.attrs.galleryOpenFileFromDeviceDialog) {
     open()
-    props.updateAttributes({ galleryOpenFileDialog: null })
+    props.updateAttributes({ galleryOpenFileFromDeviceDialog: false })
   }
 
-  if (props.node.attrs.galleryOpenFileByUrlDialog) {
+  if (props.node.attrs.galleryOpenFileFromUrlDialog) {
     dialogRef.value?.setOpen(true)
-    props.updateAttributes({ galleryOpenFileByUrlDialog: null })
+    props.updateAttributes({ galleryOpenFileFromUrlDialog: false })
   }
 })
 </script>

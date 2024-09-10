@@ -1,10 +1,10 @@
 <template>
   <Dialog
-    :class="editorDialogClasses"
+    class="fixed inset-0 w-full h-full max-w-[780px] sm:max-h-[800px]"
     @close="setOpen(false)"
     ref="dialogRef"
   >
-    <Editor />
+    <Editor :data />
 
     <template #footer>
       <EditorPanel />
@@ -14,6 +14,7 @@
 
 <script lang="ts" setup>
 import type Dialog from '~/components/global/Dialog.vue'
+import type Editor from '~/components/editor/Editor.client.vue'
 
 const dialogRef = ref<InstanceType<typeof Dialog>>()
 
@@ -136,8 +137,4 @@ const data = {
     }
   ],
 }
-
-const editorDialogClasses = computed(
-  () => 'fixed inset-0 w-full h-full max-w-[780px] sm:max-h-[800px]'
-)
 </script>

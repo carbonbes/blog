@@ -5,7 +5,7 @@
   >
     <ScrollAreaViewport
       class="w-full h-full"
-      :class="{ '!overflow-hidden': disableScroll }"
+      :class="[scrollAreaClass, { '!overflow-hidden': disableScroll }]"
       @scroll.passive="onScroll"
       @scrollcancel="onScrollCancel"
       ref="scrollAreaViewportRef"
@@ -43,7 +43,8 @@ import { ScrollAreaViewport } from 'radix-vue'
 
 withDefaults(defineProps<{
   direction?: 'horizontal' | 'vertical'
-  class?: string
+  class?: string | object
+  scrollAreaClass?: string | object
   disableScroll?: boolean
 }>(), {
   direction: 'vertical',
