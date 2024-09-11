@@ -43,7 +43,7 @@
             :options="{
               initialSlide: activeItemIndex,
               spaceBetween: 100,
-              loop: true,
+              loop: thumbnails?.length! > 1,
             }"
             class="!absolute inset-0"
             ref="swiperRef"
@@ -77,7 +77,6 @@
 <script lang="ts" setup>
 import Flex from '~/components/global/Flex.vue'
 import type Swiper from '~/components/global/swiper/Swiper.vue'
-import type SwiperSlide from '~/components/global/swiper/SwiperSlide.vue'
 import { promiseTimeout } from '@vueuse/core'
 
 export type Item = {

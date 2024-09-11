@@ -2,7 +2,7 @@ import { Node, mergeAttributes, nodePasteRule } from '@tiptap/core'
 import { NodeSelection, Plugin, PluginKey } from '@tiptap/pm/state'
 import type { EditorView } from '@tiptap/pm/view'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
-import Gallery from '~/components/editor/nodes/Gallery.vue'
+import Gallery from '~/components/editor/nodes/gallery/Gallery.vue'
 
 function createGallery(view: EditorView, files: File[] | string) {
   const galleryNode = view.state.schema.nodes.gallery.create({
@@ -33,7 +33,7 @@ const GalleryNode = Node.create({
 
   addAttributes() {
     return {
-      images: {
+      items: {
         default: [],
       },
 
@@ -66,7 +66,7 @@ const GalleryNode = Node.create({
   addPasteRules() {
     return [
       nodePasteRule({
-        find: /https?:\/\/.*\.(?:png|jpe?g|gif|webp)/gi,
+        find: /https?:\/\/.*\.(?:png|jpe?g|gif|webp|mp4|mov|webm)/gi,
         type: this.type,
         getAttributes: (match) => {
           return { forUpload: match[0] }
