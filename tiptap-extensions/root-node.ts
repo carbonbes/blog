@@ -3,16 +3,6 @@ import type { NodeSelection } from '@tiptap/pm/state'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import RootNode from '~/components/editor/nodes/root-node/RootNode.vue'
 
-declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    rootNode: {
-      setRootNode: (pos?: number) => ReturnType
-      moveUp: () => ReturnType
-      moveDown: () => ReturnType
-    }
-  }
-}
-
 const rootNode = Node.create({
   name: 'rootNode',
 

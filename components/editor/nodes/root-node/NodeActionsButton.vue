@@ -110,18 +110,18 @@ const nodeActions = computed(() => [
         icon: Heading,
         label: 'Заголовок',
         hide: ['bulletList', 'orderedList'].includes(selectedNodeType.value),
-        action: () => changeNodeType({ type: 'heading', attrs: { headingLevel: 2 } }),
+        action: () => changeNodeType({ type: 'heading', attrs: { level: 2 } }),
         subitems: [
           {
             icon: Heading1,
             label: '1 уровня',
-            action: () => changeNodeType({ type: 'heading', attrs: { headingLevel: 1 } }),
+            action: () => changeNodeType({ type: 'heading', attrs: { level: 1 } }),
             hide: props.nodeAttrs.level === 1,
           },
           {
             icon: Heading2,
             label: '2 уровня',
-            action: () => changeNodeType({ type: 'heading', attrs: { headingLevel: 2 } }),
+            action: () => changeNodeType({ type: 'heading', attrs: { level: 2 } }),
             hide: props.nodeAttrs.level === 2,
           },
         ],

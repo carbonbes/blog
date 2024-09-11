@@ -75,9 +75,12 @@ export default function useEditor() {
   const selectionIsEmpty = useState('empty-selection', () => true)
   const selectionRect = useState('selection-rect')
 
-  const selectedNodeAttrs = computed(() => selectedNode.value?.attrs)
-  const selectedNodeType = computed(
-    () => selectedNode.value?.content.content[0].type.name as NodeType
+  const selectedNodeAttrs = computed<Record<string, any>>(() => ({
+    ...selectedNode.value?.attrs,
+    ...selectedNode.value?.content.content[0].attrs,
+  }))
+  const selectedNodeType = computed<NodeType>(
+    () => selectedNode.value?.content.content[0].type.name
   )
 
   const selectedNodePos = computed(() => {
@@ -131,19 +134,15 @@ export default function useEditor() {
   }: {
     type: NodeType
     attrs?: {
-      headingLevel?: HeadingLevel
+      level?: HeadingLevel
       galleryOpenFileFromDeviceDialog?: boolean
       galleryOpenFileFromUrlDialog?: boolean
     }
   }) {
-    const dispatch = editor.value?.view.dispatch!
-    const {
-      state,
-      state: { tr },
-    } = editor.value!
-
     function scrollToNode(pos: number) {
-      const editorScrollableContainer = document.querySelector('.editor-scrollable-container') as HTMLElement
+      const editorScrollableContainer = document.querySelector(
+        '.editor-scrollable-container'
+      ) as HTMLElement
 
       const node = editor.value?.view.domAtPos(pos + 1).node as HTMLElement
 
@@ -153,10 +152,8 @@ export default function useEditor() {
 
       if (node) {
         editorScrollableContainer?.scrollTo({
-          top: elementTop - (containerHeight / 2) + (elementRect.height / 2)
+          top: elementTop - containerHeight / 2 + elementRect.height / 2,
         })
-
-        editor.value?.commands.setTextSelection(pos + 2)
       }
     }
 
@@ -171,6 +168,11 @@ export default function useEditor() {
       ]
     }
 
+    const {
+      state,
+      view: { dispatch },
+    } = editor.value!
+
     const newNode = state.schema.nodes[type].create(
       attrs,
       content ? content.map((item) => state.schema.nodeFromJSON(item)) : null
@@ -182,26 +184,17 @@ export default function useEditor() {
       ) &&
       !selectedNode.value?.content.content[0].textContent
     ) {
-      tr
-        .replaceRangeWith(
+      dispatch(
+        state.tr.replaceRangeWith(
           selectedNodePos.value?.from!,
           selectedNodePos.value?.to!,
           newNode
         )
-        .scrollIntoView()
+      )
 
-      dispatch(tr)
+      scrollToNode(selectedNodePos.value?.from!)
     } else {
-      editor.value!
-        .chain()
-        .insertContentAt(selectedNodePos.value?.to!, {
-          type,
-          attrs,
-          content
-        })
-        .focus()
-        .run()
-
+      dispatch(state.tr.insert(selectedNodePos.value?.to!, newNode))
       scrollToNode(selectedNodePos.value?.to!)
     }
   }
@@ -222,8 +215,7 @@ export default function useEditor() {
       const previousNodeStartPos = selectedNodeStartPos - prevNodeSize
       const previousNodeEndPos = selectedNodeStartPos
 
-      tr
-        .delete(previousNodeStartPos, previousNodeEndPos)
+      tr.delete(previousNodeStartPos, previousNodeEndPos)
         .insert(
           selectedNodeStartPos - prevNodeSize + selectedNodeSize,
           prevNode
@@ -236,8 +228,7 @@ export default function useEditor() {
       const nextNodeStartPos = selectedNodeEndPos
       const nextNodeEndPos = selectedNodeEndPos + nextNodeSize
 
-      tr
-        .delete(nextNodeStartPos, nextNodeEndPos)
+      tr.delete(nextNodeStartPos, nextNodeEndPos)
         .insert(selectedNodeStartPos, nextNode)
         .scrollIntoView()
     }
@@ -247,7 +238,7 @@ export default function useEditor() {
 
   function removeNode() {
     const { dispatch } = editor.value?.view!
-    const tr = editor.value!.state.tr
+    const tr = editor.value?.state.tr!
 
     dispatch(
       tr.delete(selectedNodePos.value?.from!, selectedNodePos.value?.to!)
@@ -260,18 +251,12 @@ export default function useEditor() {
   }: {
     type: NodeType
     attrs?: {
-      headingLevel?: HeadingLevel
+      level?: HeadingLevel
     }
   }) {
     if (type === 'heading')
-      editor.value
-        ?.chain()
-        .focus(selectedNodePos.value!.from + 3)
-        .toggleHeading({ level: attrs?.headingLevel! })
-        .run()
+      editor.value?.chain().toggleHeading({ level: attrs?.level! }).run()
     else if (type === 'paragraph') {
-      editor.value?.commands.focus(selectedNodePos.value!.from + 3)
-
       if (
         editor.value?.isActive('bulletList') ||
         editor.value?.isActive('orderedList')
@@ -282,28 +267,24 @@ export default function useEditor() {
 
         resolvedPos.nodeAfter?.descendants((node) => {
           if (node.type.name === 'listItem') {
-            editor.value?.chain().focus().liftListItem('listItem').run()
+            editor.value?.chain().liftListItem('listItem').run()
           }
 
           return false
         })
       } else {
-        editor.value
-          ?.chain()
-          .focus(selectedNodePos.value!.from + 3)
-          .setParagraph()
-          .run()
+        editor.value?.chain().setParagraph().run()
       }
     } else if (type === 'bulletList')
       editor.value
         ?.chain()
-        .focus(selectedNodePos.value!.from + 3)
+        .focus(selectedNodePos.value!.from + 2)
         .toggleBulletList()
         .run()
     else if (type === 'orderedList')
       editor.value
         ?.chain()
-        .focus(selectedNodePos.value!.from + 3)
+        .focus(selectedNodePos.value!.from + 2)
         .toggleOrderedList()
         .run()
 

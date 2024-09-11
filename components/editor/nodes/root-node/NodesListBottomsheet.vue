@@ -47,7 +47,7 @@ const buttons = markRaw([
     icon: Heading1,
     label: 'Заголовок 1',
     action: () => {
-      insertNode({ type: 'heading', attrs: { headingLevel: 1 } })
+      insertNode({ type: 'heading', attrs: { level: 1 } })
       setOpen(false)
     }
   },
@@ -55,7 +55,7 @@ const buttons = markRaw([
     icon: Heading2,
     label: 'Заголовок 2',
     action: () => {
-      insertNode({ type: 'heading', attrs: { headingLevel: 2 } })
+      insertNode({ type: 'heading', attrs: { level: 2 } })
       setOpen(false)
     }
   },

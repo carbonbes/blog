@@ -45,6 +45,7 @@
         size="l"
         class="flex items-center gap-3 !rounded-2xl !shadow"
         @click="button.action"
+        :disabled="button.disabled"
       >
         <Component :is="button.icon" />
         {{ button.label }}
@@ -72,6 +73,7 @@ const emit = defineEmits<{
 }>()
 
 const {
+  selectedNodeType,
   selectedNodeAttrs,
   selectedNodeNeighbors,
   toggleNodeAttribute,
@@ -149,42 +151,47 @@ const changeNodeTypeButtons = computed(() => [
   {
     icon: Heading1,
     label: 'Заголовок 1',
+    disabled: selectedNodeType.value === 'heading' && selectedNodeAttrs.value.level === 1,
     action: () => {
-      changeNodeType({ type: 'heading', attrs: { headingLevel: 1 } })
+      changeNodeType({ type: 'heading', attrs: { level: 1 } })
       setOpen(false)
-    }
+    },
   },
   {
     icon: Heading2,
     label: 'Заголовок 2',
+    disabled: selectedNodeType.value === 'heading' && selectedNodeAttrs.value.level === 2,
     action: () => {
-      changeNodeType({ type: 'heading', attrs: { headingLevel: 2 } })
+      changeNodeType({ type: 'heading', attrs: { level: 2 } })
       setOpen(false)
-    }
+    },
   },
   {
     icon: Paragraph,
     label: 'Текст',
+    disabled: selectedNodeType.value === 'paragraph',
     action: () => {
       changeNodeType({ type: 'paragraph' })
       setOpen(false)
-    }
+    },
   },
   {
     icon: ListNumbers,
     label: 'Нумерованный список',
+    disabled: selectedNodeType.value === 'orderedList',
     action: () => {
       changeNodeType({ type: 'orderedList' })
       setOpen(false)
-    }
+    },
   },
   {
     icon: List,
     label: 'Маркированный список',
+    hide: selectedNodeType.value === 'bulletList',
     action: () => {
       changeNodeType({ type: 'bulletList' })
       setOpen(false)
-    }
+    },
   },
 ])
 
