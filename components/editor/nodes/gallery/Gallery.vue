@@ -27,6 +27,7 @@
           :isSingle
           :isGallery
           :parent="itemsContainerRef?.$el"
+          @remove="remove(i)"
           @openFileFromDeviceDialog="open"
           @openFileFromUrlDialog="dialogRef?.setOpen(true)"
         />
@@ -51,10 +52,14 @@
     </Flex>
   </NodeViewWrapper>
 
-  <Dialog class="w-full max-w-80" @close="imageUrl = ''" ref="dialogRef">
+  <Dialog
+    class="w-full max-w-80"
+    @close="itemFromUrl = ''"
+    ref="dialogRef"
+  >
     <UITextArea autofocus
       placeholder="Ссылка на картинку"
-      v-model="imageUrl"
+      v-model="itemFromUrl"
     />
   </Dialog>
 </template>
@@ -64,14 +69,16 @@ import type Flex from '~/components/global/Flex.vue'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/vue-3'
 import type Dialog from '~/components/global/Dialog.vue'
 import GalleryItem from '~/components/editor/nodes/gallery/GalleryItem.vue'
+import { useSortable } from '@vueuse/integrations/useSortable'
 
 export type Item = {
   src: string
-  alt: string
+  alt?: string
   thumbnail?: string
-  width: number
-  height: number
-  type: 'image' | 'video' | 'gif'
+  width?: number
+  height?: number
+  type?: 'image' | 'video' | 'gif'
+  uploaded?: boolean
 }
 
 const props = defineProps<NodeViewProps>()
@@ -84,167 +91,50 @@ const isGallery = computed(() => props.node.attrs.items.length > 1)
 
 const FILE_MAX_SIZE = 1024 * 1024 * 10
 
-const items = ref<{
-  id?: string
-  src?: string
-  width?: number
-  height?: number
-  loading?: boolean
-}[]>(Object.assign([], props.node.attrs.items))
+const items = ref<Item[]>(props.node.attrs.items)
 
-const dialogRef = ref<InstanceType<typeof Dialog>>()
-
-const imageUrl = ref('')
-
-watch(imageUrl, async (v) => {
-  if (!v || !isValidImageURL(v)) return
-
-  dialogRef.value?.setOpen(false)
-  await uploadImage(v)
-  imageUrl.value = ''
+useSortable(itemsContainerRef as unknown as HTMLElement, items, {
+  handle: '#gallery-node-item-grip',
+  animation: 250,
+  onUpdate: async (e) => {
+    const items = Object.assign([], props.node.attrs.items)
+    items.splice(e.newIndex, 0, items.splice(e.oldIndex, 1)[0])
+    await nextTick()
+    props.updateAttributes({ items })
+  },
 })
 
 const { reset, open, onChange } = useFileDialog({
-  accept: 'image/png, image/webp, image/jpg, image/jpeg, image/gif, video/mp4, video/mov, video/webm',
+  accept:
+    'image/png, image/webp, image/jpg, image/jpeg, image/gif, video/mp4, video/quicktime, video/webm, video/x-flv',
 })
-
-const { add } = useNotifications()
 
 onChange(async (files) => {
   if (!files) return
 
-  const images = Array.from(files)
-
-  await uploadImages(images)
+  const items = Array.from(files)
 
   reset()
 })
 
-async function uploadImages(files: File[]) {
-  await Promise.all(
-    Object.values(files).map(async (file) => {
-      if (file.size > FILE_MAX_SIZE) {
-        add({
-          type: 'error',
-          title: 'Ошибка',
-          text: 'Слишком большой файл',
-        })
+const dialogRef = ref<InstanceType<typeof Dialog>>()
 
-        return
-      }
+const itemFromUrl = ref('')
 
-      const id = window.crypto.randomUUID()
+watch(itemFromUrl, async (v) => {
+  if (!v || !isValidImageURL(v)) return
 
-      const fileReader = new FileReader()
-      fileReader.readAsDataURL(file)
-
-      fileReader.onload = () => {
-        items.value.push({
-          id,
-          src: fileReader.result as string,
-          loading: true,
-        })
-
-        props.updateAttributes({
-          items: items.value,
-        })
-      }
-
-      try {
-        const { data: { secure_url, width, height }} = await uploadMediaByFile(file)
-
-        const i = items.value.findIndex((image) => image.id === id)
-
-        items.value[i].src = secure_url
-        items.value[i].width = width
-        items.value[i].height = height
-
-        delete items.value[i].id
-        delete items.value[i].loading
-      } catch (error: any) {
-        const i = items.value.findIndex((image) => image.id === id)
-        items.value.splice(i, 1)
-
-        props.updateAttributes({
-          items: items.value,
-        })
-
-        add({
-          type: 'error',
-          title: 'Ошибка',
-          text: error.data.message,
-        })
-      } finally {
-        reset()
-      }
-    })
-  )
-
-  props.updateAttributes({
-    items: items.value,
-    forUpload: [],
-  })
-}
-
-async function uploadImage(imageUrl: string) {
-  const id = window.crypto.randomUUID()
-
-  items.value.push({ id, src: imageUrl, loading: true })
-
-  try {
-    const { data: { secure_url, width, height } } = await uploadMediaByUrl(imageUrl)
-
-    const i = items.value.findIndex((image) => image.id === id)
-
-    items.value[i].src = secure_url
-    items.value[i].width = width
-    items.value[i].height = height
-
-    delete items.value[i].id
-    delete items.value[i].loading
-
-    props.updateAttributes({
-      items: items.value,
-      forUpload: [],
-    })
-  } catch (error: any) {
-    const i = items.value.findIndex((image) => image.id === id)
-    items.value.splice(i, 1)
-
-    props.updateAttributes({
-      items: items.value,
-    })
-
-    add({
-      type: 'error',
-      title: 'Ошибка',
-      text: error.data.message,
-    })
-  } finally {
-    reset()
-  }
-}
+  items.value.push({ src: v })
+  dialogRef.value?.setOpen(false)
+  itemFromUrl.value = ''
+})
 
 function remove(i: number) {
   items.value.splice(i, 1)
   props.updateAttributes({ items: items.value })
 }
 
-async function tryUploadImages() {
-  const files: File[] | string = props.node.attrs.forUpload
-
-  if (!files.length) return
-
-  if (typeof files === 'string') {
-    await uploadImage(files)
-  } else {
-    await uploadImages(files)
-  }
-}
-
 onMounted(async () => {
-  tryUploadImages()
-
   await nextTick()
 
   if (props.node.attrs.galleryOpenFileFromDeviceDialog) {

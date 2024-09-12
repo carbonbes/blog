@@ -150,10 +150,12 @@ function resetTranslateX() {
 
 const nodeContentStyles = computed(() => `transform: translateX(${translateX.value}px)`)
 
+const { swipeEnabled } = useRootNode()
+
 useGesture(nodeContentRef,
   {
     onDrag(state) {
-      if (!selectionIsEmpty.value) return
+      if (!selectionIsEmpty.value || !swipeEnabled.value) return
 
       const { movement: [x] } = state
 
@@ -162,7 +164,7 @@ useGesture(nodeContentRef,
     },
 
     onDragEnd(state) {
-      if (!selectionIsEmpty.value) return
+      if (!selectionIsEmpty.value || !swipeEnabled.value) return
 
       const { movement: [x], direction: [xDir] } = state
 

@@ -34,24 +34,24 @@ const data = {
           type: 'gallery',
           attrs: {
             items: [
-              // {
-              //   src: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1726058100/rhdfeof2bydo3wc6p9a0.jpg',
-              //   width: 1089,
-              //   height: 1049,
-              //   type: 'image',
-              // },
-              // {
-              //   src: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1726058100/bh0phkxyhstwl4hzcfr3',
-              //   width: 274,
-              //   height: 274,
-              //   type: 'gif'
-              // },
-              // {
-              //   src: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1726058100/ib5v29bvtyduyz6uhgx3.jpg',
-              //   width: 1536,
-              //   height: 2048,
-              //   type: 'image',
-              // },
+              {
+                src: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1726058100/rhdfeof2bydo3wc6p9a0.jpg',
+                width: 1089,
+                height: 1049,
+                type: 'image',
+              },
+              {
+                src: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1726058100/bh0phkxyhstwl4hzcfr3',
+                width: 274,
+                height: 274,
+                type: 'gif'
+              },
+              {
+                src: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1726058100/ib5v29bvtyduyz6uhgx3.jpg',
+                width: 1536,
+                height: 2048,
+                type: 'image',
+              },
               {
                 src: 'https://res.cloudinary.com/dkmur8a20/video/upload/v1726131132/zjr5yupdtyy6qzfjkpok.mp4',
                 thumbnail: 'https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/v1726131132/zjr5yupdtyy6qzfjkpok.mp4',
