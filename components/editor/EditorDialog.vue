@@ -39,25 +39,34 @@ const data = {
                 width: 1089,
                 height: 1049,
                 type: 'image',
+                uploaded: true
               },
               {
                 src: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1726058100/bh0phkxyhstwl4hzcfr3',
                 width: 274,
                 height: 274,
-                type: 'gif'
+                type: 'gif',
+                uploaded: true
               },
               {
                 src: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1726058100/ib5v29bvtyduyz6uhgx3.jpg',
                 width: 1536,
                 height: 2048,
                 type: 'image',
+                uploaded: true
               },
               {
                 src: 'https://res.cloudinary.com/dkmur8a20/video/upload/v1726131132/zjr5yupdtyy6qzfjkpok.mp4',
                 thumbnail: 'https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/v1726131132/zjr5yupdtyy6qzfjkpok.mp4',
                 width: 854,
                 height: 480,
-                type: 'video'
+                type: 'video',
+                uploaded: true
+              },
+              {
+                src: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1726058100/ib5v29bvtyduyz6uhgx3.jpg',
+                type: 'image',
+                uploaded: false
               }
             ],
             forUpload: [],

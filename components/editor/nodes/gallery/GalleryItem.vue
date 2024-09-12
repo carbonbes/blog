@@ -1,6 +1,6 @@
 <template>
   <div class="relative" :class="{ 'w-full': isSingle }">
-    <Tooltip v-if="isGallery" tooltip="Удалить">
+    <Tooltip v-if="isGallery && !state.loading" tooltip="Удалить">
       <button
         class="absolute top-0 left-full -translate-y-1/2 -translate-x-1/2 p-1 bg-white border border-gray-200/75 rounded-full group/remove-btn z-[1]"
         @click="emits('remove')"
@@ -11,7 +11,7 @@
       </button>
     </Tooltip>
 
-    <Tooltip v-if="isGallery" tooltip="Перетащить">
+    <Tooltip v-if="isGallery && !state.loading" tooltip="Перетащить">
       <button
         class="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1/2 p-1 bg-white border border-gray-200/75 rounded-full group/remove-btn z-[1]"
         id="gallery-node-item-grip"
@@ -125,7 +125,11 @@ const state = reactive<{
   loading: false
 })
 
-function upload(file: File) {
-
+async function upload(src: string) {
+  
 }
+
+watchEffect(() => {
+  state.loading = !props.item.uploaded
+})
 </script>

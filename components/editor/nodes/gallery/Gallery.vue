@@ -77,19 +77,36 @@ export type Item = {
   thumbnail?: string
   width?: number
   height?: number
-  type?: 'image' | 'video' | 'gif'
-  uploaded?: boolean
+  type: 'image' | 'video' | 'gif'
+  uploaded: boolean
 }
+
+const allowedMimeTypes = [
+  'image/png',
+  'image/webp',
+  'image/jpg',
+  'image/jpeg',
+  'image/tiff',
+  'image/bmp',
+  'image/heic',
+  'image/gif',
+  'video/mp4',
+  'video/quicktime',
+  'video/webm',
+  'video/x-flv',
+  'video/mpeg'
+]
 
 const props = defineProps<NodeViewProps>()
 
+const { add: notify } = useNotifications()
+
+const dialogRef = ref<InstanceType<typeof Dialog>>()
 const itemsContainerRef = ref<InstanceType<typeof Flex>>()
 
 const isEmpty = computed(() => !props.node.attrs.items.length)
 const isSingle = computed(() => props.node.attrs.items.length === 1)
 const isGallery = computed(() => props.node.attrs.items.length > 1)
-
-const FILE_MAX_SIZE = 1024 * 1024 * 10
 
 const items = ref<Item[]>(props.node.attrs.items)
 
@@ -105,26 +122,52 @@ useSortable(itemsContainerRef as unknown as HTMLElement, items, {
 })
 
 const { reset, open, onChange } = useFileDialog({
-  accept:
-    'image/png, image/webp, image/jpg, image/jpeg, image/gif, video/mp4, video/quicktime, video/webm, video/x-flv',
+  accept: allowedMimeTypes.join(', ')
 })
 
-onChange(async (files) => {
-  if (!files) return
+const FILE_MAX_SIZE = 1024 * 1024 * 10
 
-  const items = Array.from(files)
+onChange(async (fileList) => {
+  if (!fileList) return
+
+  const files = Array.from(fileList)
+
+  Object.values(files).forEach(async (file) => {
+    if (file.size > FILE_MAX_SIZE) {
+      notify({
+        type: 'error',
+        title: 'Ошибка',
+        text: 'Слишком большой файл',
+      })
+
+      return
+    }
+
+    const fileReader = new FileReader()
+    fileReader.readAsDataURL(file)
+
+    if (!allowedMimeTypes.includes(file.type)) return
+
+    console.log(fileReader.result)
+
+    // fileReader.onload = () => {
+    //   items.value?.push({
+    //     src: fileReader.result as string,
+    //     type: mimeType as 'image' | 'gif' | 'video',
+    //     uploaded: false,
+    //   })
+    // }
+  })
 
   reset()
 })
-
-const dialogRef = ref<InstanceType<typeof Dialog>>()
 
 const itemFromUrl = ref('')
 
 watch(itemFromUrl, async (v) => {
   if (!v || !isValidImageURL(v)) return
 
-  items.value.push({ src: v })
+  items.value.push({ src: v, uploaded: false })
   dialogRef.value?.setOpen(false)
   itemFromUrl.value = ''
 })
