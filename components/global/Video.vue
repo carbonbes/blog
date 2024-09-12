@@ -64,7 +64,7 @@ const props = withDefaults(
     loop?: boolean
     controls?: boolean
     playsInline?: boolean
-    size?: string
+    size?: string | object
     aspectRatio?: string
     muted?: boolean
     zoomable?: boolean

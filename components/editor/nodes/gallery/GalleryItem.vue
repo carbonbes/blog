@@ -28,6 +28,22 @@
           'w-20 h-20 object-cover': isGallery
         }"
       />
+
+      <Video
+        v-else-if="item.type === 'video'"
+        :src="item.src"
+        :alt="item.alt"
+        :thumbnail="item.thumbnail"
+        :originalWidth="item.width"
+        :originalHeight="item.height"
+        :zoomable="isSingle"
+        :lightboxItem="isGallery"
+        :parent
+        :size="{
+          'w-full aspect-video': isSingle,
+          'w-20 h-20': isGallery
+        }"
+      />
     </Flex>
 
     <Flex

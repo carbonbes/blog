@@ -68,6 +68,7 @@ import GalleryItem from '~/components/editor/nodes/gallery/GalleryItem.vue'
 export type Item = {
   src: string
   alt: string
+  thumbnail?: string
   width: number
   height: number
   type: 'image' | 'video' | 'gif'
@@ -104,7 +105,7 @@ watch(imageUrl, async (v) => {
 })
 
 const { reset, open, onChange } = useFileDialog({
-  accept: 'image/png, image/webp, image/jpg, image/jpeg, image/gif',
+  accept: 'image/png, image/webp, image/jpg, image/jpeg, image/gif, video/mp4, video/mov, video/webm',
 })
 
 const { add } = useNotifications()
