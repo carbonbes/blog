@@ -132,7 +132,9 @@ function updateItem(data: UploadApiResponse) {
   emits('loaded', {
     src,
     alt: '',
-    thumbnail: src,
+    thumbnail: ['image', 'gif'].includes(props.item.type)
+      ? src
+      : `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/v1726131132/zjr5yupdtyy6qzfjkpok.mp4`,
     width,
     height,
     type: props.item.type,

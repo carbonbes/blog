@@ -1,4 +1,4 @@
-import { Node, mergeAttributes, nodePasteRule } from '@tiptap/core'
+import { Node, mergeAttributes } from '@tiptap/core'
 import { NodeSelection, Plugin, PluginKey } from '@tiptap/pm/state'
 import type { EditorView } from '@tiptap/pm/view'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
@@ -77,7 +77,10 @@ const GalleryNode = Node.create({
 
         props: {
           handlePaste(view, event) {
-            const items = getFilesFromClipboard(event)
+            const items = getFilesFromClipboard(
+              event,
+              GALLERY_NODE_ALLOWED_MIME_TYPES
+            )
 
             if (!items) return false
 
@@ -87,7 +90,10 @@ const GalleryNode = Node.create({
           },
 
           handleDrop(view, event) {
-            const items = getFilesFromDrop(event)
+            const items = getFilesFromDrop(
+              event,
+              GALLERY_NODE_ALLOWED_MIME_TYPES
+            )
 
             if (!items) return false
 

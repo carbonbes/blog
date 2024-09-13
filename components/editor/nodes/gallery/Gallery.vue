@@ -72,6 +72,7 @@ import { NodeViewWrapper, type NodeViewProps } from '@tiptap/vue-3'
 import type Dialog from '~/components/global/Dialog.vue'
 import GalleryItem from '~/components/editor/nodes/gallery/GalleryItem.vue'
 import { useSortable } from '@vueuse/integrations/useSortable'
+import type { MimeType } from 'file-type'
 
 export type Item = {
   src: string
@@ -84,22 +85,6 @@ export type Item = {
 }
 
 export type MediaType = 'image' | 'gif' | 'video'
-
-const allowedMimeTypes = [
-  'image/png',
-  'image/webp',
-  'image/jpg',
-  'image/jpeg',
-  'image/tiff',
-  'image/bmp',
-  'image/heic',
-  'image/gif',
-  'video/mp4',
-  'video/quicktime',
-  'video/webm',
-  'video/x-flv',
-  'video/mpeg',
-]
 
 const props = defineProps<NodeViewProps>()
 
@@ -130,7 +115,7 @@ const {
   open: openFileSelectDialog,
   onChange,
 } = useFileDialog({
-  accept: allowedMimeTypes.join(', '),
+  accept: GALLERY_NODE_ALLOWED_MIME_TYPES.join(', '),
 })
 
 async function addItems(files: File[]) {
@@ -145,7 +130,8 @@ async function addItems(files: File[]) {
         return
       }
 
-      if (!allowedMimeTypes.includes(file.type)) return
+      if (!GALLERY_NODE_ALLOWED_MIME_TYPES.includes(file.type as MimeType))
+        return
 
       const base64Item = await getBase64FromFile(file)
 
@@ -174,7 +160,7 @@ onChange(async (fileList) => {
 })
 
 function onPaste(e: ClipboardEvent) {
-  const items = getFilesFromClipboard(e)
+  const items = getFilesFromClipboard(e, GALLERY_NODE_ALLOWED_MIME_TYPES)
 
   if (!items) return
 
