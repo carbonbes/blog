@@ -6,9 +6,7 @@ export default {
     hoverOnlyWhenSupported: true,
   },
 
-  content: [
-    "./src/**/*.{html,js,ts,vue}"
-  ],
+  content: ['./src/**/*.{html,js,ts,vue}'],
 
   theme: {
     extend: {
@@ -51,8 +49,13 @@ export default {
         pulse: {
           '0%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.2)' },
-          '100%': { transform: 'scale(1)' }
-        }
+          '100%': { transform: 'scale(1)' },
+        },
+        loader: {
+          '0%': { opacity: 0.2 },
+          '25%': { opacity: 0.8, transform: 'scale(1.25)' },
+          '50%': { opacity: 0.2 },
+        },
       },
 
       animation: {
@@ -66,7 +69,8 @@ export default {
         'fade-in-right-side': 'fade-in-right-side',
         'fade-in-bottom-side': 'fade-in-bottom-side',
         'fade-in-left-side': 'fade-in-left-side',
-        pulse: 'pulse infinite 3s'
+        pulse: 'pulse infinite 3s',
+        loader: 'loader',
       },
 
       fontFamily: {
@@ -76,29 +80,35 @@ export default {
   },
 
   plugins: [
-    plugin(
-      function ({ addVariant }) {
-        addVariant('not-first', '&:not(:first-child)')
-        addVariant('not-last', '&:not(:last-child)')
-      }
-    ),
-
-    plugin(
-      function ({ addUtilities }) {
-        const noDragUtil = {
-          '.no-drag': {
-            '-webkit-user-drag': 'none',
-            '-khtml-user-drag': 'none',
-            '-moz-user-drag': 'none',
-            '-o-user-drag': 'none',
-            'user-drag': 'none'
-          }
+    plugin(function ({ matchUtilities, theme, addVariant }) {
+      addVariant('not-first', '&:not(:first-child)')
+      addVariant('not-last', '&:not(:last-child)')
+      matchUtilities(
+        {
+          'animation-delay': (value) => {
+            return {
+              'animation-delay': value,
+            }
+          },
+        },
+        {
+          values: theme('transitionDelay'),
         }
+      )
+    }),
 
-        addUtilities(
-          noDragUtil
-        )
+    plugin(function ({ addUtilities }) {
+      const noDragUtil = {
+        '.no-drag': {
+          '-webkit-user-drag': 'none',
+          '-khtml-user-drag': 'none',
+          '-moz-user-drag': 'none',
+          '-o-user-drag': 'none',
+          'user-drag': 'none',
+        },
       }
-    )
+
+      addUtilities(noDragUtil)
+    }),
   ],
 }

@@ -1,5 +1,6 @@
 import { readFiles } from 'h3-formidable'
 import useCdn from '~/server/utils/useCdn'
+import { FILE_MAX_SIZE } from '~/utils/consts'
 
 export default defineApiEndpoint(
   async ({ event }) => {
@@ -18,8 +19,8 @@ export default defineApiEndpoint(
 
     const file = files.file![0]
 
-    const isImage = file.mimetype?.startsWith('image')
-    const isVideo = file.mimetype?.startsWith('video')
+    const isImage = file.mimetype?.startsWith('image/')
+    const isVideo = file.mimetype?.startsWith('video/')
 
     if (!(isImage || isVideo))
       throw createError({
@@ -27,7 +28,7 @@ export default defineApiEndpoint(
         message: 'Неверный формат медиа-файла',
       })
 
-    if (file.size > 1024 * 1024 * 5)
+    if (file.size > FILE_MAX_SIZE)
       throw createError({ statusCode: 400, message: 'Слишком большой файл' })
 
     const { upload } = useCdn()

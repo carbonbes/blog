@@ -12,8 +12,7 @@ function createGallery(view: EditorView, files: File[] | string) {
   const rootNode = view.state.schema.nodes.rootNode.create(null, galleryNode)
 
   const pos =
-    view.state.tr.selection.$anchor.pos -
-    view.state.tr.selection.$anchor.depth
+    view.state.tr.selection.$anchor.pos - view.state.tr.selection.$anchor.depth
 
   NodeSelection.create(view.state.doc, pos)
 
@@ -38,16 +37,16 @@ const GalleryNode = Node.create({
       },
 
       forUpload: {
-        default: [],
+        default: null,
       },
 
       galleryOpenFileFromDeviceDialog: {
-        default: false
+        default: false,
       },
 
-      galleryOpenFileFromUrlDialog: {
-        default: false
-      }
+      galleryOpenFileFromClipboardDialog: {
+        default: false,
+      },
     }
   },
 
@@ -60,18 +59,10 @@ const GalleryNode = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'gallery' }), 0]
-  },
-
-  addPasteRules() {
     return [
-      nodePasteRule({
-        find: /https?:\/\/.*\.(?:png|jpe?g|gif|webp|mp4|mov|webm)/gi,
-        type: this.type,
-        getAttributes: (match) => {
-          return { forUpload: match[0] }
-        },
-      }),
+      'div',
+      mergeAttributes(HTMLAttributes, { 'data-type': 'gallery' }),
+      0,
     ]
   },
 
@@ -102,8 +93,8 @@ const GalleryNode = Node.create({
           handleDrop(view, event) {
             if (!event.dataTransfer?.files) return false
 
-            const images = Array.from(event.dataTransfer.files).filter(
-              (file) => isAllowedImgFormat(file.type)
+            const images = Array.from(event.dataTransfer.files).filter((file) =>
+              isAllowedImgFormat(file.type)
             )
 
             if (!images.length) return false

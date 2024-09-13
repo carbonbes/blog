@@ -93,9 +93,9 @@ const buttons = markRaw([
   },
   {
     icon: Photo,
-    label: 'Медиа по ссылке',
+    label: 'Медиа из буфера',
     action: () => {
-      insertNode({ type: 'gallery', attrs: { galleryOpenFileFromUrlDialog: true } })
+      insertNode({ type: 'gallery', attrs: { galleryOpenFileFromClipboardDialog: true } })
       setOpen(false)
     },
   },

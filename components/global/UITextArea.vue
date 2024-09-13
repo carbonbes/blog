@@ -6,6 +6,7 @@
     :class="classes"
     v-model="model"
     ref="textArea"
+    @paste="(e) => emits('paste', e)"
   />
 </template>
 
@@ -16,7 +17,11 @@ const props = defineProps<{
   placeholder?: string
 }>()
 
-const model = defineModel()
+const emits = defineEmits<{
+  paste: [ClipboardEvent]
+}>()
+
+const model = defineModel<string>()
 
 const textArea = ref<HTMLTextAreaElement>()
 

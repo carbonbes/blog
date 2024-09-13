@@ -136,7 +136,7 @@ export default function useEditor() {
     attrs?: {
       level?: HeadingLevel
       galleryOpenFileFromDeviceDialog?: boolean
-      galleryOpenFileFromUrlDialog?: boolean
+      galleryOpenFileFromClipboardDialog?: boolean
     }
   }) {
     function scrollToNode(pos: number) {

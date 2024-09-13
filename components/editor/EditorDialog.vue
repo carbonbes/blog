@@ -63,11 +63,6 @@ const data = {
                 type: 'video',
                 uploaded: true
               },
-              {
-                src: 'https://res.cloudinary.com/dkmur8a20/image/upload/v1726058100/ib5v29bvtyduyz6uhgx3.jpg',
-                type: 'image',
-                uploaded: false
-              }
             ],
             forUpload: [],
             galleryOpenFileFromDeviceDialog: false,
