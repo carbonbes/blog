@@ -136,26 +136,34 @@ const {
   accept: allowedMimeTypes.join(', '),
 })
 
-async function addItem(file: File) {
-  if (file.size > FILE_MAX_SIZE) {
-    errorNotify({
-      title: 'Ошибка',
-      text: 'Слишком большой файл',
+async function addItems(files: File[]) {
+  await Promise.all(
+    Object.values(files).map(async (file) => {
+      if (file.size > FILE_MAX_SIZE) {
+        errorNotify({
+          title: 'Ошибка',
+          text: 'Слишком большой файл',
+        })
+
+        return
+      }
+
+      if (!allowedMimeTypes.includes(file.type)) return
+
+      const base64Item = await getBase64FromFile(file)
+
+      if (!base64Item) return
+
+      items.value?.push({
+        src: base64Item as string,
+        type: getFileTypeFromMimeType(file.type) as MediaType,
+        uploaded: false,
+      })
     })
+  )
 
-    return
-  }
-
-  if (!allowedMimeTypes.includes(file.type)) return
-
-  const base64Item = await getBase64FromFile(file)
-
-  if (!base64Item) return
-
-  items.value?.push({
-    src: base64Item as string,
-    type: getFileTypeFromMimeType(file.type) as MediaType,
-    uploaded: false,
+  props.updateAttributes({
+    items: items.value,
   })
 }
 
@@ -164,10 +172,7 @@ onChange(async (fileList) => {
 
   const files = Array.from(fileList)
 
-  Object.values(files).forEach(async (file) => {
-    addItem(file)
-  })
-
+  addItems(files)
   reset()
 })
 
@@ -176,7 +181,7 @@ function onPaste(e: ClipboardEvent) {
 
   if (!items) return
 
-  items.forEach((item) => addItem(item))
+  addItems(items)
   pasteFromClipboardDialogRef.value?.setOpen(false)
 }
 
@@ -189,7 +194,7 @@ onMounted(async () => {
   const items = props.node.attrs.forUpload as File[]
 
   if (items) {
-    items.forEach((item) => addItem(item))
+    await addItems(items)
     props.updateAttributes({ forUpload: null })
   }
 

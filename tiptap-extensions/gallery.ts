@@ -73,7 +73,7 @@ const GalleryNode = Node.create({
   addProseMirrorPlugins() {
     return [
       new Plugin({
-        key: new PluginKey('imagePasteHandler'),
+        key: new PluginKey('galleryNodePasteHandler'),
 
         props: {
           handlePaste(view, event) {
