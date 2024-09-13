@@ -3,7 +3,6 @@
     class="flex flex-col"
     :class="{ 'p-3 sm:p-4 bg-gray-100 rounded-xl': isEmpty || !isSingle }"
     contenteditable="false"
-    draggable="false"
   >
     <Flex col>
       <Flex v-if="isEmpty" col itemsCenter class="gap-8">
@@ -73,8 +72,6 @@ import { NodeViewWrapper, type NodeViewProps } from '@tiptap/vue-3'
 import type Dialog from '~/components/global/Dialog.vue'
 import GalleryItem from '~/components/editor/nodes/gallery/GalleryItem.vue'
 import { useSortable } from '@vueuse/integrations/useSortable'
-import getFileTypeFromMimeType from '~/utils/getFileTypeFromMimeType'
-import { FILE_MAX_SIZE } from '~/utils/consts'
 
 export type Item = {
   src: string
@@ -177,7 +174,7 @@ onChange(async (fileList) => {
 })
 
 function onPaste(e: ClipboardEvent) {
-  const items = getFileFromClipboard(e)
+  const items = getFilesFromClipboard(e)
 
   if (!items) return
 

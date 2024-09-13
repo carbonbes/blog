@@ -100,7 +100,6 @@
 <script lang="ts" setup>
 import type { UploadApiResponse } from 'cloudinary'
 import type { Item } from '~/components/editor/nodes/gallery/Gallery.vue'
-import getFileFromBase64 from '~/utils/getFileFromBase64'
 
 const props = defineProps<{
   item: Item

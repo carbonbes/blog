@@ -1,4 +1,4 @@
-export default function getFileFromClipboard(e: ClipboardEvent) {
+export default function getFilesFromClipboard(e: ClipboardEvent) {
   if (e.clipboardData && e.clipboardData.files.length > 0) {
     const items = Array.from(e.clipboardData?.items)
     const files: File[] = []

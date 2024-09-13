@@ -4,7 +4,7 @@ import type { EditorView } from '@tiptap/pm/view'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import Gallery from '~/components/editor/nodes/gallery/Gallery.vue'
 
-function createGallery(view: EditorView, files: File[] | string) {
+function createGallery(view: EditorView, files: File[]) {
   const galleryNode = view.state.schema.nodes.gallery.create({
     forUpload: files,
   })
@@ -77,29 +77,21 @@ const GalleryNode = Node.create({
 
         props: {
           handlePaste(view, event) {
-            if (!event.clipboardData?.files) return false
+            const items = getFilesFromClipboard(event)
 
-            const images = Array.from(event.clipboardData.files).filter(
-              (file) => isAllowedImgFormat(file.type)
-            )
+            if (!items) return false
 
-            if (!images.length) return false
-
-            createGallery(view, images)
+            createGallery(view, items)
 
             return true
           },
 
           handleDrop(view, event) {
-            if (!event.dataTransfer?.files) return false
+            const items = getFilesFromDrop(event)
 
-            const images = Array.from(event.dataTransfer.files).filter((file) =>
-              isAllowedImgFormat(file.type)
-            )
+            if (!items) return false
 
-            if (!images.length) return false
-
-            createGallery(view, images)
+            createGallery(view, items)
 
             return true
           },
