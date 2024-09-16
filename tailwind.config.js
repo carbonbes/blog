@@ -80,25 +80,20 @@ export default {
   },
 
   plugins: [
-    plugin(function ({ matchUtilities, theme, addVariant }) {
+    plugin(function ({ matchUtilities, addVariant }) {
       addVariant('not-first', '&:not(:first-child)')
       addVariant('not-last', '&:not(:last-child)')
-      matchUtilities(
-        {
-          'animation-delay': (value) => {
-            return {
-              'animation-delay': value,
-            }
-          },
+      matchUtilities({
+        'animation-delay': (value) => {
+          return {
+            'animation-delay': value,
+          }
         },
-        {
-          values: theme('transitionDelay'),
-        }
-      )
+      })
     }),
 
     plugin(function ({ addUtilities }) {
-      const noDragUtil = {
+      addUtilities({
         '.no-drag': {
           '-webkit-user-drag': 'none',
           '-khtml-user-drag': 'none',
@@ -106,9 +101,18 @@ export default {
           '-o-user-drag': 'none',
           'user-drag': 'none',
         },
-      }
-
-      addUtilities(noDragUtil)
+        '.inner-border': {
+          position: 'relative',
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            inset: '0',
+            boxShadow: 'inset 0 0 0 1px rgba(0, 0, 0, 0.1)',
+            borderRadius: 'inherit',
+            pointerEvents: 'none',
+          },
+        },
+      })
     }),
   ],
 }

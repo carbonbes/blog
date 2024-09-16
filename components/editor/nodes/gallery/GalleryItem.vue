@@ -1,27 +1,18 @@
 <template>
-  <div class="relative" :class="{ 'w-full': isSingle }">
+  <div
+    class="relative"
+    :class="{ 'w-full': isSingle }"
+    @touchstart="state.dragging = true"
+    @touchend="state.dragging = false"
+  >
     <template v-if="isGallery && !state.loading">
       <Tooltip tooltip="Удалить">
         <button
           class="absolute top-0 left-full -translate-y-1/2 -translate-x-1/2 p-1 bg-white border border-gray-200/75 rounded-full group/remove-btn z-[1]"
-          @click="emits('remove')"
+          @click="emits('remove', item.id as string)"
         >
           <ITablerX
             class="!size-3 group-hover/remove-btn:text-red-500 transition-colors"
-          />
-        </button>
-      </Tooltip>
-
-      <Tooltip tooltip="Перетащить">
-        <button
-          class="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1/2 p-1 bg-white border border-gray-200/75 rounded-full group/remove-btn z-[1]"
-          id="gallery-node-item-grip"
-          @touchstart="swipeEnabled = false"
-          @touchend="swipeEnabled = true"
-          @touchcancel="swipeEnabled = true"
-        >
-          <ITablerGripHorizontal
-            class="!size-3 group-hover/remove-btn:text-blue-500 transition-colors"
           />
         </button>
       </Tooltip>
@@ -29,7 +20,8 @@
 
     <Flex
       :center="isSingle"
-      class="bg-gray-100 rounded-xl overflow-hidden after:absolute after:inset-0 after:shadow-[inner_0_0_0_1px_red] after:rounded-xl after:pointer-events-none"
+      class="bg-gray-100 rounded-xl overflow-hidden"
+      :class="{ 'inner-border': isGallery }"
     >
       <Image
         v-if="['image', 'gif'].includes(item.type)"
@@ -89,7 +81,7 @@
       <UIButton
         size="s"
         class="absolute top-0 right-0 m-2 !bg-red-500 hover:!bg-red-700"
-        @click="emits('remove')"
+        @click="emits('remove', item.id as string)"
       >
         <ITablerTrash />
       </UIButton>
@@ -109,32 +101,34 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-  remove: any
+  remove: [string]
   openFileFromDeviceDialog: any
   openFileFromClipboardDialog: any
-  loaded: [Item]
+  uploaded: [Item]
 }>()
-
-const { swipeEnabled } = useRootNode()
-const { errorNotify } = useNotifications()
 
 const state = reactive<{
   item: Item | null
+  dragging: boolean
   loading: boolean
 }>({
   item: null,
+  dragging: false,
   loading: false,
 })
 
-function updateItem(data: UploadApiResponse) {
-  const { secure_url: src, width, height } = data
+const { swipeEnabled } = useRootNode()
+watch(() => state.dragging, (v) => swipeEnabled.value = !v)
 
-  emits('loaded', {
+function updateItem(data: UploadApiResponse) {
+  const { secure_url: src, public_id, width, height, format } = data
+
+  emits('uploaded', {
     src,
     alt: '',
-    thumbnail: ['image', 'gif'].includes(props.item.type)
-      ? src
-      : `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/v1726131132/zjr5yupdtyy6qzfjkpok.mp4`,
+    thumbnail: props.item.type === 'video'
+      ? `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/${public_id}.${format}`
+      : undefined,
     width,
     height,
     type: props.item.type,
@@ -142,8 +136,10 @@ function updateItem(data: UploadApiResponse) {
   })
 }
 
+const { errorNotify } = useNotifications()
+
 function showError() {
-  emits('remove')
+  emits('remove', props.item.id as string)
   errorNotify({ title: 'Ошибка', text: 'Не удалось загрузить файл' })
 }
 

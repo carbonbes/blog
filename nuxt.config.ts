@@ -1,4 +1,5 @@
 import { loadEnv } from 'vite'
+import mkcert from 'vite-plugin-mkcert'
 import IconsResolver from 'unplugin-icons/resolver'
 import Icons from 'unplugin-icons/vite'
 import Components from 'unplugin-vue-components/vite'
@@ -63,6 +64,12 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [
+      mkcert({
+        savePath: './certs',
+        force: true,
+        autoUpgrade: true,
+      }),
+
       Components({
         resolvers: [
           IconsResolver({
@@ -77,6 +84,13 @@ export default defineNuxtConfig({
         },
       }),
     ],
+  },
+
+  devServer: {
+    https: {
+      cert: './certs/cert.pem',
+      key: './certs/dev.pem'
+    }
   },
 
   app: {

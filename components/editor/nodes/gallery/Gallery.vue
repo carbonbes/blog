@@ -17,22 +17,28 @@
         </Flex>
       </Flex>
 
-      <Flex v-else class="gap-4 flex-wrap" ref="itemsContainerRef">
-        <GalleryItem
-          v-for="(item, i) in items"
-          :key="i"
-          :item
-          :isSingle
-          :isGallery
-          :parent="itemsContainerRef?.$el"
-          @loaded="(newItem) => items.splice(i, 1, newItem)"
-          @remove="remove(i)"
-          @openFileFromDeviceDialog="openFileSelectDialog"
-          @openFileFromClipboardDialog="
-            pasteFromClipboardDialogRef?.setOpen(true)
-          "
-        />
-      </Flex>
+      <Draggable
+        v-else
+        v-model="items"
+        item-key="id"
+        :animation="200"
+        @update="onUpdate"
+        class="flex gap-4 flex-wrap"
+        ref="itemsContainerRef"
+      >
+        <template #item="{ element }">
+          <GalleryItem
+            :item="element"
+            :parent="itemsContainerRef?.$el"
+            :isSingle
+            :isGallery
+            @uploaded="onUploaded"
+            @remove="onRemove"
+            @openFileFromDeviceDialog="openFileSelectDialog"
+            @openFileFromClipboardDialog="pasteFromClipboardDialogRef?.setOpen(true)"
+          />
+        </template>
+      </Draggable>
 
       <Flex v-if="isGallery" class="mt-10 gap-2">
         <Tooltip tooltip="Выбрать еще с устройства">
@@ -71,10 +77,11 @@ import type Flex from '~/components/global/Flex.vue'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/vue-3'
 import type Dialog from '~/components/global/Dialog.vue'
 import GalleryItem from '~/components/editor/nodes/gallery/GalleryItem.vue'
-import { useSortable } from '@vueuse/integrations/useSortable'
 import type { MimeType } from 'file-type'
+import Draggable from 'vuedraggable'
 
 export type Item = {
+  id?: string
   src: string
   alt?: string
   thumbnail?: string
@@ -97,18 +104,13 @@ const isEmpty = computed(() => !props.node.attrs.items.length)
 const isSingle = computed(() => props.node.attrs.items.length === 1)
 const isGallery = computed(() => props.node.attrs.items.length > 1)
 
-const items = ref<Item[]>(Object.assign([], props.node.attrs.items))
+const items = ref<Item[]>(Object.assign([], props.node.attrs.items).map((item: Item) => {
+  if (item.id) return item
 
-useSortable(itemsContainerRef as unknown as HTMLElement, items, {
-  handle: '#gallery-node-item-grip',
-  animation: 250,
-  onUpdate: async (e) => {
-    const items = Object.assign([], props.node.attrs.items)
-    items.splice(e.newIndex, 0, items.splice(e.oldIndex, 1)[0])
-    await nextTick()
-    props.updateAttributes({ items })
-  },
-})
+  item.id = window.crypto.randomUUID()
+
+  return item
+}))
 
 const {
   reset,
@@ -137,9 +139,15 @@ async function addItems(files: File[]) {
 
       if (!base64Item) return
 
+      const type = getFileTypeFromMimeType(file.type)
+      const thumbnail = type === 'video'
+        ? await getFrameFromBase64Video(base64Item as string)
+        : undefined
+
       items.value?.push({
         src: base64Item as string,
-        type: getFileTypeFromMimeType(file.type) as MediaType,
+        thumbnail,
+        type: type as MediaType,
         uploaded: false,
       })
     })
@@ -168,7 +176,24 @@ function onPaste(e: ClipboardEvent) {
   pasteFromClipboardDialogRef.value?.setOpen(false)
 }
 
-function remove(i: number) {
+async function onUpdate() {
+  props.updateAttributes({ items: items.value })
+}
+
+function onUploaded(newItem: Item) {
+  const i = items.value.findIndex((item) => item.id === newItem.id)
+
+  if (i === -1) return
+
+  items.value.splice(i, 1, newItem)
+  props.updateAttributes({ items: items.value })
+}
+
+function onRemove(itemId: string) {
+  const i = items.value.findIndex((item) => item.id === itemId)
+
+  if (i === -1) return
+
   items.value.splice(i, 1)
   props.updateAttributes({ items: items.value })
 }
