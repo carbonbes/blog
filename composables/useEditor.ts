@@ -1,4 +1,3 @@
-import { promiseTimeout } from '@vueuse/core'
 import { Editor, type Extensions, type JSONContent } from '@tiptap/vue-3'
 import { NodeSelection } from '@tiptap/pm/state'
 import type { HeadingLevel, NodeType } from '~/types'
@@ -145,7 +144,6 @@ export default function useEditor() {
       ) as HTMLElement
 
       const node = editor.value?.view.domAtPos(pos + 1).node as HTMLElement
-
       const elementRect = node.getBoundingClientRect()
       const elementTop = elementRect.top + editorScrollableContainer?.scrollTop
       const containerHeight = editorScrollableContainer?.clientHeight
@@ -157,7 +155,7 @@ export default function useEditor() {
       }
     }
 
-    let content: JSONContent[] | undefined
+    let content: JSONContent[] | undefined = undefined
 
     if (['bulletList', 'orderedList'].includes(type)) {
       content = [
@@ -173,10 +171,15 @@ export default function useEditor() {
       view: { dispatch },
     } = editor.value!
 
-    const newNode = state.schema.nodes[type].create(
-      attrs,
-      content ? content.map((item) => state.schema.nodeFromJSON(item)) : null
-    )
+    const newNode =
+      type === 'delimiter'
+        ? state.schema.nodes.horizontalRule.create()
+        : state.schema.nodes[type].create(
+            attrs,
+            content
+              ? content.map((item) => state.schema.nodeFromJSON(item))
+              : null
+          )
 
     if (
       ['paragraph', 'heading', 'bulletList', 'orderedList'].includes(
