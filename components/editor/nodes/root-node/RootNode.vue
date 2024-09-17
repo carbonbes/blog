@@ -4,10 +4,7 @@
       class="pt-1.5 sm:items-center gap-1 self-start hidden sm:flex sm:[&>button]:opacity-0 sm:group-hover/node:[&>button]:opacity-100 [&>button]:transition-opacity"
       contentEditable="false"
     >
-      <UIButton size="s" variant="secondary">
-        <ITablerPlus class="!size-4" />
-      </UIButton>
-
+      <NodesListDropdown @isOpen="onOpen" />
       <NodeActionsButton :pos="getPos()" :nodeAttrs="node.attrs" @onOpen="onOpen" />
     </Flex>
 
@@ -101,6 +98,7 @@
 
 <script lang="ts" setup>
 import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from '@tiptap/vue-3'
+import NodesListDropdown from '~/components/editor/nodes/root-node/NodesListDropdown.vue'
 import NodeActionsButton from '~/components/editor/nodes/root-node/NodeActionsButton.vue'
 import NodesListBottomsheet from '~/components/editor/nodes/root-node/NodesListBottomsheet.vue'
 import NodeActionsBottomsheet from '~/components/editor/nodes/root-node/NodeActionsBottomsheet.vue'
