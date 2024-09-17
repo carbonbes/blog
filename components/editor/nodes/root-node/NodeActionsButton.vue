@@ -67,40 +67,42 @@ function close() {
 
 const nodeActions = computed(() => [
   {
-    icon: Pin,
-    label: 'Вывести в карточке',
-    action: () => {
-      setNodeSelection(props.pos)
-      toggleNodeAttribute('pin')
-    },
-    active: props.nodeAttrs.pin,
+    group: [
+      {
+        icon: Pin,
+        label: 'Вывести в карточке',
+        action: () => {
+          setNodeSelection(props.pos)
+          toggleNodeAttribute('pin')
+        },
+        active: props.nodeAttrs.pin,
+      },
+      {
+        icon: EyeOff,
+        label: 'Скрыть',
+        action: () => {
+          setNodeSelection(props.pos)
+          toggleNodeAttribute('spoiler')
+        },
+        active: props.nodeAttrs.spoiler,
+      },
+    ]
   },
   {
-    icon: EyeOff,
-    label: 'Скрыть',
-    action: () => {
-      setNodeSelection(props.pos)
-      toggleNodeAttribute('spoiler')
-    },
-    active: props.nodeAttrs.spoiler,
-  },
-  {
-    separator: true,
-  },
-  {
-    icon: ArrowUp,
-    label: 'Вверх',
-    action: () => moveNode('up'),
-    disabled: !selectedNodeNeighbors.value?.prevNode
-  },
-  {
-    icon: ArrowDown,
-    label: 'Вниз',
-    action: () => moveNode('down'),
-    disabled: !selectedNodeNeighbors.value?.nextNode
-  },
-  {
-    separator: true,
+    group: [
+      {
+        icon: ArrowUp,
+        label: 'Вверх',
+        action: () => moveNode('up'),
+        disabled: !selectedNodeNeighbors.value?.prevNode
+      },
+      {
+        icon: ArrowDown,
+        label: 'Вниз',
+        action: () => moveNode('down'),
+        disabled: !selectedNodeNeighbors.value?.nextNode
+      },
+    ]
   },
   {
     icon: Refresh,
@@ -153,9 +155,6 @@ const nodeActions = computed(() => [
         ],
       },
     ],
-  },
-  {
-    separator: true,
   },
   {
     icon: Trash,

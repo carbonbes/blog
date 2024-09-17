@@ -3,6 +3,7 @@
     :items="nodesList"
     :side-offset="5"
     @isOpen="setOpen"
+    class="w-48"
     ref="dropdownRef"
   >
     <UIButton

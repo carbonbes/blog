@@ -15,23 +15,32 @@
 </template>
 
 <script lang="ts" setup>
-import { useForwardPropsEmits, type DropdownMenuContentEmits, type DropdownMenuContentProps } from 'radix-vue'
+import {
+  useForwardPropsEmits,
+  type DropdownMenuContentEmits,
+  type DropdownMenuContentProps,
+} from 'radix-vue'
 import type { DropdownItem } from '~/types'
 
 const props = withDefaults(
-  defineProps<DropdownMenuContentProps & {
-    modal?: boolean
-    maxHeight?: string
-    items: DropdownItem[]
-  }>(),
+  defineProps<
+    DropdownMenuContentProps & {
+      class?: string | object
+      modal?: boolean
+      maxHeight?: string
+      items: DropdownItem[]
+    }
+  >(),
   {
     modal: false,
-    maxHeight: '250px',
+    maxHeight: '275px',
   }
 )
-const emits = defineEmits<DropdownMenuContentEmits & {
-  isOpen: [boolean]
-}>()
+const emits = defineEmits<
+  DropdownMenuContentEmits & {
+    isOpen: [boolean]
+  }
+>()
 
 const forwarded = useForwardPropsEmits(props, emits)
 

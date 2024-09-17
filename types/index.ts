@@ -56,8 +56,8 @@ export type DropdownItem = {
   active?: boolean
   disabled?: boolean
   hide?: boolean
-  separator?: boolean
   subitems?: DropdownItem[]
+  group?: DropdownItem[]
 }
 
 export type EmbedType = 'youtube' | 'x' | 'telegram'
