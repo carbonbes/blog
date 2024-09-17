@@ -23,10 +23,7 @@
         Новый узел
       </Flex>
 
-      <NodeViewContent
-        class="sm:py-2 sm:px-3 rounded-xl w-full [&_ol]:pl-4 [&_ul]:pl-4 not-first:[&_ul_>_li]:mt-2 not-first:[&_ol_>_li]:mt-2 [&_ol]:list-decimal [&_ul]:list-disc outline-none transition-colors duration-300"
-        :class="{ '!bg-blue-100/50': nodeIsSelected }"
-      />
+      <NodeViewContent :class="nodeViewContentClasses" />
 
       <Flex
         itemsCenter
@@ -107,6 +104,7 @@ import type Flex from '~/components/global/Flex.vue'
 const props = defineProps<NodeViewProps>()
 
 const {
+  selectionIsEmpty,
   setNodeSelection,
   toggleNodeAttribute
 } = useEditor()
@@ -114,12 +112,65 @@ const {
 const nodeIsSelected = ref(false)
 const isSwiping = ref(false)
 
-const { selectionIsEmpty } = useEditor()
+const nodeHeadingClasses = computed(() => [
+  ['heading-' + props.node.content.content[0].attrs.level]: props.node.content.content[0].type.name === 'heading',
+  '[&.heading-1]:text-2xl',
+  '[&.heading-1]:font-bold',
+  '[&.heading-2]:text-xl',
+  '[&.heading-2]:font-bold',
+  'not-first:[&.heading]:mt-8',
+  'sm:not-first:[&.heading]:mt-4'
+])
+
+const nodeParagraphClasses = [
+  'not-first:[&.paragraph]:mt-6',
+  'sm:not-first:[&.paragraph]:mt-2'
+]
+
+const nodeListsClasses = [
+  'not-first:[&.orderedList]:mt-6',
+  'not-first:[&.bulletList]:mt-6',
+  'sm:not-first:[&.orderedList]:mt-2',
+  'sm:not-first:[&.bulletList]:mt-2'
+]
+
+const nodeGalleryClasses = ['not-first:[&.gallery]:mt-4']
+
+const nodeSNEmbedClasses = [
+  'not-first:[&.sn-embed]:mt-4',
+  'sm:not-first:[&.sn-embed]:mt-2'
+]
 
 const nodeClasses = computed(() => ({
-  'relative flex gap-4 [&.heading-1]:text-2xl [&.heading-1]:font-bold [&.heading-2]:text-xl [&.heading-2]:font-bold not-first:[&.paragraph]:mt-6 not-first:[&.orderedList]:mt-6 not-first:[&.bulletList]:mt-6 not-first:[&.heading]:mt-8 not-first:[&.gallery]:mt-4 sm:not-first:[&.paragraph]:mt-2 sm:not-first:[&.orderedList]:mt-2 sm:not-first:[&.bulletList]:mt-2 sm:not-first:[&.heading]:mt-4 not-first:[&.sn-embed]:mt-4 sm:not-first:[&.sn-embed]:mt-2 group/node': true,
+  'relative flex gap-4 group/node': true,
   [props.node.content.content[0].type.name]: true,
-  ['heading-' + props.node.content.content[0].attrs.level]: props.node.content.content[0].type.name === 'heading',
+  [nodeHeadingClasses.value]: true
+}))
+
+const nodeViewListsClasses = [
+  '[&_ol]:pl-4',
+  '[&_ul]:pl-4',
+  'not-first:[&_ul_>_li]:mt-2',
+  'not-first:[&_ol_>_li]:mt-2',
+  '[&_ol]:list-decimal',
+  '[&_ul]:list-disc'
+].join(' ')
+
+const nodeViewHrClasses = [
+  '[&_hr]:border-transparent',
+  '[&_hr]:w-full',
+  '[&_hr]:h-full',
+  '[&_hr]:text-2xl',
+  '[&_hr]:after:content-["*_*_*"]',
+  '[&_hr]:after:flex',
+  '[&_hr]:after:justify-center'
+].join(' ')
+
+const nodeViewContentClasses = computed(() => ({
+  'sm:py-2 sm:px-3 rounded-xl w-full outline-none transition-colors duration-300': true,
+  '!bg-blue-100/50': nodeIsSelected.value,
+  nodeViewListsClasses,
+  nodeViewHrClasses
 }))
 
 const nodeContentRef = ref<InstanceType<typeof Flex>>()
