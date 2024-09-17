@@ -22,6 +22,7 @@
         v-model="items"
         item-key="id"
         :animation="200"
+        :disabled="items.length === 1"
         @update="onUpdate"
         class="flex gap-4 flex-wrap"
         ref="itemsContainerRef"
@@ -32,6 +33,7 @@
             :parent="itemsContainerRef?.$el"
             :isSingle
             :isGallery
+            :isDraggable="items.length !== 1"
             @uploaded="onUploaded"
             @remove="onRemove"
             @openFileFromDeviceDialog="openFileSelectDialog"

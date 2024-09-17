@@ -2,8 +2,8 @@
   <div
     class="relative"
     :class="{ 'w-full': isSingle }"
-    @touchstart="state.dragging = true"
-    @touchend="state.dragging = false"
+    @touchstart="onTouch(true)"
+    @touchend="onTouch(false)"
   >
     <template v-if="isGallery && !state.loading">
       <Tooltip tooltip="Удалить">
@@ -96,8 +96,9 @@ import type { Item } from '~/components/editor/nodes/gallery/Gallery.vue'
 const props = defineProps<{
   item: Item
   parent: HTMLElement | undefined
-  isSingle?: boolean
-  isGallery?: boolean
+  isSingle: boolean
+  isGallery: boolean
+  isDraggable: boolean
 }>()
 
 const emits = defineEmits<{
@@ -116,6 +117,12 @@ const state = reactive<{
   dragging: false,
   loading: false,
 })
+
+function onTouch(value: boolean) {
+  if (!props.isDraggable) return
+
+  state.dragging = value
+}
 
 const { swipeEnabled } = useRootNode()
 watch(() => state.dragging, (v) => swipeEnabled.value = !v)
