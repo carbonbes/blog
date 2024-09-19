@@ -5,7 +5,7 @@ export default function getFilesFromClipboard(
   types?: MimeType[]
 ): File[] | undefined {
   if (e.clipboardData && e.clipboardData.files.length > 0) {
-    const items = Array.from(e.clipboardData?.items)
+    const items = Array.from(e.clipboardData.items)
     let files: File[] | undefined = undefined
 
     if (!items) return
@@ -15,7 +15,7 @@ export default function getFilesFromClipboard(
         const file = item.getAsFile()
 
         if (file && (!types || (types as string[]).includes(file.type))) {
-          files = []
+          if (!files) files = []
           files.push(file)
         }
       }

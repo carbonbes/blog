@@ -1,8 +1,10 @@
-export default function getBase64FromFile(file: File) {
-  return new Promise<string | ArrayBuffer | null>((resolve, reject) => {
+export default function getBase64FromFile(
+  file: File
+): Promise<string | ArrayBuffer | null> {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader()
 
-    reader.onloadend = () => {
+    reader.onload = () => {
       resolve(reader.result)
     }
 
