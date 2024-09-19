@@ -145,6 +145,10 @@ function setEndStyles() {
 }
 
 async function playOpenAnimation() {
+  if (props.isActiveSlide) {
+    props.thumbnail.style.opacity = '0'
+  }
+
   setStartStyles()
 
   await nextTick()
@@ -164,7 +168,14 @@ async function playCloseAnimation() {
   await nextTick()
 
   enabledTransformTransition.value = props.isActiveSlide ? true : false
+
   setStartStyles()
+
+  await promiseTimeout(295)
+
+  if (props.isActiveSlide) {
+    props.thumbnail.style.opacity = '1'
+  }
 }
 
 function recalculateTransform() {
