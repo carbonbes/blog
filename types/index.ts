@@ -37,7 +37,7 @@ export type NodeType =
   | 'gallery'
   | 'SNEmbed'
   | 'link'
-  | 'delimiter'
+  | 'separator'
 
 export type HeadingLevel = 1 | 2
 

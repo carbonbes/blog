@@ -137,7 +137,7 @@ const nodesList = markRaw([
     icon: Separator,
     label: 'Разделитель',
     action: () => {
-      insertNode({ type: 'delimiter' })
+      insertNode({ type: 'separator' })
       close()
     }
   }

@@ -132,7 +132,7 @@ const nodeActionButtons = computed(() => [
   {
     icon: Refresh,
     label: 'Поменять на',
-    disabled: ['sn-embed', 'gallery', 'link', 'delimiter'].includes(selectedNodeType.value),
+    disabled: ['sn-embed', 'gallery', 'link', 'separator'].includes(selectedNodeType.value),
     action: () => {
       state.view = 2
     },

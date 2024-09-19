@@ -107,7 +107,7 @@ const nodeActions = computed(() => [
   {
     icon: Refresh,
     label: 'Поменять на',
-    disabled: ['sn-embed', 'gallery', 'link', 'delimiter'].includes(selectedNodeType.value),
+    disabled: ['sn-embed', 'gallery', 'link', 'separator'].includes(selectedNodeType.value),
     subitems: [
       {
         icon: Heading,

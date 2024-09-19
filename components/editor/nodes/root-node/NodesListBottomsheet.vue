@@ -111,7 +111,7 @@ const buttons = markRaw([
     icon: Divider,
     label: 'Разделитель',
     action: () => {
-      insertNode({ type: 'delimiter' })
+      insertNode({ type: 'separator' })
       setOpen(false)
     }
   },

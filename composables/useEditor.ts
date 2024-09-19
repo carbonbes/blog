@@ -20,7 +20,7 @@ import Dropcursor from '@tiptap/extension-dropcursor'
 import InlineSpoiler from '~/tiptap-extensions/inline-spoiler'
 import Gallery from '~/tiptap-extensions/gallery'
 import TrailingNode from '~/tiptap-extensions/trailing-node'
-import Delimiter from '@tiptap/extension-horizontal-rule'
+import Separator from '@tiptap/extension-horizontal-rule'
 import SNEmbed from '~/tiptap-extensions/social-network-embed'
 import YoutubeEmbed from '~/tiptap-extensions/youtube-embed'
 
@@ -59,7 +59,7 @@ const extensions: Extensions = [
   InlineSpoiler,
   Gallery,
   TrailingNode,
-  Delimiter,
+  Separator,
   SNEmbed,
   YoutubeEmbed,
 ]
@@ -172,7 +172,7 @@ export default function useEditor() {
     } = editor.value!
 
     const newNode =
-      type === 'delimiter'
+      type === 'separator'
         ? state.schema.nodes.horizontalRule.create()
         : state.schema.nodes[type].create(
             attrs,

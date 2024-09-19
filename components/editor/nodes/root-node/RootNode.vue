@@ -23,10 +23,7 @@
         Новый узел
       </Flex>
 
-      <NodeViewContent
-        class="sm:py-2 sm:px-3 rounded-xl w-full [&_ol]:pl-4 [&_ul]:pl-4 not-first:[&_ul_>_li]:mt-2 not-first:[&_ol_>_li]:mt-2 [&_ol]:list-decimal [&_ul]:list-disc outline-none transition-colors duration-300"
-        :class="{ '!bg-blue-100/50': nodeIsSelected }"
-      />
+      <NodeViewContent :class="nodeViewContentClasses" />
 
       <Flex
         itemsCenter
@@ -107,19 +104,126 @@ import type Flex from '~/components/global/Flex.vue'
 const props = defineProps<NodeViewProps>()
 
 const {
+  selectionIsEmpty,
   setNodeSelection,
   toggleNodeAttribute
 } = useEditor()
 
-const nodeIsSelected = ref(false)
-const isSwiping = ref(false)
+const nodeType = computed<string>(() => props.node.content.content[0].type.name)
 
-const { selectionIsEmpty } = useEditor()
+const nodeHeadingClasses = computed(() => {
+  const nodeContent = props.node.content.content[0]
+  const level = nodeContent.attrs.level
+
+  if (nodeContent.type.name !== 'heading') return {}
+
+  return {
+    ['heading-' + level]: true,
+    ...(level === 1 ? {
+      'text-2xl': true,
+      'font-bold': true
+    } : {}),
+    ...(level === 2 ? {
+      'text-xl': true,
+      'font-bold': true
+    } : {}),
+    'not-first:mt-8': true,
+    'sm:not-first:mt-4': true
+  }
+})
+
+const nodeParagraphClasses = computed(() => {
+  if (nodeType.value !== 'paragraph') return {}
+
+  return {
+    'not-first:[&.paragraph]:mt-6': true,
+    'sm:not-first:[&.paragraph]:mt-2': true
+  }
+})
+
+const nodeListsClasses = computed(() => {
+  if (!['orderedList', 'bulletList'].includes(nodeType.value)) return {}
+
+  return {
+    'not-first:[&.orderedList]:mt-6': true,
+    'not-first:[&.bulletList]:mt-6': true,
+    'sm:not-first:[&.orderedList]:mt-2': true,
+    'sm:not-first:[&.bulletList]:mt-2': true
+  }
+})
+
+const nodeGalleryClasses = computed(() => {
+  if (nodeType.value !== 'gallery') return {}
+
+  return {
+    'not-first:[&.gallery]:mt-4': true
+  }
+})
+
+const nodeSNEmbedClasses = computed(() => {
+  if (nodeType.value !== 'sn-embed') return {}
+
+  return {
+    'not-first:[&.sn-embed]:mt-4': true,
+    'sm:not-first:[&.sn-embed]:mt-2': true
+  }
+})
+
+const nodeSeparatorClasses = computed(() => {
+  if (nodeType.value !== 'horizontalRule') return {}
+
+  return {
+    'not-first:[&.horizontalRule]:mt-4': true,
+    'sm:not-first:[&.horizontalRule]:mt-2': true,
+  }
+})
 
 const nodeClasses = computed(() => ({
-  'relative flex gap-4 [&.heading-1]:text-2xl [&.heading-1]:font-bold [&.heading-2]:text-xl [&.heading-2]:font-bold not-first:[&.paragraph]:mt-6 not-first:[&.orderedList]:mt-6 not-first:[&.bulletList]:mt-6 not-first:[&.heading]:mt-8 not-first:[&.gallery]:mt-4 sm:not-first:[&.paragraph]:mt-2 sm:not-first:[&.orderedList]:mt-2 sm:not-first:[&.bulletList]:mt-2 sm:not-first:[&.heading]:mt-4 not-first:[&.sn-embed]:mt-4 sm:not-first:[&.sn-embed]:mt-2 group/node': true,
-  [props.node.content.content[0].type.name]: true,
-  ['heading-' + props.node.content.content[0].attrs.level]: props.node.content.content[0].type.name === 'heading',
+  'relative flex gap-4 group/node': true,
+  [nodeType.value]: true,
+  ...nodeHeadingClasses.value,
+  ...nodeParagraphClasses.value,
+  ...nodeListsClasses.value,
+  ...nodeGalleryClasses.value,
+  ...nodeSNEmbedClasses.value,
+  ...nodeSeparatorClasses.value
+}))
+
+const nodeViewListsClasses = computed(() => {
+  if (['orderedList', 'bulletList'].includes(nodeType.value)) return {}
+
+  return {
+    '[&_ol]:pl-4': true,
+    '[&_ul]:pl-4': true,
+    'not-first:[&_ul_>_li]:mt-2': true,
+    'not-first:[&_ol_>_li]:mt-2': true,
+    '[&_ol]:list-decimal': true,
+    '[&_ul]:list-disc': true
+  }
+})
+
+const nodeViewSeparatorClasses = computed(() => {
+  if (nodeType.value !== 'horizontalRule') return {}
+
+  return {
+    '[&_hr]:h-full': true,
+    '[&_hr]:border-transparent': true,
+    '[&_hr]:after:content-["*_*_*"]': true,
+    '[&_hr]:after:w-full': true,
+    '[&_hr]:after:inline-block': true,
+    '[&_hr]:after:text-2xl': true,
+    '[&_hr]:after:text-center': true,
+    '[&_hr]:after:align-middle': true,
+  }
+})
+
+const nodeIsSelected = ref(false)
+
+const nodeViewContentClasses = computed(() => ({
+  'sm:py-2 sm:px-3 rounded-xl w-full outline-none transition-colors duration-300': true,
+  '!bg-blue-100/50': nodeIsSelected.value,
+  ...nodeViewListsClasses.value,
+  ...nodeViewSeparatorClasses.value
 }))
 
 const nodeContentRef = ref<InstanceType<typeof Flex>>()
@@ -149,6 +253,7 @@ function resetTranslateX() {
 const nodeContentStyles = computed(() => `transform: translateX(${translateX.value}px)`)
 
 const { swipeEnabled } = useRootNode()
+const isSwiping = ref(false)
 
 useGesture(nodeContentRef,
   {
