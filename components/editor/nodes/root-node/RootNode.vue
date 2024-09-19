@@ -119,6 +119,7 @@ const nodeHeadingClasses = computed(() => {
 
   return {
     ['heading-' + level]: true,
+    '!mt-8 !sm:mt-4': true,
     ...(level === 1 ? {
       'text-2xl': true,
       'font-bold': true
@@ -127,59 +128,41 @@ const nodeHeadingClasses = computed(() => {
       'text-xl': true,
       'font-bold': true
     } : {}),
-    'not-first:mt-8': true,
-    'sm:not-first:mt-4': true
   }
 })
 
 const nodeParagraphClasses = computed(() => {
   if (nodeType.value !== 'paragraph') return {}
 
-  return {
-    'not-first:[&.paragraph]:mt-6': true,
-    'sm:not-first:[&.paragraph]:mt-2': true
-  }
+  return {}
 })
 
 const nodeListsClasses = computed(() => {
   if (!['orderedList', 'bulletList'].includes(nodeType.value)) return {}
 
-  return {
-    'not-first:[&.orderedList]:mt-6': true,
-    'not-first:[&.bulletList]:mt-6': true,
-    'sm:not-first:[&.orderedList]:mt-2': true,
-    'sm:not-first:[&.bulletList]:mt-2': true
-  }
+  return {}
 })
 
 const nodeGalleryClasses = computed(() => {
   if (nodeType.value !== 'gallery') return {}
 
-  return {
-    'not-first:[&.gallery]:mt-4': true
-  }
+  return {}
 })
 
 const nodeSNEmbedClasses = computed(() => {
   if (nodeType.value !== 'sn-embed') return {}
 
-  return {
-    'not-first:[&.sn-embed]:mt-4': true,
-    'sm:not-first:[&.sn-embed]:mt-2': true
-  }
+  return {}
 })
 
 const nodeSeparatorClasses = computed(() => {
   if (nodeType.value !== 'horizontalRule') return {}
 
-  return {
-    'not-first:[&.horizontalRule]:mt-4': true,
-    'sm:not-first:[&.horizontalRule]:mt-2': true,
-  }
+  return {}
 })
 
 const nodeClasses = computed(() => ({
-  'relative flex gap-4 group/node': true,
+  'my-4 sm:my-2 relative flex gap-4 group/node': true,
   [nodeType.value]: true,
   ...nodeHeadingClasses.value,
   ...nodeParagraphClasses.value,
@@ -190,7 +173,7 @@ const nodeClasses = computed(() => ({
 }))
 
 const nodeViewListsClasses = computed(() => {
-  if (['orderedList', 'bulletList'].includes(nodeType.value)) return {}
+  if (!['orderedList', 'bulletList'].includes(nodeType.value)) return {}
 
   return {
     '[&_ol]:pl-4': true,
