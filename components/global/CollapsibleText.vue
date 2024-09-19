@@ -1,7 +1,7 @@
 <template>
   <Component :is="tag">
     <template v-if="isLongText && textIsCollapsed">
-      <span>{{ `${text.slice(0, 250)}...` }}&nbsp;</span>
+      <span>{{ `${text.slice(0, maxLength)}...` }}&nbsp;</span>
       <button
         class="text-blue-500"
         @click="textIsCollapsed = false"

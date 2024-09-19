@@ -64,13 +64,13 @@
     <Flex v-if="isSingle" class="absolute left-0 bottom-0 p-2 w-full">
       <Flex class="gap-2">
         <Tooltip tooltip="Выбрать еще с устройства">
-          <UIButton size="s" @click="emits('openFileFromDeviceDialog')">
+          <UIButton size="s" class="rounded-xl" @click="emits('openFileFromDeviceDialog')">
             <ITablerPlus />
           </UIButton>
         </Tooltip>
 
         <Tooltip tooltip="Вставить еще из буфера">
-          <UIButton size="s" @click="emits('openFileFromClipboardDialog')">
+          <UIButton size="s" class="rounded-xl" @click="emits('openFileFromClipboardDialog')">
             <ITablerClipboard />
           </UIButton>
         </Tooltip>
@@ -80,7 +80,7 @@
     <Tooltip v-if="isSingle && !state.loading" tooltip="Удалить">
       <UIButton
         size="s"
-        class="absolute top-0 right-0 m-2 !bg-red-500 hover:!bg-red-700"
+        class="absolute top-0 right-0 m-2 !bg-red-500 hover:!bg-red-700 rounded-xl"
         @click="emits('remove', item.id as string)"
       >
         <ITablerTrash />

@@ -45,6 +45,7 @@
       <CollapsibleText
         v-if="embed.text"
         :text="embed.text"
+        :maxLength="175"
         class="px-5 pb-5 whitespace-pre-line"
       />
 

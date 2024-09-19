@@ -9,9 +9,9 @@
         <ITablerPhoto class="!size-10" />
 
         <Flex class="gap-2">
-          <UIButton @click="openFileSelectDialog"> Выбрать файлы </UIButton>
+          <UIButton class="rounded-xl" @click="openFileSelectDialog"> Выбрать файлы </UIButton>
 
-          <UIButton @click="pasteFromClipboardDialogRef?.setOpen(true)">
+          <UIButton class="rounded-xl" @click="pasteFromClipboardDialogRef?.setOpen(true)">
             Вставить из буфера
           </UIButton>
         </Flex>
@@ -44,7 +44,7 @@
 
       <Flex v-if="isGallery" class="mt-10 gap-2">
         <Tooltip tooltip="Выбрать еще с устройства">
-          <UIButton size="s" @click="openFileSelectDialog">
+          <UIButton size="s" class="rounded-xl" @click="openFileSelectDialog">
             <ITablerPlus />
           </UIButton>
         </Tooltip>
@@ -52,6 +52,7 @@
         <Tooltip tooltip="Вставить еще из буфера">
           <UIButton
             size="s"
+            class="rounded-xl"
             @click="pasteFromClipboardDialogRef?.setOpen(true)"
           >
             <ITablerClipboard />

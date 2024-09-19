@@ -1,14 +1,14 @@
 <template>
   <Flex itemsCenter class="ml-auto gap-2">
-    <UIButton variant="secondary" :disabled="!canUndo" @click="undo">
+    <UIButton variant="secondary" :disabled="!canUndo" class="rounded-xl" @click="undo">
       <ITablerArrowBackUp />
     </UIButton>
 
-    <UIButton variant="secondary" :disabled="!canRedo" @click="redo">
+    <UIButton variant="secondary" :disabled="!canRedo" class="rounded-xl" @click="redo">
       <ITablerArrowForwardUp />
     </UIButton>
 
-    <UIButton @click="console.log(editor?.getJSON())">
+    <UIButton class="rounded-xl" @click="console.log(editor?.getJSON())">
       Сохранить
     </UIButton>
   </Flex>
