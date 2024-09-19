@@ -91,6 +91,8 @@ export default function useGesture(
       }
     }
 
+    const { onlyTouchDevices, ...gestureOptions } = options || {}
+
     gesture.value = new Gesture(
       el as EventTarget,
       {
@@ -111,7 +113,7 @@ export default function useGesture(
         onWheelEnd: createEventHandler<WheelGestureState>(handlers.onWheelEnd),
         onHover: createEventHandler<HoverGestureState>(handlers.onHover),
       },
-      options
+      gestureOptions
     )
   }
 
