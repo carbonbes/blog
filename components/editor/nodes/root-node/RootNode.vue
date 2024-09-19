@@ -119,7 +119,7 @@ const nodeHeadingClasses = computed(() => {
 
   return {
     ['heading-' + level]: true,
-    '!mt-8 !sm:mt-4': true,
+    'not-first:!mt-8 not-first:!sm:mt-4': true,
     ...(level === 1 ? {
       'text-2xl': true,
       'font-bold': true
@@ -162,7 +162,7 @@ const nodeSeparatorClasses = computed(() => {
 })
 
 const nodeClasses = computed(() => ({
-  'my-4 sm:my-2 relative flex gap-4 group/node': true,
+  'not-first:mt-4 not-last:mb-4 not-first:sm:mt-2 not-last:sm:mb-2 relative flex gap-4 group/node': true,
   [nodeType.value]: true,
   ...nodeHeadingClasses.value,
   ...nodeParagraphClasses.value,
