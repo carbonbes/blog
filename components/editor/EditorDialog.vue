@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    class="fixed inset-0 w-full h-full max-w-[780px] sm:max-h-[800px] rounded-none sm:rounded-xl"
+    class="fixed inset-0 w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none sm:!rounded-xl"
     @close="setOpen(false)"
     ref="dialogRef"
   >
