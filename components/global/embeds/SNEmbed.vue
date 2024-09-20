@@ -49,8 +49,24 @@
         class="px-5 pb-5 whitespace-pre-line"
       />
 
+      <Flex
+        v-if="embed.media && embed.media.length === 1"
+        center
+        class="bg-gray-100"
+      >
+        <Image
+          v-if="embed.media[0].type === 'image'"
+          :src="embed.media[0].url"
+          :alt="embed.media[0].alt"
+          :originalWidth="embed.media[0].width"
+          :originalHeight="embed.media[0].height"
+          zoomable
+          size="w-fit max-h-80"
+        />
+      </Flex>
+
       <GalleryGrid
-        v-if="embed.media"
+        v-else-if="embed.media && embed.media.length > 1"
         :items="embed.media"
       />
     </Flex>

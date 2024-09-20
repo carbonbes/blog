@@ -1,3 +1,5 @@
+import getMimeTypeFromBuffer from '~/utils/getMimeTypeFromBuffer'
+
 export default async function getBase64FromBuffer(
   buffer: Buffer | ArrayBuffer
 ): Promise<string> {

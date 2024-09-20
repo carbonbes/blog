@@ -21,10 +21,17 @@ import SNEmbed from '~/components/global/embeds/SNEmbed.vue'
 
 const props = defineProps<NodeViewProps>()
 
+const { errorNotify } = useNotifications()
+
 onMounted(async () => {
   if (props.node.attrs.url) {
-    const { data: embed } = await getEmbed(props.node.attrs.url)
-    props.updateAttributes({ url: null, embed })
+    try {
+      const { data: embed } = await getEmbed(props.node.attrs.url)
+      props.updateAttributes({ url: null, embed })
+    } catch (error: any) {
+      props.deleteNode()
+      errorNotify({ text: error.data.message })
+    }
   }
 })
 </script>
