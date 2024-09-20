@@ -1,5 +1,5 @@
 <template>
-  <NodeViewWrapper>
+  <NodeViewWrapper data-prevent-focus="true">
     <Video
       :src="`http://www.youtube.com/embed/${node.attrs.video_id}`"
       :thumbnail="node.attrs.thumbnail"

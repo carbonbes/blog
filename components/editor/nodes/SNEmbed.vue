@@ -1,6 +1,8 @@
 <template>
   <NodeViewWrapper
     contenteditable="false"
+    data-prevent-focus="true"
+    class="user-select-all"
   >
     <Flex
       v-if="!node.attrs.embed"

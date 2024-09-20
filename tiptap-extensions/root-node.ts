@@ -1,5 +1,4 @@
 import { Node, mergeAttributes } from '@tiptap/core'
-import type { NodeSelection } from '@tiptap/pm/state'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import RootNode from '~/components/editor/nodes/root-node/RootNode.vue'
 
@@ -65,13 +64,26 @@ const rootNode = Node.create({
   },
 
   addNodeView() {
-    return VueNodeViewRenderer(RootNode)
+    return VueNodeViewRenderer(RootNode, {
+      stopEvent(props) {
+        if ((props.event.target as HTMLElement).closest('[data-prevent-focus="true"]')) {
+          const selection = window.getSelection()
+        
+          if (selection) {
+            selection.empty()
+          }
+
+          props.event.preventDefault()
+          return true
+        }
+
+        return false
+      },
+    })
   },
 
   addKeyboardShortcuts() {
     return {
-      'Mod-Alt-0': () => this.editor.commands.setRootNode(),
-
       Enter: ({ editor }) => {
         const {
           selection: { $head, from, to },

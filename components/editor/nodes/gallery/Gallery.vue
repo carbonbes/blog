@@ -3,6 +3,7 @@
     class="flex flex-col"
     :class="{ 'p-3 sm:p-4 bg-gray-100 rounded-xl': isEmpty || !isSingle }"
     contenteditable="false"
+    data-prevent-focus="true"
   >
     <Flex col>
       <Flex v-if="isEmpty" col itemsCenter class="gap-8">

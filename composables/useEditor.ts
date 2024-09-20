@@ -290,8 +290,6 @@ export default function useEditor() {
         .focus(selectedNodePos.value!.from + 2)
         .toggleOrderedList()
         .run()
-
-    editor.value?.commands.blur()
   }
 
   const { rects } = useTextSelection()
@@ -301,18 +299,6 @@ export default function useEditor() {
       content,
 
       extensions,
-
-      editorProps: {
-        handleClickOn(view, pos, node, nodePos, event, direct) {
-          if (['sn-embed'].includes(node.type.name)) {
-            editor.value?.commands.blur()
-
-            return true
-          }
-
-          return false
-        },
-      },
 
       onUpdate({ editor }) {
         const content = editor.getJSON() as JSONContent[]
