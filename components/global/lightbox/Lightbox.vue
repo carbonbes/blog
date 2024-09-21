@@ -40,16 +40,14 @@
           </button>
 
           <Swiper
-            :options="{
-              initialSlide: activeItemIndex,
-              spaceBetween: 100,
-              loop: thumbnails?.length! > 1,
-            }"
+            :initialSlide="activeItemIndex"
+            :spaceBetween="100"
+            :loop="thumbnails?.length! > 1"
             class="!absolute inset-0"
             ref="swiperRef"
             @realIndexChange="(value) => activeItemIndex = value"
           >
-            <SwiperSlide
+            <LightboxItem
               v-for="(item, i) in items"
               :key="i"
               :item

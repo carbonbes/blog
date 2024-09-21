@@ -1,36 +1,47 @@
 <template>
-  <div class="swiper" ref="containerRef">
-    <div class="swiper-wrapper">
-      <slot />
-    </div>
-  </div>
+  <swiper-container
+    :init
+    :initialSlide
+    :loop
+    :spaceBetween
+    @swiperrealindexchange="onRealIndexChange"
+    ref="swiperContainerRef"
+  >
+    <slot />
+  </swiper-container>
 </template>
 
 <script lang="ts" setup>
-import { Swiper } from 'swiper'
-import { type SwiperOptions } from 'swiper/types'
-import 'swiper/css/bundle'
+import { register } from 'swiper/element/bundle'
+import type { Swiper, SwiperOptions } from 'swiper/types'
 
-const props = defineProps<{
-  options?: SwiperOptions
-}>()
+register()
+
+type SwiperContainer = HTMLElement & { swiper: Swiper }
+
+withDefaults(
+  defineProps<SwiperOptions>(),
+  {
+    init: true
+  }
+)
 
 const emits = defineEmits<{
   realIndexChange: [number]
 }>()
 
-const containerRef = ref<HTMLElement>()
+const swiperContainerRef = ref<SwiperContainer>()
 const swiper = ref<Swiper>()
 
-function initSwiper() {
-  if (!containerRef.value || swiper.value) return
+watchEffect(() => {
+  swiper.value = swiperContainerRef.value?.swiper
+})
 
-  swiper.value = new Swiper(containerRef.value, props.options)
+function onRealIndexChange(e) {
+  const [swiper] = e.detail
 
-  swiper.value.on('realIndexChange', (swiper) => emits('realIndexChange', swiper.realIndex))
+  emits('realIndexChange', swiper.realIndex)
 }
-
-onMounted(initSwiper)
 
 defineExpose({ swiper })
 </script>
