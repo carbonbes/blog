@@ -41,15 +41,15 @@
 
           <Swiper
             :initialSlide="activeItemIndex"
-            :spaceBetween="100"
             :loop="thumbnails?.length! > 1"
-            class="!absolute inset-0"
+            class="absolute inset-0"
             ref="swiperRef"
             @realIndexChange="(value) => activeItemIndex = value"
           >
             <LightboxItem
               v-for="(item, i) in items"
               :key="i"
+              :index="i"
               :item
               :thumbnail="thumbnails![i]"
               :isActiveSlide="activeItemIndex === i"
@@ -86,7 +86,7 @@ export type Item = {
   type: 'image' | 'video' | 'gif'
 }
 
-const { items: thumbnails } = useLightboxDialog()
+const { thumbnails } = useLightboxDialog()
 
 const isOpen = ref(false)
 

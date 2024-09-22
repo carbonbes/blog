@@ -1,34 +1,46 @@
 <template>
   <SwiperItem
-    class="touch-none"
+    class="overflow-hidden touch-none"
     v-intersection-observer="onIntersectionObserver"
     ref="slideRef"
   >
     <div
-      class="origin-top-left"
-      :class="{
-        'transition-[transform,width,height] duration-300': enabledTransformTransition && !screenIsResizing
-      }"
-      :style="[slideContentWrapperTransform, slideContentWrapperSize]"
+      class="absolute inset-0 overflow-hidden"
+      :class="{ 'transition-transform duration-300': enabledTransformTransition && !screenIsResizing }"
+      :style="slideWrapper1Transform"
     >
-      <NuxtImg
-        v-if="isImage"
-        :src="item.src"
-        :alt="item.alt"
-        loading="lazy"
-        class="w-full h-full max-h-screen object-cover object-center"
-        ref="slideContentRef"
-      />
+      <div
+        class="absolute inset-0 overflow-hidden"
+        :class="{ 'transition-transform duration-300': enabledTransformTransition && !screenIsResizing }"
+        :style="slideWrapper2Transform"
+      >
+        <div
+          class="absolute origin-top-left"
+          :class="{ 'transition-transform duration-300': enabledTransformTransition && !screenIsResizing }"
+          :style="slideContentWrapperTransform"
+        >
+          <NuxtImg
+            v-if="isImage"
+            :src="item.src"
+            :alt="item.alt"
+            loading="lazy"
+            class="w-full h-full max-h-screen"
+            :style="slideContentWrapperItemSize"
+            ref="slideContentRef"
+          />
 
-      <video
-        v-else
-        :src="item.src"
-        class="w-full h-full bg-black aspect-video"
-        controls
-        muted
-        playsinline
-        ref="slideContentRef"
-      />
+          <video
+            v-else
+            :src="item.src"
+            class="w-full h-full bg-black aspect-video"
+            :style="slideContentWrapperItemSize"
+            controls
+            muted
+            playsinline
+            ref="slideContentRef"
+          />
+        </div>
+      </div>
     </div>
   </SwiperItem>
 </template>
@@ -41,6 +53,7 @@ import { promiseTimeout } from '@vueuse/core'
 import SwiperItem from '~/components/global/swiper/SwiperItem.vue'
 
 const props = defineProps<{
+  index: number
   item: Item
   thumbnail: HTMLElement
   isActiveSlide: boolean
@@ -75,7 +88,6 @@ onClickOutside(
     if (!props.isActiveSlide || props.swiper.animating) return
 
     close()
-    playCloseAnimation()
   },
   { ignore: [prevSlideControlRef, nextSlideControlRef] }
 )
@@ -113,44 +125,71 @@ const slideContentSize = computed(() =>
   )
 )
 
+const wrapper1TranslateX = ref(0)
+const wrapper1TranslateY = ref(0)
+const wrapper2TranslateX = ref(0)
+const wrapper2TranslateY = ref(0)
+
 const translateX = ref(0)
 const translateY = ref(0)
-const croppedWidth = ref(0)
-const croppedHeight = ref(0)
+const scaleX = ref(1)
+const scaleY = ref(1)
 
-const enabledTransformTransition = ref(false)
+const contentItemWidth = ref(0)
+const contentItemHeight = ref(0)
+
+const slideWrapper1Transform = computed(() => `transform: translate3d(${wrapper1TranslateX.value}px, ${wrapper1TranslateY.value}px, 0px)`)
+const slideWrapper2Transform = computed(() => `transform: translate3d(${wrapper2TranslateX.value}px, ${wrapper2TranslateY.value}px, 0px)`)
+const slideContentWrapperTransform = computed(() => `transform: translate3d(${translateX.value}px, ${translateY.value}px, 0px) scale3d(${scaleX.value}, ${scaleY.value}, 1)`)
+const slideContentWrapperItemSize = computed(() => `width: ${contentItemWidth.value}px; height: ${contentItemHeight.value}px`)
+
 const isMounted = ref(false)
 
-const slideContentWrapperTransform = computed(() => `transform: translate(${translateX.value}px, ${translateY.value}px)`)
-const slideContentWrapperSize = computed(() => `width: ${croppedWidth.value}px; height: ${croppedHeight.value}px`)
-
-async function close() {
+function close() {
   if (!isMounted.value) return
 
-  playCloseAnimation()
+  if (props.isActiveSlide) playCloseAnimation()
   emits('close')
 }
 
 function setStartStyles() {
-  translateX.value = slideThumbnailBounding.left.value
-  translateY.value = slideThumbnailBounding.top.value
-  croppedWidth.value = slideThumbnailBounding.width.value
-  croppedHeight.value = slideThumbnailBounding.height.value
+  wrapper1TranslateX.value = slideThumbnailBounding.left.value + slideThumbnailBounding.width.value - screenWidth.value
+  wrapper1TranslateY.value = slideThumbnailBounding.bottom.value - screenHeight.value
+  wrapper2TranslateX.value = slideThumbnailBounding.left.value + Math.abs(wrapper1TranslateX.value)
+  wrapper2TranslateY.value = slideThumbnailBounding.top.value + Math.abs(wrapper1TranslateY.value)
+
+  translateX.value = 0
+  translateY.value = 0
+  scaleX.value = slideThumbnailBounding.width.value / props.item.width
+  scaleY.value = slideThumbnailBounding.height.value / props.item.height
+
+  contentItemWidth.value = slideThumbnailBounding.width.value
+  contentItemHeight.value = slideThumbnailBounding.height.value
 }
 
 function setEndStyles() {
+  wrapper1TranslateX.value = 0
+  wrapper1TranslateY.value = 0
+  wrapper2TranslateX.value = 0
+  wrapper2TranslateY.value = 0
+
   translateX.value = (screenWidth.value / 2) - (slideContentSize.value.width / 2)
   translateY.value = (screenHeight.value / 2) - (slideContentSize.value.height / 2)
-  croppedWidth.value = slideContentSize.value.width
-  croppedHeight.value = slideContentSize.value.height
+  scaleX.value = 1
+  scaleY.value = 1
+
+  contentItemWidth.value = slideContentSize.value.width
+  contentItemHeight.value = slideContentSize.value.height
 }
+
+const enabledTransformTransition = ref(false)
 
 async function playOpenAnimation() {
   setStartStyles()
 
   await nextTick()
 
-  enabledTransformTransition.value = props.isActiveSlide ? true : false
+  enabledTransformTransition.value = true
   setEndStyles()
 
   await promiseTimeout(300)
@@ -164,7 +203,7 @@ async function playCloseAnimation() {
 
   await nextTick()
 
-  enabledTransformTransition.value = props.isActiveSlide ? true : false
+  enabledTransformTransition.value = true
 
   setStartStyles()
 }
@@ -175,9 +214,9 @@ function recalculateTransform() {
   setEndStyles()
 }
 
-onMounted(async () => {
+onMounted(() => {
   setSlideControlsRefs()
-  playOpenAnimation()
+  if (props.isActiveSlide) playOpenAnimation()
 })
 
 watchEffect(recalculateTransform)
