@@ -49,7 +49,6 @@
             <LightboxItem
               v-for="(item, i) in items"
               :key="i"
-              :index="i"
               :item
               :thumbnail="thumbnails![i]"
               :isActiveSlide="activeItemIndex === i"

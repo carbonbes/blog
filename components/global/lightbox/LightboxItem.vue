@@ -6,17 +6,17 @@
   >
     <div
       class="absolute inset-0 overflow-hidden"
-      :class="{ 'transition-transform duration-300': enabledTransformTransition && !screenIsResizing }"
+      :class="transitionTransform"
       :style="slideWrapper1Transform"
     >
       <div
         class="absolute inset-0 overflow-hidden"
-        :class="{ 'transition-transform duration-300': enabledTransformTransition && !screenIsResizing }"
+        :class="transitionTransform"
         :style="slideWrapper2Transform"
       >
         <div
           class="absolute origin-top-left"
-          :class="{ 'transition-transform duration-300': enabledTransformTransition && !screenIsResizing }"
+          :class="transitionTransform"
           :style="slideContentWrapperTransform"
         >
           <NuxtImg
@@ -53,7 +53,6 @@ import { promiseTimeout } from '@vueuse/core'
 import SwiperItem from '~/components/global/swiper/SwiperItem.vue'
 
 const props = defineProps<{
-  index: number
   item: Item
   thumbnail: HTMLElement
   isActiveSlide: boolean
@@ -125,6 +124,10 @@ const slideContentSize = computed(() =>
   )
 )
 
+const transitionTransform = computed(() => ({
+  'transition-[transform_cubic_bezier(0.4,0,0.22,1)] duration-[333ms]': enabledTransformTransition.value && !screenIsResizing.value
+}))
+
 const wrapper1TranslateX = ref(0)
 const wrapper1TranslateY = ref(0)
 const wrapper2TranslateX = ref(0)
@@ -134,14 +137,13 @@ const translateX = ref(0)
 const translateY = ref(0)
 const scaleX = ref(1)
 const scaleY = ref(1)
-
-const contentItemWidth = ref(0)
-const contentItemHeight = ref(0)
+const offsetX = ref(0)
+const offsetY = ref(0)
 
 const slideWrapper1Transform = computed(() => `transform: translate3d(${wrapper1TranslateX.value}px, ${wrapper1TranslateY.value}px, 0px)`)
 const slideWrapper2Transform = computed(() => `transform: translate3d(${wrapper2TranslateX.value}px, ${wrapper2TranslateY.value}px, 0px)`)
-const slideContentWrapperTransform = computed(() => `transform: translate3d(${translateX.value}px, ${translateY.value}px, 0px) scale3d(${scaleX.value}, ${scaleY.value}, 1)`)
-const slideContentWrapperItemSize = computed(() => `width: ${contentItemWidth.value}px; height: ${contentItemHeight.value}px`)
+const slideContentWrapperTransform = computed(() => `transform: translate3d(${translateX.value + offsetX.value}px, ${translateY.value + offsetY.value}px, 0px) scale3d(${scaleX.value}, ${scaleY.value}, 1)`)
+const slideContentWrapperItemSize = computed(() => `width: ${slideContentSize.value.width}px; height: ${slideContentSize.value.height}px`)
 
 const isMounted = ref(false)
 
@@ -152,6 +154,31 @@ function close() {
   emits('close')
 }
 
+function calculateStartValues(
+  originalWidth: number,
+  originalHeight: number,
+  containerWidth: number,
+  containerHeight: number
+) {
+  const containerAspectRatio = containerWidth / containerHeight
+  const elementAspectRatio = originalWidth / originalHeight
+
+  let scaleX = 1, scaleY = 1
+  let offsetX = 0, offsetY = 0
+
+  if (elementAspectRatio > containerAspectRatio) {
+    scaleY = containerHeight / originalHeight
+    scaleX = scaleY
+    offsetX = (containerWidth - originalWidth * scaleX) / 2
+  } else {
+    scaleX = containerWidth / originalWidth
+    scaleY = scaleX
+    offsetY = (containerHeight - originalHeight * scaleY) / 2
+  }
+
+  return { scaleX, scaleY, offsetX, offsetY }
+}
+
 function setStartStyles() {
   wrapper1TranslateX.value = slideThumbnailBounding.left.value + slideThumbnailBounding.width.value - screenWidth.value
   wrapper1TranslateY.value = slideThumbnailBounding.bottom.value - screenHeight.value
@@ -160,11 +187,23 @@ function setStartStyles() {
 
   translateX.value = 0
   translateY.value = 0
-  scaleX.value = slideThumbnailBounding.width.value / props.item.width
-  scaleY.value = slideThumbnailBounding.height.value / props.item.height
 
-  contentItemWidth.value = slideThumbnailBounding.width.value
-  contentItemHeight.value = slideThumbnailBounding.height.value
+  const {
+    scaleX: _scaleX,
+    scaleY: _scaleY,
+    offsetX: _offsetX,
+    offsetY: _offsetY
+  } = calculateStartValues(
+    slideContentSize.value.width,
+    slideContentSize.value.height,
+    slideThumbnailBounding.width.value,
+    slideThumbnailBounding.height.value,
+  )
+
+  scaleX.value = _scaleX
+  scaleY.value = _scaleY
+  offsetX.value = _offsetX
+  offsetY.value = _offsetY
 }
 
 function setEndStyles() {
@@ -177,9 +216,8 @@ function setEndStyles() {
   translateY.value = (screenHeight.value / 2) - (slideContentSize.value.height / 2)
   scaleX.value = 1
   scaleY.value = 1
-
-  contentItemWidth.value = slideContentSize.value.width
-  contentItemHeight.value = slideContentSize.value.height
+  offsetX.value = 0
+  offsetY.value = 0
 }
 
 const enabledTransformTransition = ref(false)
