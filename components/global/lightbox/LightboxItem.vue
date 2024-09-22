@@ -125,7 +125,8 @@ const slideContentSize = computed(() =>
 )
 
 const transitionTransform = computed(() => ({
-  'transition-[transform_cubic_bezier(0.4,0,0.22,1)] duration-[333ms]': enabledTransformTransition.value && !screenIsResizing.value
+  'will-change-transform': true,
+  'transition-transform duration-[333ms]': enabledTransformTransition.value && !screenIsResizing.value
 }))
 
 const wrapper1TranslateX = ref(0)
@@ -150,7 +151,7 @@ const isMounted = ref(false)
 function close() {
   if (!isMounted.value) return
 
-  if (props.isActiveSlide) playCloseAnimation()
+  playCloseAnimation()
   emits('close')
 }
 
@@ -227,7 +228,7 @@ async function playOpenAnimation() {
 
   await nextTick()
 
-  enabledTransformTransition.value = true
+  enabledTransformTransition.value = props.isActiveSlide ? true : false
   setEndStyles()
 
   await promiseTimeout(300)
@@ -241,9 +242,13 @@ async function playCloseAnimation() {
 
   await nextTick()
 
-  enabledTransformTransition.value = true
+  enabledTransformTransition.value =  props.isActiveSlide ? true : false
 
   setStartStyles()
+
+  await promiseTimeout(300)
+
+  enabledTransformTransition.value = false
 }
 
 function recalculateTransform() {
@@ -254,7 +259,7 @@ function recalculateTransform() {
 
 onMounted(() => {
   setSlideControlsRefs()
-  if (props.isActiveSlide) playOpenAnimation()
+  playOpenAnimation()
 })
 
 watchEffect(recalculateTransform)
@@ -285,7 +290,8 @@ useGesture(slideRef,
   },
   {
     drag: {
-      axis: 'y'
+      axis: 'y',
+      filterTaps: true
     },
     onlyTouchDevices: true
   }

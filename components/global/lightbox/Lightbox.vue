@@ -3,7 +3,7 @@
     <DialogPortal>
       <Transition @enter="onOverlayOpen">
         <DialogOverlay
-          class="fixed inset-0 transition-[background-color,backdrop-filter] duration-300 z-[1]"
+          class="fixed inset-0 transition-[background-color,backdrop-filter] duration-[333ms] z-[1] will-change-[background-color,backdrop-filter]"
           :style="dialogOverlayStyles"
         />
       </Transition>
@@ -19,10 +19,16 @@
         </VisuallyHidden>
 
         <button class="absolute top-0 right-0 p-4 z-10">
-          <ITablerX class="!size-8 text-white/30 hover:text-white transition-colors" />
+          <ITablerX
+            class="!size-8 text-white/30 hover:text-white transition-colors"
+          />
         </button>
 
-        <Flex itemsCenter justifyBetween class="absolute inset-0">
+        <Flex
+          itemsCenter
+          justifyBetween
+          class="absolute inset-0"
+        >
           <span
             v-if="!isSingleItem"
             class="absolute top-0 left-0 p-4 text-gray-300 z-10"
