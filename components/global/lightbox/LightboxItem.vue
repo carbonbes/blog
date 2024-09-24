@@ -1,5 +1,5 @@
 <template>
-  <SwiperItem
+  <SwiperSlide
     class="overflow-hidden touch-none"
     v-intersection-observer="onIntersectionObserver"
     ref="slideRef"
@@ -42,7 +42,7 @@
         </div>
       </div>
     </div>
-  </SwiperItem>
+  </SwiperSlide>
 </template>
 
 <script lang="ts" setup>
@@ -50,7 +50,7 @@ import type { Item } from '~/components/global/lightbox/Lightbox.vue'
 import { vIntersectionObserver } from '@vueuse/components'
 import type Swiper from 'swiper'
 import { promiseTimeout } from '@vueuse/core'
-import SwiperItem from '~/components/global/swiper/SwiperItem.vue'
+import SwiperSlide from '~/components/global/swiper/SwiperSlide.vue'
 
 const props = defineProps<{
   item: Item

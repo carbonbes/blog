@@ -48,9 +48,10 @@
           <Swiper
             :initialSlide="activeItemIndex"
             :loop="thumbnails?.length! > 1"
+            :spaceBetween="100"
+            @swiperrealindexchange="onSwiperRealIndexChange"
             class="absolute inset-0"
             ref="swiperRef"
-            @realIndexChange="(value) => activeItemIndex = value"
           >
             <LightboxItem
               v-for="(item, i) in items"
@@ -118,6 +119,7 @@ const overlayPointerEvents = ref('auto')
 const dialogOverlayStyles = computed(() => `background-color: ${overlayBg.value}; backdrop-filter: blur(${overlayBlurSize.value}px); pointer-events: ${overlayPointerEvents.value}`)
 
 const swiperRef = ref<InstanceType<typeof Swiper>>()
+  
 const swiper = computed(() => {
   if (!swiperRef.value) return
 
@@ -178,4 +180,10 @@ function initLightbox() {
 }
 
 watchEffect(initLightbox)
+
+function onSwiperRealIndexChange(e) {
+  const [swiper] = e.detail
+
+  activeItemIndex.value = swiper.realIndex
+}
 </script>

@@ -1,9 +1,7 @@
 <template>
   <BottomSheet
     class="top-full !bg-gray-100 after:!bg-gray-100"
-    contentClass="relative overflow-x-hidden"
-    withSlideTransition
-    :slideTransitionIndex="state.view"
+    contentClass="!px-0"
     @onOpen="onOpen"
     ref="bottomsheetRef"
   >
@@ -13,49 +11,58 @@
           v-if="state.view === 2"
           size="l"
           class="w-full flex items-center justify-center gap-3 !rounded-2xl !shadow"
-          @click="state.view = 1"
+          @click="prevView"
         >
           Назад
         </UIButton>
       </FadeInOpacityTransition>
     </template>
 
-    <Flex v-if="state.view === 1" col class="w-full pb-[25%] !flex gap-4">
-      <UIButton
-        v-for="(button, i) in nodeActionButtons"
-        :key="i"
-        variant="secondary"
-        size="l"
-        class="flex items-center gap-3 !rounded-2xl !shadow"
-        :class="{ 'text-blue-500': button.active }"
-        @click="button.action"
-        :disabled="button.disabled"
-      >
-        <Component :is="button.icon" />
-        {{ button.label }}
-        <ITablerChevronRight v-if="button.additional" class="ml-auto" />
-      </UIButton>
-    </Flex>
+    <Swiper
+      :spaceBetween="50"
+      :speed="200"
+      :allowTouchMove="false"
+      ref="swiperRef"
+    >
+      <SwiperSlide class="px-4 pb-4 w-full h-full !flex flex-col gap-4">
+        <UIButton
+          v-for="(button, i) in nodeActionButtons"
+          :key="i"
+          variant="secondary"
+          size="l"
+          class="flex items-center gap-3 !rounded-2xl !shadow"
+          :class="{ 'text-blue-500': button.active }"
+          @click="button.action"
+          :disabled="button.disabled"
+        >
+          <Component :is="button.icon" />
+          {{ button.label }}
+          <ITablerChevronRight v-if="button.additional" class="ml-auto" />
+        </UIButton>
+      </SwiperSlide>
 
-    <Flex v-else col class="w-full pb-[25%] !flex gap-4">
-      <UIButton
-        v-for="(button, i) in changeNodeTypeButtons"
-        :key="i"
-        variant="secondary"
-        size="l"
-        class="flex items-center gap-3 !rounded-2xl !shadow"
-        @click="button.action"
-        :disabled="button.disabled"
-      >
-        <Component :is="button.icon" />
-        {{ button.label }}
-      </UIButton>
-    </Flex>
+      <SwiperSlide class="px-4 pb-4 w-full h-full !flex flex-col gap-4">
+        <UIButton
+          v-for="(button, i) in changeNodeTypeButtons"
+          :key="i"
+          variant="secondary"
+          size="l"
+          class="flex items-center gap-3 !rounded-2xl !shadow"
+          @click="button.action"
+          :disabled="button.disabled"
+        >
+          <Component :is="button.icon" />
+          {{ button.label }}
+        </UIButton>
+      </SwiperSlide>
+    </Swiper>
   </BottomSheet>
 </template>
 
 <script lang="ts" setup>
 import type BottomSheet from '~/components/global/BottomSheet.vue'
+import Swiper from '~/components/global/swiper/Swiper.vue'
+import SwiperSlide from '~/components/global/swiper/SwiperSlide.vue'
 import Pin from '~icons/tabler/pin'
 import EyeOff from '~icons/tabler/eye-off'
 import ArrowUp from '~icons/tabler/arrow-up'
@@ -71,6 +78,8 @@ import Trash from '~icons/tabler/trash'
 const emit = defineEmits<{
   onOpen: [boolean]
 }>()
+
+const swiperRef = ref<InstanceType<typeof Swiper>>()
 
 const {
   selectedNodeType,
@@ -89,7 +98,22 @@ const state = reactive({
 function onOpen(value: boolean) {
   emit('onOpen', value)
 
-  if (!value) state.view = 1
+  if (!value) resetView()
+}
+
+function prevView() {
+  swiperRef.value?.swiper?.slidePrev()
+  state.view--
+}
+
+function nextView() {
+  swiperRef.value?.swiper?.slideNext()
+  state.view++
+}
+
+function resetView() {
+  swiperRef.value?.swiper?.slideTo(0)
+  state.view = 1
 }
 
 const nodeActionButtons = computed(() => [
@@ -133,9 +157,7 @@ const nodeActionButtons = computed(() => [
     icon: Refresh,
     label: 'Поменять на',
     disabled: ['sn-embed', 'gallery', 'link', 'separator'].includes(selectedNodeType.value),
-    action: () => {
-      state.view = 2
-    },
+    action: () => nextView(),
     additional: true
   },
   {
