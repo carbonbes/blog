@@ -2,38 +2,34 @@
   <Flex center class="h-[calc(100vh_-_60px)]">
     <Flex
       center
-      class="relative w-full h-full sm:w-96 sm:h-96 bg-white sm:ring-1 sm:ring-gray-200 sm:rounded-xl sm:shadow-md overflow-hidden"
+      class="w-full h-full sm:w-96 sm:h-96 bg-white sm:ring-1 sm:ring-gray-200 sm:rounded-xl sm:shadow-md overflow-hidden"
     >
-      <SlideTransition
-        :index="state.tab"
-        @afterEnter="emailInputFocus"
+      <Swiper
+        :speed="250"
+        :allowTouchMove="false"
+        class="w-full h-full"
+        ref="swiperTabRef"
       >
-        <Flex
-          v-if="state.tab === 1"
-          col
-          class="relative w-full h-full overflow-hidden"
-        >
-          <SlideTransition
-            :index="state.signInStep"
-            @afterEnter="pinInputFocus"
+        <SwiperSlide :class="tabClasses">
+          <Swiper
+            :speed="250"
+            :allowTouchMove="false"
+            class="w-full h-full"
+            ref="swiperSignInViewRef"
           >
-            <Flex
-              v-if="state.signInStep === 1"
-              col
-              justifyCenter
-              :class="stepClasses"
-            >
+            <SwiperSlide :class="stepClasses">
               <Flex col class="mt-auto gap-4">
                 <p class="text-center text-lg font-bold">Вход</p>
                 <UIInput
                   type="email"
                   placeholder="Почта"
                   :disabled="state.signInRequesting"
+                  class="rounded-xl"
                   v-model.trim="signInEmail"
                   ref="emailInputRef"
                 />
                 <UIButton
-                  class="font-medium"
+                  class="font-medium rounded-xl"
                   :disabled="!isValidEmail(signInEmail) || state.signInRequesting"
                   @click="requestSignIn"
                 >
@@ -43,20 +39,15 @@
 
               <UIButton
                 variant="secondary"
-                class="mt-auto !text-gray-500 hover:!text-gray-900"
+                class="mt-auto !text-gray-500 hover:!text-gray-900 border rounded-xl"
                 :disabled="state.signInRequesting"
-                @click="state.tab = 2"
+                @click="nextTab"
               >
                 У меня нет аккаунта
               </UIButton>
-            </Flex>
+            </SwiperSlide>
 
-            <Flex
-              v-else
-              col
-              justifyCenter
-              :class="stepClasses"
-            >
+            <SwiperSlide :class="stepClasses">
               <Flex col class="mt-auto gap-4">
                 <p class="font-medium text-center">Введите код из письма</p>
                 <PinInput
@@ -70,7 +61,7 @@
               <Flex col class="mt-auto w-full gap-2">
                 <p class="text-center text-gray-500">Не пришел код?</p>
                 <UIButton
-                  class="font-medium"
+                  class="font-medium rounded-xl"
                   :disabled="state.otpVerifying || state.signInRequesting || !state.canResendOtp"
                   @click="requestSignIn"
                 >
@@ -84,41 +75,36 @@
                   ref="countdownRef"
                 />
               </Flex>
-            </Flex>
-          </SlideTransition>
-        </Flex>
+            </SwiperSlide>
+          </Swiper>
+        </SwiperSlide>
 
-        <Flex
-          v-else
-          col
-          class="relative w-full h-full overflow-hidden"
-        >
-          <SlideTransition
-            :index="state.signUpStep"
-            @afterEnter="pinInputFocus"
+        <SwiperSlide :class="tabClasses">
+          <Swiper
+            :speed="250"
+            :allowTouchMove="false"
+            class="w-full h-full"
+            ref="swiperSignUpViewRef"
           >
-            <Flex
-              v-if="state.signUpStep === 1"
-              col
-              justifyCenter
-              :class="stepClasses"
-            >
+            <SwiperSlide :class="stepClasses">
               <Flex col class="mt-auto gap-4">
                 <p class="text-center text-lg font-bold">Регистрация</p>
                 <UIInput
                   type="email"
                   placeholder="Почта"
                   :disabled="state.signUpRequesting"
+                  class="rounded-xl"
                   v-model.trim="signUpFormData.email"
                   ref="emailInputRef"
                 />
                 <UIInput
                   placeholder="Имя"
                   :disabled="state.signUpRequesting"
+                  class="rounded-xl"
                   v-model.trim="signUpFormData.name"
                 />
                 <UIButton
-                  class="font-medium"
+                  class="font-medium rounded-xl"
                   :disabled="
                     !(isValidEmail(signUpFormData.email) && signUpFormData.name) || state.signUpRequesting
                   "
@@ -130,20 +116,15 @@
 
               <UIButton
                 variant="secondary"
-                class="mt-auto !text-gray-500 hover:!text-gray-900"
+                class="mt-auto !text-gray-500 hover:!text-gray-900 rounded-xl"
                 :disabled="state.signUpRequesting"
-                @click="state.tab = 1"
+                @click="prevTab"
               >
                 У меня есть аккаунт
               </UIButton>
-            </Flex>
+            </SwiperSlide>
 
-            <Flex
-              v-else
-              col
-              justifyCenter
-              :class="stepClasses"
-            >
+            <SwiperSlide :class="stepClasses">
               <Flex col class="mt-auto gap-4">
                 <p class="font-medium text-center">Введите код из письма</p>
                 <PinInput
@@ -157,7 +138,7 @@
               <Flex col class="mt-auto w-full gap-2">
                 <p class="text-center text-gray-500">Не пришел код?</p>
                 <UIButton
-                  class="font-medium"
+                  class="font-medium rounded-xl"
                   :disabled="state.otpVerifying || state.signUpRequesting || !state.canResendOtp"
                   @click="requestSignUp"
                 >
@@ -171,10 +152,10 @@
                   ref="countdownRef"
                 />
               </Flex>
-            </Flex>
-          </SlideTransition>
-        </Flex>
-      </SlideTransition>
+            </SwiperSlide>
+          </Swiper>
+        </SwiperSlide>
+      </Swiper>
     </Flex>
   </Flex>
 </template>
@@ -182,6 +163,7 @@
 <script lang="ts" setup>
 import type PinInput from '~/components/global/PinInput.vue'
 import type Countdown from '~/components/global/Countdown.vue'
+import type Swiper from '~/components/global/swiper/Swiper.vue'
 
 definePageMeta({
   name: 'LoginPage'
@@ -200,7 +182,31 @@ const state = reactive({
   canResendOtp: false
 })
 
+const swiperTabRef = ref<InstanceType<typeof Swiper>>()
+const swiperSignInViewRef = ref<InstanceType<typeof Swiper>>()
+const swiperSignUpViewRef = ref<InstanceType<typeof Swiper>>()
+
 const emailInputRef = ref<HTMLInputElement>()
+
+function prevTab() {
+  state.tab--
+  swiperTabRef.value.swiper?.slidePrev()
+}
+
+function nextTab() {
+  state.tab++
+  swiperTabRef.value.swiper?.slideNext()
+}
+
+function nextSignInView() {
+  state.signInStep++
+  swiperSignInViewRef.value.swiper?.slideNext()
+}
+
+function nextSignUpView() {
+  state.signUpStep++
+  swiperSignUpViewRef.value.swiper?.slideNext()
+}
 
 function emailInputFocus() {
   if (state.tab === 1 && state.signInStep === 1 && emailInputRef.value) {
@@ -227,7 +233,8 @@ const signUpFormData = reactive({
   name: '',
 })
 
-const stepClasses = 'relative p-8 w-full h-full'
+const tabClasses = 'h-full flex flex-col overflow-hidden'
+const stepClasses = 'p-8 w-full h-full flex flex-col justify-center'
 
 const countdownRef = ref<InstanceType<typeof Countdown>>()
 
@@ -236,7 +243,7 @@ async function requestSignIn(resend?: boolean) {
 
   try {
     await signIn({ email: signInEmail.value })
-    state.signInStep = 2
+    nextSignInView()
     if (resend) {
       state.canResendOtp = false
       countdownRef.value?.startCounting()
@@ -254,7 +261,7 @@ async function requestSignUp(resend?: boolean) {
 
   try {
     await signUp(signUpFormData)
-    state.signUpStep = 2
+    nextSignUpView()
     if (resend) {
       state.canResendOtp = false
       countdownRef.value?.startCounting()

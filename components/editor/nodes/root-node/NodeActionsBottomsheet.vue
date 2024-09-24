@@ -20,7 +20,7 @@
 
     <Swiper
       :spaceBetween="50"
-      :speed="200"
+      :speed="250"
       :allowTouchMove="false"
       ref="swiperRef"
     >

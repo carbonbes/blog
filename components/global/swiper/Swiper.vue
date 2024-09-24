@@ -1,10 +1,12 @@
 <template>
-  <swiper-container
-    v-bind="forwarded"
-    ref="swiperContainerRef"
-  >
-    <slot />
-  </swiper-container>
+  <ClientOnly>
+    <swiper-container
+      v-bind="{ ...$attrs, ...forwarded }"
+      ref="swiperContainerRef"
+    >
+      <slot :swiper />
+    </swiper-container>
+  </ClientOnly>
 </template>
 
 <script lang="ts" setup>
