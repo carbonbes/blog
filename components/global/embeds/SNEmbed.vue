@@ -4,7 +4,11 @@
       <div
         class="grid grid-rows-[repeat(2,_1fr)] grid-columns-[repeat(2,_minmax(0,_max_-_content))] gap-x-3"
       >
-        <a :href="embed.author.url" target="_blank" class="row-[1/2_span] col-[1]">
+        <a
+          :href="embed.author.url"
+          target="_blank"
+          class="row-[1/2_span] col-[1]"
+        >
           <Image
             :src="embed.author.avatar!"
             size="w-full"
@@ -28,7 +32,11 @@
           </a>
         </Flex>
         <Tooltip :tooltip="new Date(embed.published).toLocaleString()">
-          <a :href="embed.url" target="_blank" class="max-w-fit row-[2_span] col-[2] translate-y-[2px] !no-underline">
+          <a
+            :href="embed.url"
+            target="_blank"
+            class="max-w-fit row-[2_span] col-[2] translate-y-[2px] !no-underline"
+          >
             <DateTime
               :dateTime="embed.published!"
               class="text-gray-500 leading-[18px] text-sm"
@@ -50,24 +58,35 @@
       />
 
       <Flex
-        v-if="embed.media && embed.media.length === 1"
+        v-if="singleImage"
         center
         class="bg-gray-100"
       >
         <Image
-          v-if="embed.media[0].type === 'image'"
-          :src="embed.media[0].url"
-          :alt="embed.media[0].alt"
-          :originalWidth="embed.media[0].width"
-          :originalHeight="embed.media[0].height"
+          :src="singleImage.url"
+          :alt="singleImage.alt"
+          :originalWidth="singleImage.width"
+          :originalHeight="singleImage.height"
           zoomable
           size="w-fit max-h-80"
         />
       </Flex>
 
+      <Video
+        v-else-if="singleVideo"
+        :src="singleVideo.url"
+        :alt="singleVideo.alt"
+        :thumbnail="singleVideo.thumbnail"
+        :originalWidth="singleVideo.width"
+        :originalHeight="singleVideo.height"
+        autoplay
+        controls
+        size="w-full h-80"
+      />
+
       <GalleryGrid
-        v-else-if="embed.media && embed.media.length > 1"
-        :items="embed.media"
+        v-else-if="gallery"
+        :items="gallery.media"
       />
     </Flex>
   </Flex>
@@ -76,5 +95,36 @@
 <script lang="ts" setup>
 import type { SNEmbed } from '~/types'
 
-defineProps<{ embed: SNEmbed }>()
+const props = defineProps<{ embed: SNEmbed }>()
+
+const singleImage = computed(() => {
+  if (props.embed.media && props.embed.media.length === 1 && ['image', 'gif'].includes(props.embed.media[0].type)) {
+    return {
+      url: props.embed.media[0].url,
+      alt: props.embed.media[0].alt,
+      width: props.embed.media[0].width,
+      height: props.embed.media[0].height
+    }
+  }
+})
+
+const singleVideo = computed(() => {
+  if (props.embed.media && props.embed.media.length === 1 && props.embed.media[0].type === 'video') {
+    return {
+      url: props.embed.media[0].url,
+      alt: props.embed.media[0].alt,
+      thumbnail: props.embed.media[0].thumbnail,
+      width: props.embed.media[0].width,
+      height: props.embed.media[0].height
+    }
+  }
+})
+
+const gallery = computed(() => {
+  if (props.embed.media && props.embed.media.length > 1) {
+    return {
+      media: props.embed.media
+    }
+  }
+})
 </script>

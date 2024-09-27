@@ -1,8 +1,8 @@
 import getEmbedType from '~/utils/getEmbedType'
 import { CDNMedia, TwitterApiTweetResponse } from '~/types'
 import { TelegramClient } from 'telegram'
-import { StringSession } from 'telegram/sessions'
-import { Api } from 'telegram/tl'
+import { StringSession } from 'telegram/sessions/index.js'
+import { Api } from 'telegram/tl/index.js'
 import getBase64FromBuffer from '~/utils/getBase64FromBuffer'
 
 const {
