@@ -1,9 +1,9 @@
 import getEmbedType from '~/utils/getEmbedType'
 import { CDNMedia, TwitterApiTweetResponse } from '~/types'
 import { TelegramClient } from 'telegram'
-import { StringSession } from 'telegram/sessions'
-import { Api } from 'telegram/tl'
-import getMimeTypeFromBuffer from '~/utils/getMimeTypeFromBuffer'
+import { StringSession } from 'telegram/sessions/index.js'
+import { Api } from 'telegram/tl/index.js'
+import getBase64FromBuffer from '~/utils/getBase64FromBuffer'
 
 const {
   xApiGuestTokenUrl,
@@ -25,39 +25,120 @@ type TelegramMediaArgs =
   | {
       telegram: TelegramClient
       media: Api.TypeMessageMedia
-      type: 'media'
+      type: 'post_media'
     }
 
-async function getTelegramMedia(args: TelegramMediaArgs) {
-  const { telegram } = args
+async function initTelegramClient() {
+  const stringSession = new StringSession(telegramApiStringSession)
+  const telegram = new TelegramClient(stringSession, +telegramApiId, telegramApiHash, {})
+  await telegram.connect()
 
-  const buffer = args.type === 'media'
-    ? await telegram.downloadMedia(args.media) as Buffer
-    : await telegram.downloadProfilePhoto(args.channelUsername) as Buffer
-
-  const mimeType = await getMimeTypeFromBuffer(buffer)
-
-  const base64 = `data:${mimeType};base64,` + Buffer.from(buffer).toString('base64')
-
-  return await upload(base64)
+  return telegram
 }
 
-function getEmbedMedia(media: CDNMedia) {
+async function getTelegramChannelName(telegram: TelegramClient, channelUsername: string) {
+  const { chats: [{ title: channelName }] } = await telegram.invoke(
+    new Api.channels.GetChannels({
+      id: [channelUsername]
+    })
+  )
+
+  return channelName
+}
+
+async function uploadTelegramMedia(args: TelegramMediaArgs) {
+  const { telegram } = args
+
+  const buffer = args.type === 'post_media'
+    ? await telegram.downloadMedia(args.media)
+    : await telegram.downloadProfilePhoto(args.channelUsername)
+
+  if (!buffer) return
+
+  const base64 = await getBase64FromBuffer(buffer as Buffer)
+
   const {
-    secure_url,
+    secure_url: url,
     public_id,
     format,
     width,
     height,
     resource_type
-  } = media
+  } = await upload(base64)
 
   return {
-    url: secure_url,
+    url,
     ...(resource_type === 'video' && { thumbnail: `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/${public_id}.${format}` }),
     width,
     height,
-    type: resource_type
+    type: resource_type as 'image' | 'video'
+  }
+}
+
+async function getTelegramPostData(telegram: TelegramClient, channelUsername: string, postId: number) {
+  const [post] = await telegram.getMessages(
+    channelUsername,
+    {
+      ids: new Api.InputMessageID({ id: postId }),
+    }
+  )
+
+  let media: {
+    url: string
+    alt?: string
+    thumbnail?: string
+    width: number
+    height: number
+    type: 'image' | 'video'
+  }[] | undefined = undefined
+
+  if (post.media && !post.groupedId) {
+    const mediaItem = await uploadTelegramMedia({ telegram, media: post.media, type: 'post_media' })
+
+    if (!mediaItem) return
+
+    media = [mediaItem]
+  } else if (post.media && post.groupedId) {
+    const ids: number[] = []
+
+    for (let i = +postId + 1; i <= +postId + 10; i++) {
+      ids.push(i)
+    }
+
+    const posts = (
+      await telegram.getMessages(channelUsername, {
+        ids,
+      })
+    ).filter((p) => Number(p?.groupedId) === Number(post.groupedId))
+
+    const mediaForUpload = [
+      post.media,
+      ...posts.map((post) => post.media)
+    ]
+
+    media = (
+      await Promise.all(
+        mediaForUpload.map(async (media) => {
+          if (!media) return
+
+          const mediaItem = await uploadTelegramMedia({
+            telegram,
+            media,
+            type: 'post_media',
+          })
+
+          if (!mediaItem) return
+
+          return mediaItem
+        })
+      )
+    ).filter((media) => !!media)
+  }
+
+  return {
+    text: post.text,
+    media,
+    published: post.date * 1000
   }
 }
 
@@ -79,82 +160,40 @@ export default defineApiEndpoint(async ({ event }) => {
     })
 
   if (type === 'telegram') {
-    const telegramPostRegexp = /https?:\/\/(?:telegram|t)\.me\/(.+)\/(\d+)/gi
-    const [, channelUsername, postId] = telegramPostRegexp.exec(url) || []
+    try {
+      const telegramPostRegexp = /https?:\/\/(?:telegram|t)\.me\/(.+)\/(\d+)/gi
+      const [, channelUsername, postId] = telegramPostRegexp.exec(url) || []
 
-    const stringSession = new StringSession(telegramApiStringSession)
-    const telegram = new TelegramClient(stringSession, +telegramApiId, telegramApiHash, {})
-    await telegram.connect()
+      const telegram = await initTelegramClient()
 
-    const { chats: [{ title: channelName }] } = await telegram.invoke(
-      new Api.channels.GetChannels({
-        id: [channelUsername]
+      const channelName = await getTelegramChannelName(telegram, channelUsername)
+      const post = await getTelegramPostData(telegram, channelUsername, +postId)
+      const authorAvatar = await uploadTelegramMedia({ telegram, channelUsername, type: 'profile_photo' })
+
+      if (!post)
+        throw createError({
+          statusCode: 404,
+          message: 'Пост не найден',
+        })
+
+      return {
+        author: {
+          avatar: authorAvatar?.url || null,
+          name: channelName,
+          username: channelUsername,
+          url: `https://t.me/${channelUsername}`
+        },
+        text: post.text,
+        media: post.media,
+        published: post.published,
+        type,
+        url
+      }
+    } catch (error) {
+      throw createError({
+        statusCode: 400,
+        message: 'Ошибка получения поста',
       })
-    )
-
-    const [mainPost] = await telegram.getMessages(
-      channelUsername,
-      {
-        ids: new Api.InputMessageID({ id: postId as unknown as number }),
-      }
-    )
-
-    const avatar = (await getTelegramMedia({ telegram, channelUsername, type: 'profile_photo' })).secure_url
-
-    if (mainPost.media && mainPost.groupedId) {
-      const ids: number[] = []
-
-      for (let i = +postId + 1; i <= +postId + 10; i++) {
-        ids.push(i)
-      }
-
-      const groupedPosts = (
-        await telegram.getMessages(channelUsername, {
-          ids,
-        })
-      ).filter((post) => Number(post?.groupedId) === Number(mainPost.groupedId))
-
-      groupedPosts.unshift(mainPost)
-
-      const media = await Promise.all(
-        groupedPosts.map(async (post) => {
-          if (!post.media) return
-
-          const media = await getTelegramMedia({ telegram, media: post.media, type: 'media' })
-
-          return getEmbedMedia(media)
-        })
-      )
-
-      return {
-        author: {
-          avatar: avatar,
-          name: channelName,
-          username: channelUsername,
-          url: `https://t.me/${channelUsername}`
-        },
-        text: mainPost.message,
-        media,
-        published: mainPost.date * 1000,
-        type,
-        url
-      }
-    } else if (mainPost.media && !mainPost.groupedId) {
-      const media = await getTelegramMedia({ telegram, media: mainPost.media, type: 'media' })
-
-      return {
-        author: {
-          avatar,
-          name: channelName,
-          username: channelUsername,
-          url: `https://t.me/${channelUsername}`
-        },
-        text: mainPost.message,
-        media: [getEmbedMedia(media)],
-        published: mainPost.date * 1000,
-        type,
-        url
-      }
     }
   }
 
