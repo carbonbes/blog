@@ -66,7 +66,7 @@ export type TwitterApiTweetResponse = {
   data: {
     tweetResult: {
       result: {
-        __typename: string
+        __typename: 'TweetUnavailable' | string
         rest_id: string
         core: {
           user_results: {
@@ -347,7 +347,8 @@ export type TwitterApiTweetResponse = {
           retweeted: boolean
           user_id_str: string
           id_str: string
-        }
+        },
+        reason: 'NsfwLoggedOut' | string
       }
     }
   }

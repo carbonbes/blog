@@ -7,12 +7,11 @@
         <a
           :href="embed.author.url"
           target="_blank"
-          class="row-[1/2_span] col-[1]"
+          class="row-[1/2_span] col-[1] overflow-hidden rounded-full inner-border"
         >
           <Image
             :src="embed.author.avatar!"
             size="w-full"
-            rounded="rounded-full"
             class="size-9"
           />
         </a>
