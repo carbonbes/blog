@@ -1,5 +1,5 @@
 import getEmbedType from '~/utils/getEmbedType'
-import { CDNMedia, TwitterApiTweetResponse } from '~/types'
+import { TwitterApiTweetResponse } from '~/types'
 import { TelegramClient } from 'telegram'
 import { StringSession } from 'telegram/sessions/index.js'
 import { Api } from 'telegram/tl/index.js'
