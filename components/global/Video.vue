@@ -7,7 +7,7 @@
       size,
       aspectRatio,
       {
-        'bg-cover aspect-video rounded-xl overflow-hidden': type === 'youtube',
+        'bg-cover bg-center aspect-video rounded-xl overflow-hidden': type === 'youtube',
         'bg-contain bg-center bg-no-repeat': type === 'video',
         'cursor-zoom-in': zoomable || lightboxItem
       }
@@ -41,20 +41,24 @@
     :class="[size, aspectRatio]"
   />
 
-  <iframe
+  <ScriptYouTubePlayer
     v-else-if="type === 'youtube' && isPlaying"
-    :src="`${src}?controls=2&autoplay=1&enablejsapi=1&playsinline=1`"
-    class="w-full aspect-video rounded-xl"
-  />
+    :video-id="props.videoId!"
+    ref="youtubeRef"
+  >
+
+  </ScriptYouTubePlayer>
 </template>
 
 <script lang="ts" setup>
+import type { ScriptYouTubePlayer } from '#build/components'
 import type Flex from '~/components/global/Flex.vue'
 
 const props = withDefaults(
   defineProps<{
     class?: string
-    src: string
+    src?: string
+    videoId?: string
     alt?: string
     thumbnail?: string
     originalWidth?: number
@@ -79,6 +83,15 @@ const props = withDefaults(
   }
 )
 
+const emits = defineEmits<{
+  'youtube-ready': [e: YT.PlayerEvent]
+  'youtube-state-change': [e: YT.OnStateChangeEvent, target: YT.Player]
+  'youtube-playback-quality-change': [e: YT.OnPlaybackQualityChangeEvent, target: YT.Player]
+  'youtube-playback-rate-change': [e: YT.OnPlaybackRateChangeEvent, target: YT.Player]
+  'youtube-error': [e: YT.OnErrorEvent, target: YT.Player]
+}>()
+
+const youtubeRef = ref<InstanceType<typeof ScriptYouTubePlayer>>()
 const isPlaying = ref(false)
 
 const lightboxAttrs = computed(() => {

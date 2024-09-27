@@ -1,7 +1,7 @@
 <template>
   <NodeViewWrapper data-prevent-focus="true">
     <Video
-      :src="`http://www.youtube.com/embed/${node.attrs.video_id}`"
+      :videoId="node.attrs.video_id"
       :thumbnail="node.attrs.thumbnail"
       type="youtube"
     />

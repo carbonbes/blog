@@ -38,6 +38,7 @@ export default defineNuxtConfig({
     '@nuxt/image',
     'dayjs-nuxt',
     'radix-vue/nuxt',
+    '@nuxt/scripts'
   ],
 
   supabase: {
