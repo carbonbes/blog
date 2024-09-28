@@ -29,19 +29,13 @@
         </Flex>
 
         <div
-          class="w-full h-full touch-pan-y overflow-y-auto"
+          class="px-4 w-full h-full touch-pan-y overflow-y-auto"
           :class="[contentClass, { 'overflow-y-hidden': state.isSwiping }]"
           ref="dialogScrollableContentRef"
           @touchstart="state.isHovered = true"
           @touchend="state.isHovered = false"
         >
-          <Component
-            :is="withSlideTransition ? 'SlideTransition' : 'div'"
-            :index="withSlideTransition ? slideTransitionIndex : undefined"
-            class="px-4"
-          >
-            <slot />
-          </Component>
+          <slot />
         </div>
 
         <Flex
@@ -72,8 +66,6 @@ const props = defineProps<
     class?: string
     contentClass?: string
     footerClass?: string
-    withSlideTransition?: boolean
-    slideTransitionIndex?: number
   }
 >()
 
