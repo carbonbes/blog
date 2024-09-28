@@ -1,10 +1,6 @@
 <template>
   <NodeViewWrapper data-prevent-focus="true">
-    <Video
-      :videoId="node.attrs.video_id"
-      :thumbnail="node.attrs.thumbnail"
-      type="youtube"
-    />
+    <YoutubeVideo :videoId="node.attrs.video_id" />
   </NodeViewWrapper>
 </template>
 

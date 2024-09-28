@@ -2,36 +2,26 @@
   <Flex
     v-if="!isPlaying"
     center
-    class="relative before:content-[''] before:absolute before:inset-0 before:bg-black/35 bg-gray-100/50 cursor-pointer group/overlay"
+    class="relative bg-contain bg-center bg-no-repeat cursor-pointer group/overlay before:content-[''] before:absolute before:inset-0 before:bg-black/35 bg-gray-100/50"
     :class="[
       size,
       aspectRatio,
       {
-        'bg-cover bg-center aspect-video rounded-xl overflow-hidden': type === 'youtube',
-        'bg-contain bg-center bg-no-repeat': type === 'video',
-        'cursor-zoom-in': zoomable || lightboxItem
-      }
+        'cursor-zoom-in': zoomable || lightboxItem,
+      },
     ]"
     :style="{ backgroundImage: `url(${thumbnail}` }"
     v-bind="lightboxAttrs"
     ref="thumbnailRef"
     @click="onThumbnailClick"
   >
-    <div
-      v-if="type === 'video'"
-      class="p-3 w-fit bg-black/50 rounded-full backdrop-blur-[2px]"
-    >
+    <div class="p-3 w-fit bg-black/50 rounded-full backdrop-blur-[2px]">
       <ITablerPlayerPlay class="text-white [&>path]:fill-white" />
     </div>
-
-    <IIconsYoutube
-      v-else
-      class="!size-16 z-[1] group-hover/overlay:text-red-600 transition-colors"
-    />
   </Flex>
 
   <video
-    v-if="type === 'video' && isPlaying"
+    v-if="isPlaying"
     :src
     :autoplay
     :loop
@@ -40,30 +30,19 @@
     :muted
     :class="[size, aspectRatio]"
   />
-
-  <ScriptYouTubePlayer
-    v-else-if="type === 'youtube' && isPlaying"
-    :video-id="props.videoId!"
-    ref="youtubeRef"
-  >
-
-  </ScriptYouTubePlayer>
 </template>
 
 <script lang="ts" setup>
-import type { ScriptYouTubePlayer } from '#build/components'
 import type Flex from '~/components/global/Flex.vue'
 
 const props = withDefaults(
   defineProps<{
     class?: string
     src?: string
-    videoId?: string
     alt?: string
     thumbnail?: string
     originalWidth?: number
     originalHeight?: number
-    type?: 'video' | 'youtube'
     autoplay?: boolean
     loop?: boolean
     controls?: boolean
@@ -79,19 +58,10 @@ const props = withDefaults(
   {
     type: 'video',
     muted: true,
-    playsInline: true
+    playsInline: true,
   }
 )
 
-const emits = defineEmits<{
-  'youtube-ready': [e: YT.PlayerEvent]
-  'youtube-state-change': [e: YT.OnStateChangeEvent, target: YT.Player]
-  'youtube-playback-quality-change': [e: YT.OnPlaybackQualityChangeEvent, target: YT.Player]
-  'youtube-playback-rate-change': [e: YT.OnPlaybackRateChangeEvent, target: YT.Player]
-  'youtube-error': [e: YT.OnErrorEvent, target: YT.Player]
-}>()
-
-const youtubeRef = ref<InstanceType<typeof ScriptYouTubePlayer>>()
 const isPlaying = ref(false)
 
 const lightboxAttrs = computed(() => {
@@ -119,8 +89,8 @@ function onThumbnailClick() {
     setItems({
       target: thumbnailRef.value?.$el,
       zoomable: props.zoomable,
-      lightboxItem:props.lightboxItem,
-      parent: props.parent
+      lightboxItem: props.lightboxItem,
+      parent: props.parent,
     })
   } else {
     isPlaying.value = true

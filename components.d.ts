@@ -20,6 +20,7 @@ declare module 'vue' {
     ITablerPencil: typeof import('~icons/tabler/pencil')['default']
     ITablerPhoto: typeof import('~icons/tabler/photo')['default']
     ITablerPin: typeof import('~icons/tabler/pin')['default']
+    ITablerPlayerPause: typeof import('~icons/tabler/player-pause')['default']
     ITablerPlayerPlay: typeof import('~icons/tabler/player-play')['default']
     ITablerPlus: typeof import('~icons/tabler/plus')['default']
     ITablerTrash: typeof import('~icons/tabler/trash')['default']
