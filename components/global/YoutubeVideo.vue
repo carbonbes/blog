@@ -2,7 +2,7 @@
   <div
     class="w-full h-full aspect-video rounded-xl overflow-hidden group/overlay"
     :class="{
-      'relative after:absolute after:inset-0': isPaused || isError,
+      'relative after:absolute after:inset-0': isPaused || isEnded || isError,
     }"
     @click="isPaused ? play() : undefined"
   >
@@ -108,10 +108,12 @@ const placeholder = computed(
 )
 
 const isPaused = ref(false)
+const isEnded = ref(false)
 const isError = ref(false)
 
 function onStateChange(e: YT.OnStateChangeEvent) {
   isPaused.value = e.data === 2
+  isEnded.value = e.data === 0
 }
 
 function play() {
