@@ -56,7 +56,6 @@ const props = withDefaults(
     ignoreThumbnailClick?: boolean
   }>(),
   {
-    type: 'video',
     muted: true,
     playsInline: true,
   }
@@ -74,7 +73,7 @@ const lightboxAttrs = computed(() => {
     'data-lightbox-thumbnail': props.thumbnail,
     'data-lightbox-width': props.originalWidth,
     'data-lightbox-height': props.originalHeight,
-    'data-lightbox-type': props.type,
+    'data-lightbox-type': 'video',
   }
 })
 

@@ -7,14 +7,14 @@
     @click="isPaused ? play() : undefined"
   >
     <div
+      v-show="status === 'loaded' && hasBeenInteraction"
       class="w-full h-full aspect-video"
-      v-show="hasBeenInteraction"
       ref="videoRef"
     />
 
     <div
-      v-if="!playerIsReady && !hasBeenInteraction"
-      class="relative w-full h-full flex items-center justify-center cursor-pointer"
+      v-if="status !== 'loaded' || !hasBeenInteraction"
+      class="relative w-full h-full flex items-center justify-center cursor-pointer after:absolute after:inset-0 after:bg-black/35"
       ref="placeholderRef"
       @click="hasBeenInteraction = true"
     >
@@ -25,7 +25,7 @@
       />
 
       <IIconsYoutube
-        class="!size-16 z-[1] group-hover/overlay:text-red-600 transition-colors"
+        class="!size-16 z-[1] text-red-600 group-hover/overlay:text-black transition-colors duration-[250ms]"
       />
     </div>
   </div>
@@ -50,17 +50,18 @@ const { status, onLoaded } = useScriptYouTubePlayer({
   },
 })
 
-const player = ref<YT.Player>()
-
-const playerIsReady = ref(false)
 const hasBeenInteraction = ref(false)
 
 watch(hasBeenInteraction, async (v) => {
-  if (status.value === 'loaded' && v) {
+  if (status.value !== 'loaded') return
+
+  if (v) {
     await nextTick()
     initPlayer()
   }
 })
+
+const player = ref<YT.Player>()
 
 function initPlayer() {
   if (!hasBeenInteraction.value) return
@@ -72,10 +73,6 @@ function initPlayer() {
       mute: 1,
     },
     events: {
-      onReady() {
-        playerIsReady.value = true
-      },
-
       onError() {
         isError.value = true
       },
@@ -114,8 +111,7 @@ const isPaused = ref(false)
 const isError = ref(false)
 
 function onStateChange(e: YT.OnStateChangeEvent) {
-  if (e.data === 1) isPaused.value = false
-  if (e.data === 2) isPaused.value = true
+  isPaused.value = e.data === 2
 }
 
 function play() {
