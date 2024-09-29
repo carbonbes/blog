@@ -23,20 +23,20 @@
         v-model="items"
         item-key="id"
         :animation="200"
-        :disabled="items.length === 1"
+        
         @update="onUpdate"
         class="flex gap-4 flex-wrap"
         ref="itemsContainerRef"
       >
-        <template #item="{ element }">
+        <template #item="{ element, index }">
           <GalleryItem
             :item="element"
             :parent="itemsContainerRef?.$el"
             :isSingle
             :isGallery
             :isDraggable="items.length !== 1"
-            @uploaded="onUploaded"
-            @remove="onRemove"
+            @uploaded="(newItem) => onUploaded(index, newItem)"
+            @remove="onRemove(index)"
             @openFileFromDeviceDialog="openFileSelectDialog"
             @openFileFromClipboardDialog="pasteFromClipboardDialogRef?.setOpen(true)"
           />
@@ -184,21 +184,13 @@ async function onUpdate() {
   props.updateAttributes({ items: items.value })
 }
 
-function onUploaded(newItem: Item) {
-  const i = items.value.findIndex((item) => item.id === newItem.id)
-
-  if (i === -1) return
-
-  items.value.splice(i, 1, newItem)
+function onUploaded(index, newItem: Item) {
+  items.value.splice(index, 1, newItem)
   props.updateAttributes({ items: items.value })
 }
 
-function onRemove(itemId: string) {
-  const i = items.value.findIndex((item) => item.id === itemId)
-
-  if (i === -1) return
-
-  items.value.splice(i, 1)
+function onRemove(index) {
+  items.value.splice(index, 1)
   props.updateAttributes({ items: items.value })
 }
 

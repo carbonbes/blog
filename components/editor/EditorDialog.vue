@@ -4,7 +4,7 @@
     @close="setOpen(false)"
     ref="dialogRef"
   >
-    <Editor />
+    <Editor :data />
 
     <template #footer>
       <EditorPanel />
