@@ -66,14 +66,20 @@ const rootNode = Node.create({
   addNodeView() {
     return VueNodeViewRenderer(RootNode, {
       stopEvent(props) {
-        if ((props.event.target as HTMLElement).closest('[data-prevent-focus="true"]')) {
+        if (
+          isTouchDevice() &&
+          (props.event.target as HTMLElement).closest(
+            '[data-prevent-focus="true"]'
+          )
+        ) {
           const selection = window.getSelection()
-        
+
           if (selection) {
             selection.empty()
           }
 
           props.event.preventDefault()
+
           return true
         }
 

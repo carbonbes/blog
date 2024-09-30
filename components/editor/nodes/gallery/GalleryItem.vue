@@ -5,18 +5,19 @@
     @touchstart="onTouch(true)"
     @touchend="onTouch(false)"
   >
-    <template v-if="isGallery && !state.loading">
-      <Tooltip tooltip="Удалить">
-        <button
-          class="absolute top-0 left-full -translate-y-1/2 -translate-x-1/2 p-1 bg-white border border-gray-200/75 rounded-full group/remove-btn z-[1]"
-          @click="emits('remove', item.id as string)"
-        >
-          <ITablerX
-            class="!size-3 group-hover/remove-btn:text-red-500 transition-colors"
-          />
-        </button>
-      </Tooltip>
-    </template>
+    <Tooltip
+      v-if="isGallery && !state.loading"
+      tooltip="Удалить"
+    >
+      <button
+        class="absolute top-0 left-full -translate-y-1/2 -translate-x-1/2 p-1 bg-white border border-gray-200/75 rounded-full group/remove-btn z-[1]"
+        @click="emits('remove', item.id as string)"
+      >
+        <ITablerX
+          class="!size-3 group-hover/remove-btn:text-red-500 transition-colors"
+        />
+      </button>
+    </Tooltip>
 
     <Flex
       :center="isSingle"
@@ -46,14 +47,16 @@
         :thumbnail="item.thumbnail"
         :originalWidth="item.width"
         :originalHeight="item.height"
+        :autoplay="isSingle"
+        :controls="isSingle"
         :parent
-        :zoomable="isSingle && item.uploaded"
         :lightboxItem="isGallery && item.uploaded"
         :size="{
           'pointer-events-none opacity-50': state.loading,
           'w-full aspect-video': isSingle,
           'w-20 h-20': isGallery,
         }"
+        ref="videoRef"
       />
 
       <Flex v-if="!item.uploaded" center class="absolute inset-0">
@@ -92,6 +95,7 @@
 <script lang="ts" setup>
 import type { UploadApiResponse } from 'cloudinary'
 import type { Item } from '~/components/editor/nodes/gallery/Gallery.vue'
+import type Video from '~/components/global/Video.vue'
 
 const props = defineProps<{
   item: Item
@@ -107,6 +111,17 @@ const emits = defineEmits<{
   openFileFromClipboardDialog: any
   uploaded: [Item]
 }>()
+
+const videoRef = ref<InstanceType<typeof Video>>()
+
+watch(
+  () => props.isSingle,
+  (newV, oldV) => {
+    if (newV !== oldV && videoRef.value?.isPlaying) {
+      videoRef.value.isPlaying = false
+    }
+  }
+)
 
 const state = reactive<{
   item: Item | null
@@ -151,9 +166,14 @@ function showError() {
 }
 
 async function upload() {
-  const file = await getFileFromBase64(props.item.src)
-
   try {
+    const file = await getFileFromBase64(props.item.src)
+
+    if (!file) {
+      showError()
+      return
+    }
+
     const { data } = await uploadMediaByFile(file)
 
     if (!data) {

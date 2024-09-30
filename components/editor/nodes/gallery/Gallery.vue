@@ -23,7 +23,7 @@
         v-model="items"
         item-key="id"
         :animation="200"
-        
+        :disabled="items.length === 1"
         @update="onUpdate"
         class="flex gap-4 flex-wrap"
         ref="itemsContainerRef"
@@ -184,12 +184,12 @@ async function onUpdate() {
   props.updateAttributes({ items: items.value })
 }
 
-function onUploaded(index, newItem: Item) {
+function onUploaded(index: number, newItem: Item) {
   items.value.splice(index, 1, newItem)
   props.updateAttributes({ items: items.value })
 }
 
-function onRemove(index) {
+function onRemove(index: number) {
   items.value.splice(index, 1)
   props.updateAttributes({ items: items.value })
 }

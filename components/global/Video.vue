@@ -95,4 +95,6 @@ function onThumbnailClick() {
     isPlaying.value = true
   }
 }
+
+defineExpose({ isPlaying })
 </script>
