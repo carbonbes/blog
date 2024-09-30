@@ -292,6 +292,40 @@ export default function useEditor() {
         .run()
   }
 
+  function updateNodeAttributes({
+    pos,
+    attrs,
+    preventAddToHistory
+  }: {
+    pos: number,
+    attrs: Record<string, any>,
+    preventAddToHistory?: boolean
+  }) {
+    if (!editor.value) return
+
+    const {
+      state: { selection, doc, tr },
+      view: { dispatch }
+    } = editor.value
+
+    setNodeSelection(pos)
+
+    const { $from } = selection
+    const node = doc.nodeAt($from.pos)
+
+    if (!node) {
+      return
+    }
+
+    tr.setNodeMarkup($from.pos, undefined, { ...node.attrs, ...attrs })
+
+    if (preventAddToHistory) {
+      tr.setMeta('addToHistory', false)
+    }
+
+    dispatch(tr)
+  }
+
   const { rects } = useTextSelection()
 
   function initEditor(content?: JSONContent) {
@@ -358,6 +392,7 @@ export default function useEditor() {
     moveNode,
     removeNode,
     changeNodeType,
+    updateNodeAttributes,
     selectionIsEmpty,
     selectionRect,
   }

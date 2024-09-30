@@ -99,6 +99,7 @@ export type MediaType = 'image' | 'gif' | 'video'
 
 const props = defineProps<NodeViewProps>()
 
+const { updateNodeAttributes } = useEditor()
 const { errorNotify } = useNotifications()
 
 const pasteFromClipboardDialogRef = ref<InstanceType<typeof Dialog>>()
@@ -206,12 +207,20 @@ onMounted(async () => {
 
   if (props.node.attrs.galleryOpenFileFromDeviceDialog) {
     openFileSelectDialog()
-    props.updateAttributes({ galleryOpenFileFromDeviceDialog: false })
+    updateNodeAttributes({
+      pos: props.getPos(),
+      attrs: { galleryOpenFileFromDeviceDialog: false },
+      preventAddToHistory: true
+    })
   }
 
   if (props.node.attrs.galleryOpenFileFromClipboardDialog) {
     pasteFromClipboardDialogRef.value?.setOpen(true)
-    props.updateAttributes({ galleryOpenFileFromClipboardDialog: false })
+    updateNodeAttributes({
+      pos: props.getPos(),
+      attrs: { galleryOpenFileFromClipboardDialog: false },
+      preventAddToHistory: true
+    })
   }
 })
 </script>

@@ -23,6 +23,7 @@ import SNEmbed from '~/components/global/embeds/SNEmbed.vue'
 
 const props = defineProps<NodeViewProps>()
 
+const { updateNodeAttributes } = useEditor()
 const { errorNotify } = useNotifications()
 
 onMounted(async () => {
