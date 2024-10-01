@@ -79,7 +79,7 @@ const GalleryNode = Node.create({
           handlePaste(view, event) {
             const items = getFilesFromClipboard(
               event,
-              GALLERY_NODE_ALLOWED_MIME_TYPES
+              ALLOWED_MEDIAFILE_MIME_TYPES
             )
 
             if (!items) return false
@@ -92,7 +92,7 @@ const GalleryNode = Node.create({
           handleDrop(view, event) {
             const items = getFilesFromDrop(
               event,
-              GALLERY_NODE_ALLOWED_MIME_TYPES
+              ALLOWED_MEDIAFILE_MIME_TYPES
             )
 
             if (!items) return false

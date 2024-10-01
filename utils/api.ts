@@ -59,13 +59,6 @@ export async function uploadMediaByFile(file: File) {
   })
 }
 
-export async function uploadMediaByUrl(url: string) {
-  return await $fetch<Response<CDNMedia>>('/api/v1/upload/media/by_url', {
-    method: 'POST',
-    body: { url },
-  })
-}
-
 export async function getEmbed(url: string) {
   return await $fetch<Response<SNEmbed>>(`/api/v1/embed?url=${url}`)
 }

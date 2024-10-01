@@ -121,13 +121,13 @@ const {
   open: openFileSelectDialog,
   onChange,
 } = useFileDialog({
-  accept: GALLERY_NODE_ALLOWED_MIME_TYPES.join(', '),
+  accept: ALLOWED_MEDIAFILE_MIME_TYPES.join(', '),
 })
 
 async function addItems(files: File[]) {
   await Promise.all(
     Object.values(files).map(async (file) => {
-      if (file.size > FILE_MAX_SIZE) {
+      if (file.size > MEDIAFILE_MAX_SIZE) {
         errorNotify({
           title: 'Ошибка',
           text: 'Слишком большой файл',
@@ -136,7 +136,7 @@ async function addItems(files: File[]) {
         return
       }
 
-      if (!GALLERY_NODE_ALLOWED_MIME_TYPES.includes(file.type as MimeType))
+      if (!ALLOWED_MEDIAFILE_MIME_TYPES.includes(file.type as MimeType))
         return
 
       const base64Item = await getBase64FromFile(file)
@@ -172,7 +172,7 @@ onChange(async (fileList) => {
 })
 
 function onPaste(e: ClipboardEvent) {
-  const items = getFilesFromClipboard(e, GALLERY_NODE_ALLOWED_MIME_TYPES)
+  const items = getFilesFromClipboard(e, ALLOWED_MEDIAFILE_MIME_TYPES)
 
   if (!items) return
 

@@ -7,11 +7,36 @@ export type Json =
   | Json[]
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          operationName?: string
+          query?: string
+          variables?: Json
+          extensions?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       articles: {
         Row: {
-          author: number | null
+          author: string | null
           body: Json
           created_at: string
           id: number
@@ -20,7 +45,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          author?: number | null
+          author?: string | null
           body: Json
           created_at?: string
           id?: number
@@ -29,7 +54,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          author?: number | null
+          author?: string | null
           body?: Json
           created_at?: string
           id?: number
@@ -43,7 +68,86 @@ export type Database = {
             columns: ['author']
             isOneToOne: false
             referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedColumns: ['user_id']
+          }
+        ]
+      }
+      comments: {
+        Row: {
+          attachments: Json | null
+          author: string
+          created_at: string
+          id: number
+          text: string | null
+        }
+        Insert: {
+          attachments?: Json | null
+          author: string
+          created_at?: string
+          id?: number
+          text?: string | null
+        }
+        Update: {
+          attachments?: Json | null
+          author?: string
+          created_at?: string
+          id?: number
+          text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'comments_author_fkey'
+            columns: ['author']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['user_id']
+          }
+        ]
+      }
+      mediafiles: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration: number | null
+          height: number | null
+          id: number
+          mime_type: string | null
+          thumbnail: string | null
+          uploaded_by: string | null
+          url: string | null
+          width: number | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration?: number | null
+          height?: number | null
+          id?: number
+          mime_type?: string | null
+          thumbnail?: string | null
+          uploaded_by?: string | null
+          url?: string | null
+          width?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration?: number | null
+          height?: number | null
+          id?: number
+          mime_type?: string | null
+          thumbnail?: string | null
+          uploaded_by?: string | null
+          url?: string | null
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'mediafiles_uploaded_by_fkey'
+            columns: ['uploaded_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['user_id']
           }
         ]
       }
