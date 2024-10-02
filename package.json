@@ -43,6 +43,7 @@
     "@tiptap/vue-3": "2.4.0",
     "@types/fluent-ffmpeg": "^2.1.26",
     "@types/formidable": "^3.4.5",
+    "@types/tmp": "^0.2.6",
     "@use-gesture/vanilla": "^10.3.1",
     "@vueuse/nuxt": "^10.9.0",
     "cloudinary": "^2.2.0",

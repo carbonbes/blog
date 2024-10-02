@@ -109,37 +109,43 @@ export type Database = {
           created_at: string
           description: string | null
           duration: number | null
-          height: number | null
+          height: number
           id: number
-          mime_type: string | null
+          media_id: string
+          mime_type: string
+          storage_path: string
           thumbnail: string | null
           uploaded_by: string | null
-          url: string | null
-          width: number | null
+          url: string
+          width: number
         }
         Insert: {
           created_at?: string
           description?: string | null
           duration?: number | null
-          height?: number | null
+          height: number
           id?: number
-          mime_type?: string | null
+          media_id: string
+          mime_type: string
+          storage_path: string
           thumbnail?: string | null
           uploaded_by?: string | null
-          url?: string | null
-          width?: number | null
+          url: string
+          width: number
         }
         Update: {
           created_at?: string
           description?: string | null
           duration?: number | null
-          height?: number | null
+          height?: number
           id?: number
-          mime_type?: string | null
+          media_id?: string
+          mime_type?: string
+          storage_path?: string
           thumbnail?: string | null
           uploaded_by?: string | null
-          url?: string | null
-          width?: number | null
+          url?: string
+          width?: number
         }
         Relationships: [
           {

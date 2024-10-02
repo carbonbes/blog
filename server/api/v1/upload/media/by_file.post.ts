@@ -5,9 +5,13 @@ import ffmpeg from 'fluent-ffmpeg'
 import { PassThrough } from 'stream'
 import {
   ALLOWED_MEDIAFILE_MIME_TYPES,
+  IMAGE_ROUTE,
   MEDIAFILE_MAX_SIZE,
+  VIDEO_ROUTE,
 } from '~/utils/consts'
 import getBufferFromFile from '~/utils/getBufferFromFile'
+import { Supabase } from '~/types'
+import getMimeTypeFromBuffer from '~/utils/getMimeTypeFromBuffer'
 
 function getFileTypeFromMimeType(mimeType: MimeType) {
   if (mimeType.startsWith('image/')) {
@@ -26,12 +30,18 @@ async function getVideoMetadata(path: string): Promise<{
     ffmpeg.ffprobe(path, (error, data) => {
       if (error) {
         reject(error)
+
+        throw createError({
+          message: `Ошибка получения метаданных видео: ${error.message}`,
+        })
       }
 
+      const { width, height, duration } = data.streams[0]
+
       resolve({
-        width: data.streams[0].width,
-        height: data.streams[0].height,
-        duration: data.streams[0].duration,
+        width,
+        height,
+        duration,
       })
     })
   })
@@ -43,23 +53,57 @@ async function getScreenshotFromVideo(path: string): Promise<Buffer> {
     const chunks: Buffer[] = []
 
     ffmpeg(path)
+      .outputFormat('image2pipe')
+      .frames(1)
+      .on('error', (error) => {
+        reject(error)
+
+        throw createError({
+          message: `Ошибка получения скриншота видео: ${error.message}`,
+        })
+      })
       .on('end', () => {
         resolve(Buffer.concat(chunks))
       })
-      .on('error', (error) => {
-        reject(error)
-      })
-      .screenshot({
-        count: 1,
-        timestamps: ['50%'],
-      })
-      .format('png')
       .pipe(bufferStream)
 
     bufferStream.on('data', (chunk) => {
       chunks.push(chunk)
     })
+
+    bufferStream.on('end', () => {
+      resolve(Buffer.concat(chunks))
+    })
   })
+}
+
+async function upload(
+  supabase: Supabase,
+  path: string,
+  file: Buffer,
+  contentType: string
+) {
+  try {
+    const { data: storageFile, error } = await supabase.storage
+      .from('media')
+      .upload(path, file, { contentType })
+
+    if (error)
+      throw createError({
+        message: `Ошибка загрузки медиафайла: ${error.message}`,
+      })
+
+    if (!storageFile)
+      throw createError({ message: 'Не удалось загрузить медиафайл' })
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('media').getPublicUrl(storageFile.path)
+
+    return { url: publicUrl, storageFilePath: storageFile.path }
+  } catch (err: any) {
+    throw createError({})
+  }
 }
 
 export default defineApiEndpoint(
@@ -106,37 +150,34 @@ export default defineApiEndpoint(
         message: 'Слишком большой медиафайл',
       })
 
-    const buffer = await getBufferFromFile(file.filepath)
-
-    const { data, error } = await supabase.storage
-      .from('media')
-      .upload(file.newFilename, buffer, { contentType: file.mimetype })
-
-    if (error)
-      throw createError({
-        statusCode: 400,
-        message: error.message,
-      })
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from('media').getPublicUrl(data.path)
-
     const type = getFileTypeFromMimeType(file.mimetype as MimeType)
 
     if (type === 'image') {
+      const buffer = await getBufferFromFile(file.filepath)
+
+      const { storageFilePath } = await upload(
+        supabase,
+        file.newFilename,
+        buffer,
+        file.mimetype
+      )
+
+      const media_id = crypto.randomUUID()
+      const url = IMAGE_ROUTE + media_id
       const { width, height } = await sharp(file.filepath).metadata()
 
       const { data, error } = await supabase
         .from('mediafiles')
         .insert({
-          url: publicUrl,
+          media_id,
+          storage_path: storageFilePath,
+          url,
           width,
           height,
-          description: description?.[0],
           mime_type: file.mimetype,
+          description: description?.[0],
         })
-        .select('url, width, height, description, mime_type')
+        .select('url, width, height, mime_type, description')
         .single()
 
       if (error)
@@ -147,10 +188,60 @@ export default defineApiEndpoint(
 
       return data
     } else if (type === 'video') {
-      // const { width, height, duration } = await getVideoMetadata(file.filepath)
+      const videoBuffer = await getBufferFromFile(file.filepath)
       const thumbnailBuffer = await getScreenshotFromVideo(file.filepath)
+      const thumbnailMimetype = await getMimeTypeFromBuffer(thumbnailBuffer)
 
-      return thumbnailBuffer
+      if (!thumbnailMimetype)
+        throw createError({
+          statusCode: 400,
+          message: 'Не удалось распознать тип у превью видео',
+        })
+
+      const media_id = crypto.randomUUID()
+      const url = VIDEO_ROUTE + media_id
+
+      const { storageFilePath } = await upload(
+        supabase,
+        file.newFilename,
+        videoBuffer,
+        file.mimetype
+      )
+
+      const thumbnailUrl = await upload(
+        supabase,
+        file.newFilename + '_thumb',
+        thumbnailBuffer,
+        thumbnailMimetype
+      )
+
+      const { width, height, duration } = await getVideoMetadata(file.filepath)
+
+      const { data, error } = await supabase
+        .from('mediafiles')
+        .insert({
+          media_id,
+          url,
+          storage_path: storageFilePath,
+          thumbnail: thumbnailUrl,
+          width,
+          height,
+          duration: +duration!,
+          mime_type: file.mimetype,
+          description: description?.[0],
+        })
+        .select(
+          'media_id, url, thumbnail, width, height, duration, mime_type, description'
+        )
+        .single()
+
+      if (error)
+        throw createError({
+          statusCode: +error.code,
+          message: error.message,
+        })
+
+      return data
     }
   },
   { requireAuth: true }

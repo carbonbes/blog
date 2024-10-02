@@ -145,7 +145,7 @@ async function addItems(files: File[]) {
 
       const type = getFileTypeFromMimeType(file.type)
       const thumbnail = type === 'video'
-        ? await getFrameFromBase64Video(base64Item as string)
+        ? await getScreenshotFromBase64Video(base64Item as string)
         : undefined
 
       items.value?.push({

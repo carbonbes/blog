@@ -1,4 +1,4 @@
-export default function getFrameFromBase64Video(value: string) {
+export default function getScreenshotFromBase64Video(value: string) {
   return new Promise<string>((resolve, reject) => {
     const video = document.createElement('video')
     video.src = value
