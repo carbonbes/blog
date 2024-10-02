@@ -16,29 +16,31 @@ export default defineApiEndpoint(async ({ event, supabase }) => {
       message: 'Укажите id медиафайла',
     })
 
-  const { data: file } = await supabase
+  const { data: fileData, error: fileDataError } = await supabase
     .from('mediafiles')
     .select('storage_path')
     .eq('media_id', mediaId)
     .single()
 
-  if (!file)
+  if (!fileData || fileDataError)
     throw createError({
       statusCode: 404,
       message: 'Не удалось найти медиафайл',
     })
 
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from('media').getPublicUrl(file.storage_path)
-
-  const { data: blobFile, error } = await supabase.storage
+  const { data: blobFile, error: blobFileError } = await supabase.storage
     .from('media')
-    .download(publicUrl, { transform })
+    .download(fileData.storage_path)
 
-  return error
+  if (!blobFile || blobFileError)
+    throw createError({
+      statusCode: 404,
+      message: 'Не удалось найти медиафайл',
+    })
 
-  const buffer = await blobFile?.arrayBuffer()
+  const buffer = await blobFile.arrayBuffer()
 
-  return blobFile
+  appendHeader(event, 'Content-Type', 'image/jpeg')
+
+  return buffer
 })
