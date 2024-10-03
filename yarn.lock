@@ -3294,11 +3294,6 @@ aria-hidden@^1.2.3:
   dependencies:
     tslib "^2.0.0"
 
-asap@^2.0.0:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
-  integrity sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==
-
 ast-kit@^0.12.1:
   version "0.12.1"
   resolved "https://registry.yarnpkg.com/ast-kit/-/ast-kit-0.12.1.tgz#94a42db3c1a3d73efdb627e01839dae15586fdd8"
@@ -4307,14 +4302,6 @@ devlop@^1.0.0:
   dependencies:
     dequal "^2.0.0"
 
-dezalgo@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/dezalgo/-/dezalgo-1.0.4.tgz#751235260469084c132157dfa857f386d4c33d81"
-  integrity sha512-rXSP0bf+5n0Qonsb+SVVfNfIsimO4HEtmnIpPHY8Q1UCzKlQrDMfdobr8nJOOsRgWCyMRqeSBQzmWUMq7zvVig==
-  dependencies:
-    asap "^2.0.0"
-    wrappy "1"
-
 dfa@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/dfa/-/dfa-1.2.0.tgz#96ac3204e2d29c49ea5b57af8d92c2ae12790657"
@@ -4967,15 +4954,6 @@ form-data@^4.0.0:
     combined-stream "^1.0.8"
     mime-types "^2.1.12"
 
-formidable@^3.5.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/formidable/-/formidable-3.5.1.tgz#9360a23a656f261207868b1484624c4c8d06ee1a"
-  integrity sha512-WJWKelbRHN41m5dumb0/k8TeAx7Id/y3a+Z7QfhxP/htI9Js5zYaEDtG8uMgG0vM0lOlqnmjE99/kfpOYi/0Og==
-  dependencies:
-    dezalgo "^1.0.4"
-    hexoid "^1.0.0"
-    once "^1.4.0"
-
 fraction.js@^4.3.7:
   version "4.3.7"
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.3.7.tgz#06ca0085157e42fda7f9e726e79fefc4068840f7"
@@ -5233,13 +5211,6 @@ gzip-size@^7.0.0:
   dependencies:
     duplexer "^0.1.2"
 
-h3-formidable@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/h3-formidable/-/h3-formidable-1.0.0.tgz#669dfabd3835a581987208c0742ef7a0e399e768"
-  integrity sha512-RZf0e17Q1tGFc60KJb9BrptcbSnO75r/YhyQ5OtEjvAimhYY80M1yVDu2DldwcnXvYYngxAcvGOG7xihJldfzg==
-  dependencies:
-    formidable "^3.5.1"
-
 h3@^1.10.0, h3@^1.10.2, h3@^1.11.1:
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/h3/-/h3-1.11.1.tgz#e9414ae6f2a076a345ea07256b320edb29bab9f7"
@@ -5334,11 +5305,6 @@ hast-util-whitespace@^3.0.0:
   integrity sha512-88JUN06ipLwsnv+dVn+OIYOvAuvBMy/Qoi6O7mQHxdPXpjy+Cd6xRkWwux7DKO+4sYILtLBRIKgsdpS2gQc7qw==
   dependencies:
     "@types/hast" "^3.0.0"
-
-hexoid@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/hexoid/-/hexoid-1.0.0.tgz#ad10c6573fb907de23d9ec63a711267d9dc9bc18"
-  integrity sha512-QFLV0taWQOZtvIRIAdBChesmogZrtuXvVWsFHZTk2SU+anspqZ2vMnoLg7IE1+Uk16N19APic1BuF8bC8c2m5g==
 
 hookable@^5.5.3:
   version "5.5.3"

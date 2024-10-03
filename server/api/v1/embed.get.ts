@@ -346,8 +346,6 @@ export default defineApiEndpoint(
           url,
         }
       } catch (error: any) {
-        console.log(error)
-
         throw createError({
           statusCode: 400,
           message: 'Ошибка получения поста',

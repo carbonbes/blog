@@ -1,3 +1,6 @@
+import { Readable } from 'stream'
+import getMimeTypeFromBuffer from '~/utils/getMimeTypeFromBuffer'
+
 interface TransformOptions {
   width?: number
   height?: number
@@ -28,19 +31,38 @@ export default defineApiEndpoint(async ({ event, supabase }) => {
       message: 'Не удалось найти медиафайл',
     })
 
-  const { data: blobFile, error: blobFileError } = await supabase.storage
+  const { data: storageFile, error: storageFileError } = await supabase.storage
     .from('media')
-    .download(fileData.storage_path)
+    .download(fileData.storage_path, { transform })
 
-  if (!blobFile || blobFileError)
+  if (!storageFile || storageFileError)
     throw createError({
       statusCode: 404,
       message: 'Не удалось найти медиафайл',
     })
 
-  const buffer = await blobFile.arrayBuffer()
+  const arrayBuffer = await storageFile.arrayBuffer()
+  const buffer = Buffer.from(arrayBuffer)
+  const mimeType = await getMimeTypeFromBuffer(buffer)
 
-  appendHeader(event, 'Content-Type', 'image/jpeg')
+  if (!mimeType)
+    throw createError({
+      statusCode: 400,
+      message: 'Не удалось распознать тип медиафайла',
+    })
 
-  return buffer
+  const stream = new Readable({
+    read() {
+      this.push(buffer)
+      this.push(null)
+    },
+  })
+
+  appendHeaders(event, {
+    'Content-Type': mimeType,
+    'Cache-Control': 'max-age=3600',
+    'Content-Length': Buffer.byteLength(buffer).toString()
+  })
+
+  return await sendStream(event, stream)
 })
