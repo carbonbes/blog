@@ -158,7 +158,7 @@ export default defineApiEndpoint(
 
     const files = formData.filter((item) => item.name === 'file')
 
-    if (!files)
+    if (files[0].data.length === 0)
       throw createError({
         statusCode: 404,
         message: 'Медиафайл не обнаружен',
@@ -175,7 +175,7 @@ export default defineApiEndpoint(
       ?.data.toString()
 
     const file = Buffer.from(files[0].data)
-    const fileName = files[0].filename || crypto.randomUUID()
+    const fileName = crypto.randomUUID()
     const fileMimetype = await getMimeTypeFromBuffer(file)
 
     if (!fileMimetype)
@@ -205,13 +205,14 @@ export default defineApiEndpoint(
       const { data, error } = await supabase
         .from('media_files')
         .insert({
+          name: fileName,
           url,
           width,
           height,
           mime_type: fileMimetype,
           description,
         })
-        .select('url, width, height, mime_type, description')
+        .select('name, url, width, height, mime_type, description')
         .single()
 
       if (error)
@@ -249,6 +250,7 @@ export default defineApiEndpoint(
       const { data: thumbnailData, error: thumbnailDataError } = await supabase
         .from('media_files_thumbnails')
         .insert({
+          name: fileName + '_thumbnail',
           url: thumbnailUrl,
           width: thumbnailWidth,
           height: thumbnailHeight,
@@ -266,6 +268,7 @@ export default defineApiEndpoint(
       const { data, error } = await supabase
         .from('media_files')
         .insert({
+          name: fileName,
           url: videoUrl,
           thumbnail: thumbnailData.id,
           width: videoWidth,
@@ -276,8 +279,10 @@ export default defineApiEndpoint(
         })
         .select(
           `
+          name,
           url,
           thumbnail (
+            name,
             url,
             width,
             height,

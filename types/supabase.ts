@@ -112,6 +112,7 @@ export type Database = {
           height: number
           id: number
           mime_type: string
+          name: string
           thumbnail: number | null
           uploaded_by: string | null
           url: string
@@ -124,6 +125,7 @@ export type Database = {
           height: number
           id?: number
           mime_type: string
+          name: string
           thumbnail?: number | null
           uploaded_by?: string | null
           url: string
@@ -136,6 +138,7 @@ export type Database = {
           height?: number
           id?: number
           mime_type?: string
+          name?: string
           thumbnail?: number | null
           uploaded_by?: string | null
           url?: string
@@ -164,6 +167,7 @@ export type Database = {
           height: number
           id: number
           mime_type: string
+          name: string
           uploaded_by: string | null
           url: string
           width: number
@@ -173,6 +177,7 @@ export type Database = {
           height: number
           id?: number
           mime_type: string
+          name: string
           uploaded_by?: string | null
           url: string
           width: number
@@ -182,6 +187,7 @@ export type Database = {
           height?: number
           id?: number
           mime_type?: string
+          name?: string
           uploaded_by?: string | null
           url?: string
           width?: number

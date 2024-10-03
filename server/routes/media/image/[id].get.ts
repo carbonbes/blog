@@ -1,17 +1,20 @@
 import { Readable } from 'stream'
 import getMimeTypeFromBuffer from '~/utils/getMimeTypeFromBuffer'
+import { GifCodec } from 'gifwrap'
 
-interface TransformOptions {
-  width?: number
-  height?: number
-  resize?: 'cover' | 'contain' | 'fill'
-  quality?: number
-  format?: 'origin'
-}
+type TransformOptions =
+  | {
+      width?: number
+      height?: number
+      resize?: 'cover' | 'contain' | 'fill'
+      quality?: number
+      format?: 'origin'
+    }
+  | undefined
 
 export default defineApiEndpoint(async ({ event, supabase }) => {
   const mediaId = getRouterParam(event, 'id')
-  const transform: TransformOptions | undefined = getQuery(event)
+  const transform: TransformOptions = getQuery(event)
 
   if (!mediaId)
     throw createError({
@@ -20,9 +23,9 @@ export default defineApiEndpoint(async ({ event, supabase }) => {
     })
 
   const { data: fileData, error: fileDataError } = await supabase
-    .from('mediafiles')
-    .select('storage_path')
-    .eq('media_id', mediaId)
+    .from('media_files')
+    .select('name')
+    .eq('name', mediaId)
     .single()
 
   if (!fileData || fileDataError)
@@ -33,17 +36,19 @@ export default defineApiEndpoint(async ({ event, supabase }) => {
 
   const { data: storageFile, error: storageFileError } = await supabase.storage
     .from('media')
-    .download(fileData.storage_path, { transform })
+    .download(mediaId, { transform })
 
   if (!storageFile || storageFileError)
     throw createError({
       statusCode: 404,
-      message: 'Не удалось найти медиафайл',
+      message: 'Не удалось загрузить медиафайл',
     })
 
   const arrayBuffer = await storageFile.arrayBuffer()
   const buffer = Buffer.from(arrayBuffer)
   const mimeType = await getMimeTypeFromBuffer(buffer)
+
+  let finalBuffer
 
   if (!mimeType)
     throw createError({
@@ -51,9 +56,20 @@ export default defineApiEndpoint(async ({ event, supabase }) => {
       message: 'Не удалось распознать тип медиафайла',
     })
 
+  if (mimeType === 'image/gif') {
+    const gifCodec = new GifCodec()
+    const gif = await gifCodec.decodeGif(buffer)
+
+    const encodedGif = await gifCodec.encodeGif(gif.frames, { loops: 0 })
+
+    finalBuffer = encodedGif.buffer
+  } else {
+    finalBuffer = buffer
+  }
+
   const stream = new Readable({
     read() {
-      this.push(buffer)
+      this.push(finalBuffer)
       this.push(null)
     },
   })
@@ -61,7 +77,7 @@ export default defineApiEndpoint(async ({ event, supabase }) => {
   appendHeaders(event, {
     'Content-Type': mimeType,
     'Cache-Control': 'max-age=3600',
-    'Content-Length': Buffer.byteLength(buffer).toString()
+    'Content-Length': Buffer.byteLength(finalBuffer).toString(),
   })
 
   return await sendStream(event, stream)
