@@ -28,7 +28,7 @@ export default defineApiEndpoint(async ({ event, supabase }) => {
     .eq('name', mediaName)
     .single()
 
-  if (!fileData || fileDataError)
+  if (fileDataError || !fileData)
     throw createError({
       statusCode: 404,
       message: 'Не удалось найти медиафайл',

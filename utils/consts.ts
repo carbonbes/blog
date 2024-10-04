@@ -9,7 +9,6 @@ export const ALLOWED_MEDIAFILE_MIME_TYPES: MimeType[] = [
   'image/tiff',
   'image/gif',
   'video/mp4',
-  'video/quicktime',
   'video/webm',
   'video/x-flv',
   'video/mpeg',
