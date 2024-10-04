@@ -1,6 +1,6 @@
 import { Readable } from 'stream'
-import getMimeTypeFromBuffer from '~/utils/getMimeTypeFromBuffer'
-import { GifCodec } from 'gifwrap'
+import getFileTypeFromMimeType from '~/utils/getFileTypeFromMimeType'
+import { MimeType } from 'file-type'
 
 type TransformOptions =
   | {
@@ -13,10 +13,10 @@ type TransformOptions =
   | undefined
 
 export default defineApiEndpoint(async ({ event, supabase }) => {
-  const mediaId = getRouterParam(event, 'id')
+  const mediaName = getRouterParam(event, 'name')
   const transform: TransformOptions = getQuery(event)
 
-  if (!mediaId)
+  if (!mediaName)
     throw createError({
       statusCode: 400,
       message: 'Укажите id медиафайла',
@@ -24,8 +24,8 @@ export default defineApiEndpoint(async ({ event, supabase }) => {
 
   const { data: fileData, error: fileDataError } = await supabase
     .from('media_files')
-    .select('name')
-    .eq('name', mediaId)
+    .select('name, mime_type')
+    .eq('name', mediaName)
     .single()
 
   if (!fileData || fileDataError)
@@ -34,9 +34,21 @@ export default defineApiEndpoint(async ({ event, supabase }) => {
       message: 'Не удалось найти медиафайл',
     })
 
+  const mimeType = fileData.mime_type as MimeType
+
+  const type = getFileTypeFromMimeType(mimeType)
+
+  if (type === 'video' || !type)
+    throw createError({
+      statusCode: 400,
+      message: 'Запрашиваемый медиафайл не является картинкой',
+    })
+
   const { data: storageFile, error: storageFileError } = await supabase.storage
     .from('media')
-    .download(mediaId, { transform })
+    .download(mediaName, {
+      transform: mimeType !== 'image/gif' ? transform : undefined,
+    })
 
   if (!storageFile || storageFileError)
     throw createError({
@@ -46,30 +58,10 @@ export default defineApiEndpoint(async ({ event, supabase }) => {
 
   const arrayBuffer = await storageFile.arrayBuffer()
   const buffer = Buffer.from(arrayBuffer)
-  const mimeType = await getMimeTypeFromBuffer(buffer)
-
-  let finalBuffer
-
-  if (!mimeType)
-    throw createError({
-      statusCode: 400,
-      message: 'Не удалось распознать тип медиафайла',
-    })
-
-  if (mimeType === 'image/gif') {
-    const gifCodec = new GifCodec()
-    const gif = await gifCodec.decodeGif(buffer)
-
-    const encodedGif = await gifCodec.encodeGif(gif.frames, { loops: 0 })
-
-    finalBuffer = encodedGif.buffer
-  } else {
-    finalBuffer = buffer
-  }
 
   const stream = new Readable({
     read() {
-      this.push(finalBuffer)
+      this.push(buffer)
       this.push(null)
     },
   })
@@ -77,7 +69,7 @@ export default defineApiEndpoint(async ({ event, supabase }) => {
   appendHeaders(event, {
     'Content-Type': mimeType,
     'Cache-Control': 'max-age=3600',
-    'Content-Length': Buffer.byteLength(finalBuffer).toString(),
+    'Content-Length': Buffer.byteLength(buffer).toString(),
   })
 
   return await sendStream(event, stream)

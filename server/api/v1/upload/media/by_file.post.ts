@@ -1,4 +1,3 @@
-import { MimeType } from 'file-type'
 import sharp from 'sharp'
 import ffmpeg from 'fluent-ffmpeg'
 import { PassThrough } from 'stream'
@@ -9,14 +8,7 @@ import {
 import getMimeTypeFromBuffer from '~/utils/getMimeTypeFromBuffer'
 import tmp from 'tmp'
 import fs from 'fs'
-
-function getFileTypeFromMimeType(mimeType: MimeType) {
-  if (mimeType.startsWith('image/')) {
-    return 'image'
-  } else if (mimeType.startsWith('video/')) {
-    return 'video'
-  }
-}
+import getFileTypeFromMimeType from '~/utils/getFileTypeFromMimeType'
 
 async function getVideoMetadata(file: Buffer): Promise<{
   width: number
@@ -158,23 +150,20 @@ export default defineApiEndpoint(
 
     const files = formData.filter((item) => item.name === 'file')
 
-    if (files[0].data.length === 0)
-      throw createError({
-        statusCode: 404,
-        message: 'Медиафайл не обнаружен',
-      })
-
     if (files.length > 1)
       throw createError({
         statusCode: 400,
         message: 'За раз загрузить можно только один медиафайл',
       })
 
-    const description = formData
-      .find((item) => item.name === 'description')
-      ?.data.toString()
+    const file = files[0].data
 
-    const file = Buffer.from(files[0].data)
+    if (file.length === 0)
+      throw createError({
+        statusCode: 404,
+        message: 'Медиафайл не обнаружен',
+      })
+
     const fileName = crypto.randomUUID()
     const fileMimetype = await getMimeTypeFromBuffer(file)
 
@@ -195,6 +184,10 @@ export default defineApiEndpoint(
         statusCode: 400,
         message: 'Слишком большой медиафайл',
       })
+
+    const description = formData
+      .find((item) => item.name === 'description')
+      ?.data.toString()
 
     const type = getFileTypeFromMimeType(fileMimetype)
 
@@ -242,15 +235,17 @@ export default defineApiEndpoint(
         thumbnailBuffer
       ).metadata()
 
+      const thumbnailName = crypto.randomUUID()
+
       const [{ url: videoUrl }, { url: thumbnailUrl }] = await Promise.all([
-        upload(crypto.randomUUID(), file, fileMimetype),
-        upload(crypto.randomUUID(), thumbnailBuffer, thumbnailMimetype),
+        upload(fileName, file, fileMimetype),
+        upload(thumbnailName, thumbnailBuffer, thumbnailMimetype),
       ])
 
       const { data: thumbnailData, error: thumbnailDataError } = await supabase
-        .from('media_files_thumbnails')
+        .from('media_files')
         .insert({
-          name: fileName + '_thumbnail',
+          name: thumbnailName,
           url: thumbnailUrl,
           width: thumbnailWidth,
           height: thumbnailHeight,
