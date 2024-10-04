@@ -11,7 +11,7 @@
       v-if="['image', 'gif'].includes(item.type)"
       :src="item.url"
       :alt="item.alt"
-      size="w-full h-full object-cover"
+      class="w-full h-full object-cover"
     />
 
     <Video

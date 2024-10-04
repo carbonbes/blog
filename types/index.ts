@@ -6,6 +6,7 @@ import {
 import type { UploadApiResponse } from 'cloudinary'
 import type { FunctionalComponent, SVGAttributes } from 'vue'
 import type { JSONContent } from '@tiptap/vue-3'
+import type { MimeType } from 'file-type'
 
 export interface Response<T = {}> {
   success: boolean
@@ -43,7 +44,22 @@ export type HeadingLevel = 1 | 2
 
 export type NodeAttrs = Record<string, any>
 
-export type CDNMedia = UploadApiResponse
+export type StorageMedia = {
+  name: string
+  url: string
+  width: number
+  height: number
+  duration?: number
+  mime_type: MimeType
+  description?: string
+  thumbnail?: {
+    url: string
+    name: string
+    width: number
+    height: number
+    mime_type: MimeType
+  }
+}
 
 export type SVGIcon = FunctionalComponent<SVGAttributes, {}, any, {}>
 
@@ -226,14 +242,14 @@ export type TwitterApiTweetResponse = {
                 allow_download: boolean
               }
               video_info?: {
-                aspect_ratio: [ 1, 1 ]
+                aspect_ratio: [1, 1]
                 duration_millis: 39886
                 variants: {
                   content_type: 'application/x-mpegURL' | 'video/mp4'
                   url: string
                   bitrate?: number
                 }[]
-              },
+              }
               media_results: {
                 result: {
                   media_key: string
@@ -347,7 +363,7 @@ export type TwitterApiTweetResponse = {
           retweeted: boolean
           user_id_str: string
           id_str: string
-        },
+        }
         reason: 'NsfwLoggedOut' | string
       }
     }
@@ -371,6 +387,14 @@ export type SNEmbed = {
     type: 'image' | 'video' | 'gif'
   }[]
   published: string
-  type: Exclude<EmbedType, 'youtube'>,
+  type: Exclude<EmbedType, 'youtube'>
   url: string
+}
+
+export type ImageTransformOptions = {
+  width?: number
+  height?: number
+  resize?: 'cover' | 'contain' | 'fill'
+  quality?: number
+  format?: 'origin'
 }

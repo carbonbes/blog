@@ -11,8 +11,7 @@
         >
           <Image
             :src="embed.author.avatar!"
-            size="w-full"
-            class="size-9"
+            class="w-full size-9"
           />
         </a>
         <Flex itemsCenter class="min-w-0 gap-2 row-[1_span] col-[2] leading-[18px] whitespace-nowrap">
@@ -67,7 +66,7 @@
           :originalWidth="singleImage.width"
           :originalHeight="singleImage.height"
           zoomable
-          size="w-fit max-h-80"
+          class="w-fit max-h-80"
         />
       </Flex>
 

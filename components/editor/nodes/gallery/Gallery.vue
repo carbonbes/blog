@@ -84,7 +84,8 @@ import GalleryItem from '~/components/editor/nodes/gallery/GalleryItem.vue'
 import type { MimeType } from 'file-type'
 import Draggable from 'vuedraggable'
 
-export type Item = {
+export type GalleryItem = {
+  name?: string
   id?: string
   src: string
   alt?: string
@@ -95,7 +96,7 @@ export type Item = {
   uploaded: boolean
 }
 
-export type MediaType = 'image' | 'gif' | 'video'
+export type MediaType = 'image' | 'video'
 
 const props = defineProps<NodeViewProps>()
 
@@ -108,7 +109,7 @@ const isEmpty = computed(() => !props.node.attrs.items.length)
 const isSingle = computed(() => props.node.attrs.items.length === 1)
 const isGallery = computed(() => props.node.attrs.items.length > 1)
 
-const items = ref<Item[]>(Object.assign([], props.node.attrs.items).map((item: Item) => {
+const items = ref<GalleryItem[]>(Object.assign([], props.node.attrs.items).map((item: GalleryItem) => {
   if (item.id) return item
 
   item.id = window.crypto.randomUUID()
@@ -184,7 +185,7 @@ async function onUpdate() {
   props.updateAttributes({ items: items.value })
 }
 
-function onUploaded(index: number, newItem: Item) {
+function onUploaded(index: number, newItem: GalleryItem) {
   items.value.splice(index, 1, newItem)
   props.updateAttributes({ items: items.value })
 }

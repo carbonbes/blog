@@ -1,14 +1,19 @@
 <template>
   <NuxtImg
+    provider="storage"
     :src
     :alt
     :loading
+    :width
+    :height
+    :quality
+    :resize
+    :format
     class="object-contain"
-    :class="[
-      { 'cursor-zoom-in': zoomable || lightboxItem, 'w-full h-full object-cover': fill },
-      size,
-      rounded,
-    ]"
+    :class="{
+      'cursor-zoom-in': zoomable || lightboxItem,
+      'w-full h-full object-cover': fill,
+    }"
     v-bind="{ ...$attrs, ...lightboxAttrs }"
     ref="imgRef"
     @click="setItems({ target: imgRef?.$el, zoomable, lightboxItem, parent })"
@@ -17,6 +22,7 @@
 
 <script lang="ts" setup>
 import type { NuxtImg } from '#build/components'
+import type { ImageTransformOptions } from '~/types'
 
 const props = withDefaults(
   defineProps<{
@@ -24,10 +30,13 @@ const props = withDefaults(
     src: string
     alt?: string
     loading?: 'lazy' | 'eager'
+    width?: ImageTransformOptions['width']
+    height?: ImageTransformOptions['height']
+    quality?: ImageTransformOptions['quality']
+    resize?: ImageTransformOptions['resize']
+    format?: ImageTransformOptions['format']
     originalWidth?: number
     originalHeight?: number
-    size?: string
-    rounded?: string
     zoomable?: boolean
     lightboxItem?: boolean
     parent?: HTMLElement

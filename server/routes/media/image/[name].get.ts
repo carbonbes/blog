@@ -2,19 +2,9 @@ import { Readable } from 'stream'
 import getFileTypeFromMimeType from '~/utils/getFileTypeFromMimeType'
 import { MimeType } from 'file-type'
 
-type TransformOptions =
-  | {
-      width?: number
-      height?: number
-      resize?: 'cover' | 'contain' | 'fill'
-      quality?: number
-      format?: 'origin'
-    }
-  | undefined
-
 export default defineApiEndpoint(async ({ event, supabase }) => {
   const mediaName = getRouterParam(event, 'name')
-  const transform: TransformOptions = getQuery(event)
+  const transform: ImageTransformOptions = getQuery(event)
 
   if (!mediaName)
     throw createError({

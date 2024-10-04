@@ -26,7 +26,13 @@ export default defineNuxtConfig({
 
     telegramApiHash: env.NUXT_TELEGRAM_API_HASH,
     telegramApiId: env.NUXT_TELEGRAM_API_ID,
-    telegramApiStringSession: env.NUXT_TELEGRAM_API_STRING_SESSION
+    telegramApiStringSession: env.NUXT_TELEGRAM_API_STRING_SESSION,
+
+    public: {
+      baseUrl: env.NUXT_BASE_URL,
+      imageRoute: env.NUXT_BASE_URL + '/media/image/',
+      videoRoute: env.NUXT_BASE_URL + '/media/video/',
+    },
   },
 
   modules: [
@@ -38,7 +44,7 @@ export default defineNuxtConfig({
     '@nuxt/image',
     'dayjs-nuxt',
     'radix-vue/nuxt',
-    '@nuxt/scripts'
+    '@nuxt/scripts',
   ],
 
   supabase: {
@@ -61,11 +67,24 @@ export default defineNuxtConfig({
     plugins: ['relativeTime'],
   },
 
+  image: {
+    providers: {
+      storage: {
+        name: 'supabase-storage',
+        provider: '~/providers/supabase-storage.ts',
+        options: {
+          baseURL: env.NUXT_BASE_URL + '/media/image/',
+        },
+      },
+    },
+  },
+
   css: ['~/assets/styles/index.sass'],
 
   vite: {
     plugins: [
       mkcert({
+        source: 'coding',
         savePath: './certs',
         force: true,
         autoUpgrade: true,
@@ -90,8 +109,8 @@ export default defineNuxtConfig({
   devServer: {
     https: {
       cert: './certs/cert.pem',
-      key: './certs/dev.pem'
-    }
+      key: './certs/dev.pem',
+    },
   },
 
   app: {
@@ -115,7 +134,8 @@ export default defineNuxtConfig({
 
   vue: {
     compilerOptions: {
-      isCustomElement: (tag) => ['swiper-container', 'swiper-slide'].includes(tag)
-    }
-  }
+      isCustomElement: (tag) =>
+        ['swiper-container', 'swiper-slide'].includes(tag),
+    },
+  },
 })

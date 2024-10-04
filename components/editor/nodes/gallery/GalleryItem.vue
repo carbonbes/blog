@@ -24,15 +24,12 @@
       class="bg-gray-100 rounded-xl overflow-hidden"
       :class="{ 'inner-border': isGallery }"
     >
-      <Image
-        v-if="['image', 'gif'].includes(item.type)"
-        :src="item.src"
-        :alt="item.alt"
-        :originalWidth="item.width"
-        :originalHeight="item.height"
+      <GalleryItemImage
+        v-if="item.type === 'image'"
+        :item
         :parent
-        :zoomable="isSingle && item.uploaded"
-        :lightboxItem="isGallery && item.uploaded"
+        :isSingle
+        :isGallery
         :class="{
           'pointer-events-none opacity-50': state.loading,
           'max-h-80': isSingle,
@@ -93,12 +90,13 @@
 </template>
 
 <script lang="ts" setup>
-import type { UploadApiResponse } from 'cloudinary'
-import type { Item } from '~/components/editor/nodes/gallery/Gallery.vue'
+import type { GalleryItem } from '~/components/editor/nodes/gallery/Gallery.vue'
 import type Video from '~/components/global/Video.vue'
+import type { StorageMedia } from '~/types'
+import GalleryItemImage from '~/components/editor/nodes/gallery/GalleryItemImage.vue'
 
 const props = defineProps<{
-  item: Item
+  item: GalleryItem
   parent: HTMLElement | undefined
   isSingle: boolean
   isGallery: boolean
@@ -109,7 +107,7 @@ const emits = defineEmits<{
   remove: [string]
   openFileFromDeviceDialog: any
   openFileFromClipboardDialog: any
-  uploaded: [Item]
+  uploaded: [GalleryItem]
 }>()
 
 const videoRef = ref<InstanceType<typeof Video>>()
@@ -124,7 +122,7 @@ watch(
 )
 
 const state = reactive<{
-  item: Item | null
+  item: GalleryItem | null
   dragging: boolean
   loading: boolean
 }>({
@@ -142,15 +140,21 @@ function onTouch(value: boolean) {
 const { swipeEnabled } = useRootNode()
 watch(() => state.dragging, (v) => swipeEnabled.value = !v)
 
-function updateItem(data: UploadApiResponse) {
-  const { secure_url: src, public_id, width, height, format } = data
+function updateItem(data: StorageMedia) {
+  const {
+    name,
+    url: src,
+    thumbnail,
+    width,
+    height,
+    description: alt
+  } = data
 
   emits('uploaded', {
+    name,
     src,
-    alt: '',
-    thumbnail: props.item.type === 'video'
-      ? `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/${public_id}.${format}`
-      : undefined,
+    alt,
+    thumbnail: thumbnail?.url,
     width,
     height,
     type: props.item.type,

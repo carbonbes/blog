@@ -9,6 +9,7 @@ import getMimeTypeFromBuffer from '~/utils/getMimeTypeFromBuffer'
 import tmp from 'tmp'
 import fs from 'fs'
 import getFileTypeFromMimeType from '~/utils/getFileTypeFromMimeType'
+import { MimeType } from 'file-type'
 
 async function getVideoMetadata(file: Buffer): Promise<{
   width: number
@@ -116,11 +117,15 @@ async function getScreenshotFromVideo(file: Buffer): Promise<Buffer> {
 
 export default defineApiEndpoint(
   async ({ event, supabase }) => {
-    async function upload(path: string, file: Buffer, contentType: string) {
+    async function upload(path: string, file: Buffer, mimeType: MimeType) {
+      const {
+        public: { imageRoute, videoRoute },
+      } = useRuntimeConfig()
+
       try {
         const { data: storageFile, error } = await supabase.storage
           .from('media')
-          .upload(path, file, { contentType })
+          .upload(path, file, { contentType: mimeType })
 
         if (error)
           throw createError({
@@ -130,13 +135,14 @@ export default defineApiEndpoint(
         if (!storageFile)
           throw createError({ message: 'Не удалось загрузить медиафайл' })
 
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from('media').getPublicUrl(storageFile.path)
+        const type = getFileTypeFromMimeType(mimeType)!
 
-        return { url: publicUrl }
-      } catch (err: any) {
-        throw createError({})
+        return { url: (type === 'image' ? imageRoute : videoRoute) + path }
+      } catch (error: any) {
+        throw createError({
+          status: 400,
+          message: 'Ошибка загрузки медиафайла',
+        })
       }
     }
 

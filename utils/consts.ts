@@ -13,6 +13,3 @@ export const ALLOWED_MEDIAFILE_MIME_TYPES: MimeType[] = [
   'video/x-flv',
   'video/mpeg',
 ]
-
-export const IMAGE_ROUTE = '/media/image/'
-export const VIDEO_ROUTE = '/media/video/'

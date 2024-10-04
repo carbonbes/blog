@@ -4,7 +4,7 @@ import {
   type Profile,
   type VerifyOtpResponse,
   type Article,
-  type CDNMedia,
+  type StorageMedia,
   type SNEmbed,
 } from '~/types/index'
 
@@ -53,7 +53,7 @@ export async function uploadMediaByFile(file: File) {
   const formData = new FormData()
   formData.append('file', file)
 
-  return await $fetch<Response<CDNMedia>>('/api/v1/upload/media/by_file', {
+  return await $fetch<Response<StorageMedia>>('/api/v1/upload/media/by_file', {
     method: 'POST',
     body: formData,
   })
