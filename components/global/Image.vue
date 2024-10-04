@@ -1,14 +1,9 @@
 <template>
   <NuxtImg
-    provider="storage"
     :src
     :alt
     :loading
-    :width
-    :height
-    :quality
-    :resize
-    :format
+    :options
     class="object-contain"
     :class="{
       'cursor-zoom-in': zoomable || lightboxItem,
@@ -28,13 +23,10 @@ const props = withDefaults(
   defineProps<{
     fill?: boolean
     src: string
+    originalSrc?: string
     alt?: string
     loading?: 'lazy' | 'eager'
-    width?: ImageTransformOptions['width']
-    height?: ImageTransformOptions['height']
-    quality?: ImageTransformOptions['quality']
-    resize?: ImageTransformOptions['resize']
-    format?: ImageTransformOptions['format']
+    options?: ImageTransformOptions
     originalWidth?: number
     originalHeight?: number
     zoomable?: boolean
@@ -51,6 +43,30 @@ const emit = defineEmits<{
   isOpen: [boolean]
 }>()
 
+const {
+  public: { imageRoute },
+} = useRuntimeConfig()
+
+const buildQueryString = computed(() => {
+  if (!props.options) return
+
+  const queryString = Object.entries(props.options)
+    .filter(([_, value]) => value !== undefined)
+    .map(
+      ([key, value]) =>
+        `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`
+    )
+    .join('&')
+
+  return queryString ? `?${queryString}` : undefined
+})
+
+const src = computed(() => {
+  if (!buildQueryString.value) return `${imageRoute}/${props.src}`
+
+  return `${imageRoute}/${props.src}${buildQueryString.value}`
+})
+
 const { setItems } = useLightboxDialog()
 
 const imgRef = ref<InstanceType<typeof NuxtImg>>()
@@ -60,7 +76,7 @@ const lightboxAttrs = computed(() => {
 
   return {
     'data-lightbox-item': true,
-    'data-lightbox-src': props.src,
+    'data-lightbox-src': props.originalSrc,
     'data-lightbox-alt': props.alt,
     'data-lightbox-width': props.originalWidth,
     'data-lightbox-height': props.originalHeight,

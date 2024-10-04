@@ -1,16 +1,18 @@
 <template>
-  <img v-if="!item.uploaded" :src="item.src" alt="" loading="lazy" />
+  <img v-if="!item.uploaded" :src="item.src" alt="" loading="lazy" :class />
 
   <Image
     v-else-if="item.uploaded"
     :src="item.name!"
+    :originalSrc="item.originalSrc"
     :alt="item.alt"
-    :width="500"
+    :options="{ width: isGallery ? 160 : undefined, quality: 50 }"
     :originalWidth="item.width"
     :originalHeight="item.height"
     :parent
     :zoomable="isSingle"
     :lightboxItem="isGallery"
+    :class
   />
 </template>
 
@@ -18,10 +20,10 @@
 import type { GalleryItem } from '~/components/editor/nodes/gallery/Gallery.vue'
 
 defineProps<{
-  class?: string | object
   item: GalleryItem
   parent?: HTMLElement
   isSingle?: boolean
   isGallery?: boolean
+  class?: string | object
 }>()
 </script>

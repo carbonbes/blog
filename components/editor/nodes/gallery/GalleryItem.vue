@@ -153,6 +153,7 @@ function updateItem(data: StorageMedia) {
   emits('uploaded', {
     name,
     src,
+    originalSrc: src,
     alt,
     thumbnail: thumbnail?.url,
     width,

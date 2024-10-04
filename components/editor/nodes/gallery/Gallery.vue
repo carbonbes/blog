@@ -88,6 +88,7 @@ export type GalleryItem = {
   name?: string
   id?: string
   src: string
+  originalSrc?: string
   alt?: string
   thumbnail?: string
   width?: number

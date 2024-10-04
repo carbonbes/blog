@@ -67,18 +67,6 @@ export default defineNuxtConfig({
     plugins: ['relativeTime'],
   },
 
-  image: {
-    providers: {
-      storage: {
-        name: 'supabase-storage',
-        provider: '~/providers/supabase-storage.ts',
-        options: {
-          baseURL: env.NUXT_BASE_URL + '/media/image/',
-        },
-      },
-    },
-  },
-
   css: ['~/assets/styles/index.sass'],
 
   vite: {
