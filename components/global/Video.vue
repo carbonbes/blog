@@ -37,7 +37,6 @@ import type Flex from '~/components/global/Flex.vue'
 
 const props = withDefaults(
   defineProps<{
-    class?: string
     src?: string
     alt?: string
     thumbnail?: string
@@ -54,6 +53,7 @@ const props = withDefaults(
     lightboxItem?: boolean
     parent?: HTMLElement
     ignoreThumbnailClick?: boolean
+    class?: string
   }>(),
   {
     muted: true,

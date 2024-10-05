@@ -13,3 +13,6 @@ export const ALLOWED_MEDIAFILE_MIME_TYPES: MimeType[] = [
   'video/x-flv',
   'video/mpeg',
 ]
+
+export const YOUTUBE_REGEX =
+  /(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\?v=)?([^&\s]+)/g

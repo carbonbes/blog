@@ -106,45 +106,55 @@ export type Database = {
       }
       media_files: {
         Row: {
-          created_at: string
           description: string | null
           duration: number | null
+          file: string
           height: number
           id: number
           mime_type: string
           name: string
           thumbnail: number | null
+          uploaded_at: string
           uploaded_by: string | null
           url: string
           width: number
         }
         Insert: {
-          created_at?: string
           description?: string | null
           duration?: number | null
+          file: string
           height: number
           id?: number
           mime_type: string
           name: string
           thumbnail?: number | null
+          uploaded_at?: string
           uploaded_by?: string | null
           url: string
           width: number
         }
         Update: {
-          created_at?: string
           description?: string | null
           duration?: number | null
+          file?: string
           height?: number
           id?: number
           mime_type?: string
           name?: string
           thumbnail?: number | null
+          uploaded_at?: string
           uploaded_by?: string | null
           url?: string
           width?: number
         }
         Relationships: [
+          {
+            foreignKeyName: 'media_files_file_fkey'
+            columns: ['file']
+            isOneToOne: false
+            referencedRelation: 'objects'
+            referencedColumns: ['id']
+          },
           {
             foreignKeyName: 'media_files_thumbnail_fkey'
             columns: ['thumbnail']

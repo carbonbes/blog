@@ -8,15 +8,15 @@
     @click="setItems({ parent, target: lightboxItemRef, lightboxItem: true })"
   >
     <Image
-      v-if="['image', 'gif'].includes(item.type)"
-      :src="item.url"
+      v-if="item.type === 'image'"
+      :src="item.src"
       :alt="item.alt"
       class="w-full h-full object-cover"
     />
 
     <Video
       v-else-if="item.type === 'video'"
-      :src="item.url"
+      :src="item.src"
       :alt="item.alt"
       :thumbnail="item.thumbnail!"
       ignoreThumbnailClick
@@ -29,11 +29,11 @@
 </template>
 
 <script lang="ts" setup>
-import { type Item } from '~/components/global/gallery-grid/GalleryGrid.vue'
+import { type GalleryGridItem } from '~/components/global/gallery-grid/GalleryGrid.vue'
 
 const props = defineProps<{
   parent: HTMLElement | undefined
-  item: Item
+  item: GalleryGridItem
   isSingleItem?: boolean
   class?: string | object
   dataResidue?: string
