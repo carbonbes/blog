@@ -137,7 +137,7 @@ export default defineApiEndpoint(
 
         const type = getFileTypeFromMimeType(mimeType)!
 
-        return { url: (type === 'image' ? imageRoute : videoRoute) + path }
+        return { url: (type === 'image' ? imageRoute : videoRoute) + `/${path}` }
       } catch (error: any) {
         throw createError({
           status: 400,

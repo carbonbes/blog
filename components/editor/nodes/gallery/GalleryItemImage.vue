@@ -1,5 +1,12 @@
 <template>
-  <img v-if="!item.uploaded" :src="item.src" alt="" loading="lazy" :class />
+  <NuxtImg
+    v-if="!item.uploaded"
+    :src="item.src"
+    alt=""
+    loading="lazy"
+    class="object-contain"
+    :class
+  />
 
   <Image
     v-else-if="item.uploaded"

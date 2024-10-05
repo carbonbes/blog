@@ -3,7 +3,6 @@
     :src
     :alt
     :loading
-    :options
     class="object-contain"
     :class="{
       'cursor-zoom-in': zoomable || lightboxItem,
@@ -47,7 +46,7 @@ const {
   public: { imageRoute },
 } = useRuntimeConfig()
 
-const buildQueryString = computed(() => {
+const imageOptions = computed(() => {
   if (!props.options) return
 
   const queryString = Object.entries(props.options)
@@ -61,11 +60,9 @@ const buildQueryString = computed(() => {
   return queryString ? `?${queryString}` : undefined
 })
 
-const src = computed(() => {
-  if (!buildQueryString.value) return `${imageRoute}/${props.src}`
-
-  return `${imageRoute}/${props.src}${buildQueryString.value}`
-})
+const src = computed(
+  () => `${imageRoute}/${props.src}${imageOptions.value || ''}`
+)
 
 const { setItems } = useLightboxDialog()
 

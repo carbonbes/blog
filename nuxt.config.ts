@@ -30,8 +30,8 @@ export default defineNuxtConfig({
 
     public: {
       baseUrl: env.NUXT_BASE_URL,
-      imageRoute: env.NUXT_BASE_URL + '/media/image/',
-      videoRoute: env.NUXT_BASE_URL + '/media/video/',
+      imageRoute: env.NUXT_BASE_URL + '/media/image',
+      videoRoute: env.NUXT_BASE_URL + '/media/video',
     },
   },
 
