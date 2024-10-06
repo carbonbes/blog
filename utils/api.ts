@@ -37,7 +37,7 @@ export async function verifyOtp(body: {
 
 export async function me() {
   return await $fetch<Response<Profile>>('/api/v1/me', {
-    ...(import.meta.server && { headers: useRequestHeaders(['cookie']) }),
+    headers: import.meta.server ? useRequestHeaders(['cookie']) : undefined,
   })
 }
 

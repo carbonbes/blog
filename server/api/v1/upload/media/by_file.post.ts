@@ -3,9 +3,7 @@ import {
   MEDIAFILE_MAX_SIZE,
 } from '~/utils/consts'
 import getMimeTypeFromBuffer from '~/utils/getMimeTypeFromBuffer'
-import getFileTypeFromMimeType from '~/utils/getFileTypeFromMimeType'
-import uploadImageToStorage from '~/server/utils/uploadImageToStorage'
-import uploadVideoToStorage from '~/server/utils/uploadVideoToStorage'
+import uploadFileToStorage from '~/server/utils/uploadFileToStorage'
 
 export default defineApiRoute(
   async ({ event, supabase }) => {
@@ -57,13 +55,7 @@ export default defineApiRoute(
       .find((item) => item.name === 'description')
       ?.data.toString()
 
-    const type = getFileTypeFromMimeType(fileMimetype)
-
-    if (type === 'image') {
-      return await uploadImageToStorage({ supabase, image: file, description })
-    } else if (type === 'video') {
-      return await uploadVideoToStorage({ supabase, video: file, description })
-    }
+    return await uploadFileToStorage({ supabase, file, description })
   },
   { requireAuth: true }
 )

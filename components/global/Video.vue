@@ -21,7 +21,7 @@
   </Flex>
 
   <video
-    v-if="isPlaying"
+    v-else
     :src
     :autoplay
     :loop

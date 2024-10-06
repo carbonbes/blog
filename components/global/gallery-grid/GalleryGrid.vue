@@ -30,17 +30,10 @@
 </template>
 
 <script lang="ts" setup>
-export type GalleryGridItem = {
-  src: string
-  alt?: string
-  thumbnail?: string
-  width: number
-  height: number
-  type: 'image' | 'video'
-}
+import type { StorageMedia } from '~/types'
 
 defineProps<{
-  items: GalleryGridItem[]
+  items: StorageMedia[]
 }>()
 
 const galleryGridRef = ref<HTMLDivElement>()

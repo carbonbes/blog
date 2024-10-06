@@ -1,9 +1,11 @@
 import getEmbedType from '~/utils/getEmbedType'
-import { TwitterApiTweetResponse } from '~/types'
+import { StorageMedia, Supabase, TwitterApiTweetResponse } from '~/types'
 import { TelegramClient } from 'telegram'
 import { StringSession } from 'telegram/sessions/index.js'
 import { Api } from 'telegram/tl/index.js'
-import getBase64FromBuffer from '~/utils/getBase64FromBuffer'
+import getFileFromBuffer from '~/utils/getFileFromBuffer'
+import uploadFileToStorage from '~/server/utils/uploadFileToStorage'
+import { MimeType } from 'file-type'
 
 const {
   xApiGuestTokenUrl,
@@ -18,11 +20,13 @@ const { upload } = useCdn()
 
 type TelegramMediaArgs =
   | {
+      supabase: Supabase
       telegram: TelegramClient
       channelUsername: string
       type: 'profile_photo'
     }
   | {
+      supabase: Supabase
       telegram: TelegramClient
       media: Api.TypeMessageMedia
       type: 'post_media'
@@ -57,38 +61,34 @@ async function getTelegramChannelName(
 }
 
 async function uploadTelegramMedia(args: TelegramMediaArgs) {
-  const { telegram } = args
+  const { supabase, telegram } = args
 
   const buffer =
     args.type === 'post_media'
-      ? await telegram.downloadMedia(args.media)
-      : await telegram.downloadProfilePhoto(args.channelUsername)
+      ? ((await telegram.downloadMedia(args.media)) as Buffer)
+      : ((await telegram.downloadProfilePhoto(args.channelUsername)) as Buffer)
 
   if (!buffer) return
 
-  const base64 = await getBase64FromBuffer(buffer as Buffer)
+  const file = await getFileFromBuffer(buffer)
 
-  const {
-    secure_url: url,
-    public_id,
-    format,
-    width,
-    height,
-    resource_type,
-  } = await upload(base64)
+  if (!file) return
+
+  const media = await uploadFileToStorage({ supabase, file: buffer })
 
   return {
-    url,
-    ...(resource_type === 'video' && {
-      thumbnail: `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/${public_id}.${format}`,
-    }),
-    width,
-    height,
-    type: resource_type as 'image' | 'video',
+    name: media.name,
+    url: media.url,
+    width: media.width,
+    height: media.height,
+    thumbnail: media.thumbnail,
+    duration: media.duration,
+    mime_type: media.mime_type as MimeType,
   }
 }
 
 async function getTelegramPostData(
+  supabase: Supabase,
   telegram: TelegramClient,
   channelUsername: string,
   postId: number
@@ -97,19 +97,11 @@ async function getTelegramPostData(
     ids: new Api.InputMessageID({ id: postId }),
   })
 
-  let media:
-    | {
-        url: string
-        alt?: string
-        thumbnail?: string
-        width: number
-        height: number
-        type: 'image' | 'video'
-      }[]
-    | undefined = undefined
+  let media: StorageMedia[] | undefined = undefined
 
   if (post.media && !post.groupedId) {
     const mediaItem = await uploadTelegramMedia({
+      supabase,
       telegram,
       media: post.media,
       type: 'post_media',
@@ -139,6 +131,7 @@ async function getTelegramPostData(
           if (!media) return
 
           const mediaItem = await uploadTelegramMedia({
+            supabase,
             telegram,
             media,
             type: 'post_media',
@@ -261,97 +254,97 @@ async function getXPostData(postId: string) {
   }
 }
 
-export default defineApiRoute(
-  async ({ event }) => {
-    const { url }: { url: string } = getQuery(event)
+export default defineApiRoute(async ({ event, supabase }) => {
+  const { url }: { url: string } = getQuery(event)
 
-    if (!url)
-      throw createError({
-        statusCode: 400,
-        message: 'Заполните все обязательные поля',
+  if (!url)
+    throw createError({
+      statusCode: 400,
+      message: 'Заполните все обязательные поля',
+    })
+
+  const type = getEmbedType(url)
+
+  if (!type)
+    throw createError({
+      statusCode: 400,
+      message: 'Тип эмбеда не распознан',
+    })
+
+  if (type === 'telegram') {
+    try {
+      const telegramPostRegexp = /https?:\/\/(?:telegram|t)\.me\/(.+)\/(\d+)/gi
+      const [, channelUsername, postId] = telegramPostRegexp.exec(url) || []
+
+      const telegram = await initTelegramClient()
+
+      const channelName = await getTelegramChannelName(
+        telegram,
+        channelUsername
+      )
+
+      const post = await getTelegramPostData(
+        supabase,
+        telegram,
+        channelUsername,
+        +postId
+      )
+
+      const authorAvatar = await uploadTelegramMedia({
+        supabase,
+        telegram,
+        channelUsername,
+        type: 'profile_photo',
       })
 
-    const type = getEmbedType(url)
+      if (!post)
+        throw createError({
+          statusCode: 404,
+          message: 'Пост не найден',
+        })
 
-    if (!type)
+      return {
+        author: {
+          avatar: authorAvatar?.url || null,
+          name: channelName,
+          username: channelUsername,
+          url: `https://t.me/${channelUsername}`,
+        },
+        text: post.text,
+        media: post.media,
+        published: post.published,
+        type,
+        url,
+      }
+    } catch (error) {
       throw createError({
         statusCode: 400,
-        message: 'Тип эмбеда не распознан',
+        message: 'Ошибка получения поста',
       })
-
-    if (type === 'telegram') {
-      try {
-        const telegramPostRegexp =
-          /https?:\/\/(?:telegram|t)\.me\/(.+)\/(\d+)/gi
-        const [, channelUsername, postId] = telegramPostRegexp.exec(url) || []
-
-        const telegram = await initTelegramClient()
-
-        const channelName = await getTelegramChannelName(
-          telegram,
-          channelUsername
-        )
-        const post = await getTelegramPostData(
-          telegram,
-          channelUsername,
-          +postId
-        )
-        const authorAvatar = await uploadTelegramMedia({
-          telegram,
-          channelUsername,
-          type: 'profile_photo',
-        })
-
-        if (!post)
-          throw createError({
-            statusCode: 404,
-            message: 'Пост не найден',
-          })
-
-        return {
-          author: {
-            avatar: authorAvatar?.url || null,
-            name: channelName,
-            username: channelUsername,
-            url: `https://t.me/${channelUsername}`,
-          },
-          text: post.text,
-          media: post.media,
-          published: post.published,
-          type,
-          url,
-        }
-      } catch (error) {
-        throw createError({
-          statusCode: 400,
-          message: 'Ошибка получения поста',
-        })
-      }
     }
+  }
 
-    if (type === 'x') {
-      try {
-        const tweetIdRegexp =
-          /(?:https?:\/\/)?(?:www\.)?(?:twitter|x)\.com\/.+\/([0-9]{19})/gi
-        const [, postId] = tweetIdRegexp.exec(url) || []
+  if (type === 'x') {
+    try {
+      const tweetIdRegexp =
+        /(?:https?:\/\/)?(?:www\.)?(?:twitter|x)\.com\/.+\/([0-9]{19})/gi
+      const [, postId] = tweetIdRegexp.exec(url) || []
 
-        const post = await getXPostData(postId)
+      const post = await getXPostData(postId)
 
-        return {
-          author: post.author,
-          text: post.text,
-          media: post.media,
-          published: post.published,
-          type,
-          url,
-        }
-      } catch (error: any) {
-        throw createError({
-          statusCode: 400,
-          message: 'Ошибка получения поста',
-        })
+      return {
+        author: post.author,
+        text: post.text,
+        media: post.media,
+        published: post.published,
+        type,
+        url,
       }
+    } catch (error: any) {
+      throw createError({
+        statusCode: 400,
+        message: 'Ошибка получения поста',
+      })
     }
-  },
-  { requireAuth: true }
-)
+  }
+})

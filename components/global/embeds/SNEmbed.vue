@@ -1,5 +1,8 @@
 <template>
-  <Flex col class="bg-white border-2 border-gray-100 rounded-xl overflow-hidden">
+  <Flex
+    col
+    class="bg-white border-2 border-gray-100 rounded-xl overflow-hidden"
+  >
     <Flex justifyBetween class="p-5">
       <div
         class="grid grid-rows-[repeat(2,_1fr)] grid-columns-[repeat(2,_minmax(0,_max_-_content))] gap-x-3"
@@ -9,12 +12,12 @@
           target="_blank"
           class="row-[1/2_span] col-[1] overflow-hidden rounded-full inner-border"
         >
-          <Image
-            :src="embed.author.avatar!"
-            class="w-full size-9"
-          />
+          <Image :src="embed.author.avatar!" class="w-full size-9" />
         </a>
-        <Flex itemsCenter class="min-w-0 gap-2 row-[1_span] col-[2] leading-[18px] whitespace-nowrap">
+        <Flex
+          itemsCenter
+          class="min-w-0 gap-2 row-[1_span] col-[2] leading-[18px] whitespace-nowrap"
+        >
           <a
             :href="embed.author.url"
             target="_blank"
@@ -55,13 +58,9 @@
         class="px-5 pb-5 whitespace-pre-line"
       />
 
-      <Flex
-        v-if="singleImage"
-        center
-        class="bg-gray-100"
-      >
+      <Flex v-if="singleImage" center class="bg-gray-100">
         <Image
-          :src="singleImage.src"
+          :src="singleImage.name"
           :alt="singleImage.alt"
           :originalWidth="singleImage.width"
           :originalHeight="singleImage.height"
@@ -72,9 +71,9 @@
 
       <Video
         v-else-if="singleVideo"
-        :src="singleVideo.src"
+        :src="singleVideo.name"
         :alt="singleVideo.alt"
-        :thumbnail="singleVideo.thumbnail"
+        :thumbnail="singleVideo.thumbnail!.name"
         :originalWidth="singleVideo.width"
         :originalHeight="singleVideo.height"
         autoplay
@@ -82,10 +81,7 @@
         size="w-full h-80"
       />
 
-      <GalleryGrid
-        v-else-if="gallery"
-        :items="gallery.media"
-      />
+      <GalleryGrid v-else-if="gallery" :items="gallery.media" />
     </Flex>
   </Flex>
 </template>
@@ -96,24 +92,42 @@ import type { SNEmbed } from '~/types'
 const props = defineProps<{ embed: SNEmbed }>()
 
 const singleImage = computed(() => {
-  if (props.embed.media && props.embed.media.length === 1 && props.embed.media[0].type === 'image') {
+  if (
+    props.embed.media &&
+    props.embed.media.length === 1 &&
+    getFileTypeFromMimeType(props.embed.media[0].mime_type) === 'image'
+  ) {
+    const { name, width, height, description: alt } = props.embed.media[0]
+
     return {
-      src: props.embed.media[0].src,
-      alt: props.embed.media[0].alt,
-      width: props.embed.media[0].width,
-      height: props.embed.media[0].height
+      name,
+      alt,
+      width,
+      height,
     }
   }
 })
 
 const singleVideo = computed(() => {
-  if (props.embed.media && props.embed.media.length === 1 && props.embed.media[0].type === 'video') {
+  if (
+    props.embed.media &&
+    props.embed.media.length === 1 &&
+    getFileTypeFromMimeType(props.embed.media[0].mime_type) === 'video'
+  ) {
+    const {
+      name,
+      thumbnail,
+      width,
+      height,
+      description: alt,
+    } = props.embed.media[0]
+
     return {
-      src: props.embed.media[0].src,
-      alt: props.embed.media[0].alt,
-      thumbnail: props.embed.media[0].thumbnail,
-      width: props.embed.media[0].width,
-      height: props.embed.media[0].height
+      name,
+      alt,
+      thumbnail,
+      width,
+      height,
     }
   }
 })
@@ -121,7 +135,7 @@ const singleVideo = computed(() => {
 const gallery = computed(() => {
   if (props.embed.media && props.embed.media.length > 1) {
     return {
-      media: props.embed.media
+      media: props.embed.media,
     }
   }
 })

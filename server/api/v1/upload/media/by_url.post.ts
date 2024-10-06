@@ -1,11 +1,9 @@
-import uploadImageToStorage from '~/server/utils/uploadImageToStorage'
-import uploadVideoToStorage from '~/server/utils/uploadVideoToStorage'
+import uploadFileToStorage from '~/server/utils/uploadFileToStorage'
 import {
   ALLOWED_MEDIAFILE_MIME_TYPES,
   MEDIAFILE_MAX_SIZE,
   YOUTUBE_REGEX,
 } from '~/utils/consts'
-import getFileTypeFromMimeType from '~/utils/getFileTypeFromMimeType'
 import getMimeTypeFromBuffer from '~/utils/getMimeTypeFromBuffer'
 
 export default defineApiRoute(
@@ -54,13 +52,7 @@ export default defineApiRoute(
         message: 'Слишком большой медиафайл',
       })
 
-    const type = getFileTypeFromMimeType(mimeType)
-
-    if (type === 'image') {
-      return await uploadImageToStorage({ supabase, image: file })
-    } else if (type === 'video') {
-      return await uploadVideoToStorage({ supabase, video: file })
-    }
+    return uploadFileToStorage({ supabase, file })
   },
   { requireAuth: true }
 )
