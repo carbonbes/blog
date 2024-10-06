@@ -61,7 +61,7 @@
         class="bg-gray-100"
       >
         <Image
-          :src="singleImage.url"
+          :src="singleImage.src"
           :alt="singleImage.alt"
           :originalWidth="singleImage.width"
           :originalHeight="singleImage.height"
@@ -72,7 +72,7 @@
 
       <Video
         v-else-if="singleVideo"
-        :src="singleVideo.url"
+        :src="singleVideo.src"
         :alt="singleVideo.alt"
         :thumbnail="singleVideo.thumbnail"
         :originalWidth="singleVideo.width"
@@ -96,9 +96,9 @@ import type { SNEmbed } from '~/types'
 const props = defineProps<{ embed: SNEmbed }>()
 
 const singleImage = computed(() => {
-  if (props.embed.media && props.embed.media.length === 1 && ['image', 'gif'].includes(props.embed.media[0].type)) {
+  if (props.embed.media && props.embed.media.length === 1 && props.embed.media[0].type === 'image') {
     return {
-      url: props.embed.media[0].url,
+      src: props.embed.media[0].src,
       alt: props.embed.media[0].alt,
       width: props.embed.media[0].width,
       height: props.embed.media[0].height
@@ -109,7 +109,7 @@ const singleImage = computed(() => {
 const singleVideo = computed(() => {
   if (props.embed.media && props.embed.media.length === 1 && props.embed.media[0].type === 'video') {
     return {
-      url: props.embed.media[0].url,
+      src: props.embed.media[0].src,
       alt: props.embed.media[0].alt,
       thumbnail: props.embed.media[0].thumbnail,
       width: props.embed.media[0].width,

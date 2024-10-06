@@ -261,7 +261,7 @@ async function getXPostData(postId: string) {
   }
 }
 
-export default defineApiEndpoint(
+export default defineApiRoute(
   async ({ event }) => {
     const { url }: { url: string } = getQuery(event)
 

@@ -378,14 +378,7 @@ export type SNEmbed = {
     url: string
   }
   text?: string
-  media?: {
-    url: string
-    alt?: string
-    thumbnail?: string
-    width: number
-    height: number
-    type: 'image' | 'video' | 'gif'
-  }[]
+  media?: StorageMedia[]
   published: string
   type: Exclude<EmbedType, 'youtube'>
   url: string

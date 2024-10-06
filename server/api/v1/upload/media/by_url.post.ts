@@ -8,7 +8,7 @@ import {
 import getFileTypeFromMimeType from '~/utils/getFileTypeFromMimeType'
 import getMimeTypeFromBuffer from '~/utils/getMimeTypeFromBuffer'
 
-export default defineApiEndpoint(
+export default defineApiRoute(
   async ({ event, supabase }) => {
     const { url }: { url: string } = await readBody(event)
 

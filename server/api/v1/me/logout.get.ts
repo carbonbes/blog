@@ -1,4 +1,4 @@
-export default defineApiEndpoint(
+export default defineApiRoute(
   async ({ event, supabase }) => {
     const { error } = await supabase.auth.signOut({ scope: 'local' })
 

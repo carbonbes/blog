@@ -2,7 +2,7 @@ import tmp from 'tmp'
 import { createWriteStream, createReadStream, statSync } from 'fs'
 import getFileTypeFromMimeType from '~/utils/getFileTypeFromMimeType'
 
-export default defineApiEndpoint(async ({ event, supabase }) => {
+export default defineApiRoute(async ({ event, supabase }) => {
   const mediaName = getRouterParam(event, 'name')
 
   if (!mediaName)

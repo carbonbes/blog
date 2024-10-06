@@ -1,4 +1,4 @@
-export default defineApiEndpoint(async ({ event, supabase }) => {
+export default defineApiRoute(async ({ event, supabase }) => {
   const profileId = getRouterParam(event, 'id')
 
   if (!profileId)

@@ -7,7 +7,7 @@ import getFileTypeFromMimeType from '~/utils/getFileTypeFromMimeType'
 import uploadImageToStorage from '~/server/utils/uploadImageToStorage'
 import uploadVideoToStorage from '~/server/utils/uploadVideoToStorage'
 
-export default defineApiEndpoint(
+export default defineApiRoute(
   async ({ event, supabase }) => {
     const formData = await readMultipartFormData(event)
 

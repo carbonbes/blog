@@ -2,7 +2,7 @@ import { Readable } from 'stream'
 import getFileTypeFromMimeType from '~/utils/getFileTypeFromMimeType'
 import { MimeType } from 'file-type'
 
-export default defineApiEndpoint(async ({ event, supabase }) => {
+export default defineApiRoute(async ({ event, supabase }) => {
   const mediaName = getRouterParam(event, 'name')
   const transform: ImageTransformOptions = getQuery(event)
 

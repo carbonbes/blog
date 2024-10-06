@@ -1,4 +1,4 @@
-export default defineApiEndpoint(
+export default defineApiRoute(
   async ({ event }) => {
     return event.context.profile
   },

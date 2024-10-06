@@ -1,6 +1,6 @@
 import isValidEmail from '~/utils/isValidEmail'
 
-export default defineApiEndpoint(async ({ event, supabase }) => {
+export default defineApiRoute(async ({ event, supabase }) => {
   const {
     email,
   }: {

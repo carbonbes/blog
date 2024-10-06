@@ -12,7 +12,7 @@ type Handler = ({
   profile: Profile | null
 }) => any
 
-export function defineApiEndpoint<T extends EventHandlerRequest, D>(
+export function defineApiRoute<T extends EventHandlerRequest, D>(
   handler: Handler,
   options?: { requireAuth?: boolean }
 ): EventHandler<T, D> {
