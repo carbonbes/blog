@@ -55,5 +55,8 @@ export default async function uploadImageToStorage({
       message: error.message,
     })
 
-  return data
+  return {
+    ...data,
+    description: description ?? undefined,
+  }
 }

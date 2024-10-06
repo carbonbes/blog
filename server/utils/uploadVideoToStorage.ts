@@ -130,7 +130,9 @@ export default async function uploadVideoToStorage({
       thumbnail: thumbnailDb.id,
       width: videoWidth,
       height: videoHeight,
+      duration,
       mime_type: videoMimeType,
+      description,
     })
     .select(
       `
@@ -158,5 +160,8 @@ export default async function uploadVideoToStorage({
       message: videoDbError?.message,
     })
 
-  return videoDb
+  return {
+    ...videoDb,
+    description: description ?? undefined,
+  }
 }
