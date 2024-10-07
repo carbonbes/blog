@@ -16,8 +16,6 @@ const {
   telegramApiStringSession,
 } = useRuntimeConfig()
 
-const { upload } = useCdn()
-
 type TelegramMediaArgs =
   | {
       supabase: Supabase
@@ -162,28 +160,41 @@ async function getTelegramPostData(
   }
 }
 
-async function uploadXMedia(media: string) {
-  const {
-    secure_url: url,
-    public_id,
-    format,
-    width,
-    height,
-    resource_type,
-  } = await upload(media)
+async function uploadXMedia(supabase: Supabase, mediaUrl: string) {
+  const blob = await $fetch<any>(mediaUrl)
+
+  if (!blob || !(blob instanceof Blob))
+    throw createError({
+      statusCode: 400,
+      message: 'Не удалось скачать медиафайл',
+    })
+
+  const buffer = Buffer.from(await blob.arrayBuffer())
+
+  const media = await uploadFileToStorage({ supabase, file: buffer })
+
+  const { name, url, width, height, thumbnail, duration, mime_type } = media
 
   return {
+    name,
     url,
-    ...(resource_type === 'video' && {
-      thumbnail: `https://res.cloudinary.com/dkmur8a20/video/upload/f_webp/${public_id}.${format}`,
-    }),
     width,
     height,
-    type: resource_type as 'image' | 'video',
+    thumbnail: thumbnail
+      ? {
+          name: thumbnail.name,
+          url: thumbnail.url,
+          width: thumbnail.width,
+          height: thumbnail.height,
+          mime_type: thumbnail.mime_type,
+        }
+      : undefined,
+    duration: duration ?? undefined,
+    mime_type: mime_type as MimeType,
   }
 }
 
-async function getXPostData(postId: string) {
+async function getXPostData(supabase: Supabase, postId: string) {
   const { guest_token } = await $fetch<{ guest_token: string }>(
     xApiGuestTokenUrl,
     {
@@ -217,25 +228,16 @@ async function getXPostData(postId: string) {
     }
   )
 
-  const avatar = (await upload(user.profile_image_url_https)).secure_url
+  const avatar = await uploadXMedia(supabase, user.profile_image_url_https)
 
-  let media:
-    | {
-        url: string
-        alt?: string
-        thumbnail?: string
-        width: number
-        height: number
-        type: 'image' | 'video'
-      }[]
-    | undefined = undefined
+  let media: StorageMedia[] | undefined = undefined
 
   if (tweet.entities.media) {
     media = (
       await Promise.all(
         tweet.entities.media.map(async (tweetMedia) => {
           if (tweetMedia.type === 'photo') {
-            return uploadXMedia(tweetMedia.media_url_https)
+            return uploadXMedia(supabase, tweetMedia.media_url_https)
           }
 
           if (['video', 'animated_gif'].includes(tweetMedia.type)) {
@@ -244,7 +246,7 @@ async function getXPostData(postId: string) {
                 tweetMedia.video_info!.variants.length - 1
               ].url
 
-            return uploadXMedia(videoUrl)
+            return uploadXMedia(supabase, videoUrl)
           }
         })
       )
@@ -258,7 +260,7 @@ async function getXPostData(postId: string) {
       username: user.screen_name,
       url: `https://x.com/${user.screen_name}`,
     },
-    text: tweet.full_text.replace(/https:\/\/t\.co\/\S+\s*$/gm, '').trim(),
+    text: tweet.full_text.replace(/https:\/\/t\.co\/\S+\s*$/gm, '').trim() || undefined,
     media,
     published: tweet.created_at,
   }
@@ -332,7 +334,7 @@ export default defineApiRoute(async ({ event, supabase }) => {
         /(?:https?:\/\/)?(?:www\.)?(?:twitter|x)\.com\/.+\/([0-9]{19})/gi
       const [, postId] = tweetIdRegexp.exec(url) || []
 
-      const post = await getXPostData(postId)
+      const post = await getXPostData(supabase, postId)
 
       return {
         author: post.author,

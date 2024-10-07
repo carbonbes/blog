@@ -14,8 +14,7 @@ function getMediaRoute({
   fileName: string
   type: 'image' | 'video'
 }) {
-  if (type === 'image') return imageRoute + `/${fileName}`
-  else return videoRoute + `/${fileName}`
+  return (type === 'image' ? imageRoute : videoRoute) + `/${fileName}`
 }
 
 export default async function uploadFileToStorage({
