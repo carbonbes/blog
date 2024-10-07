@@ -5,7 +5,6 @@ import { StringSession } from 'telegram/sessions/index.js'
 import { Api } from 'telegram/tl/index.js'
 import getFileFromBuffer from '~/utils/getFileFromBuffer'
 import uploadFileToStorage from '~/server/utils/uploadFileToStorage'
-import { MimeType } from 'file-type'
 
 const {
   xApiGuestTokenUrl,
@@ -72,27 +71,7 @@ async function uploadTelegramMedia(args: TelegramMediaArgs) {
 
   if (!file) return
 
-  const media = await uploadFileToStorage({ supabase, file: buffer })
-
-  const { name, url, width, height, thumbnail, duration, mime_type } = media
-
-  return {
-    name,
-    url,
-    width,
-    height,
-    thumbnail: thumbnail
-      ? {
-          name: thumbnail.name,
-          url: thumbnail.url,
-          width: thumbnail.width,
-          height: thumbnail.height,
-          mime_type: thumbnail.mime_type,
-        }
-      : undefined,
-    duration: duration ?? undefined,
-    mime_type: mime_type as MimeType,
-  }
+  return await uploadFileToStorage({ supabase, file: buffer })
 }
 
 async function getTelegramPostData(
@@ -171,27 +150,7 @@ async function uploadXMedia(supabase: Supabase, mediaUrl: string) {
 
   const buffer = Buffer.from(await blob.arrayBuffer())
 
-  const media = await uploadFileToStorage({ supabase, file: buffer })
-
-  const { name, url, width, height, thumbnail, duration, mime_type } = media
-
-  return {
-    name,
-    url,
-    width,
-    height,
-    thumbnail: thumbnail
-      ? {
-          name: thumbnail.name,
-          url: thumbnail.url,
-          width: thumbnail.width,
-          height: thumbnail.height,
-          mime_type: thumbnail.mime_type,
-        }
-      : undefined,
-    duration: duration ?? undefined,
-    mime_type: mime_type as MimeType,
-  }
+  return await uploadFileToStorage({ supabase, file: buffer })
 }
 
 async function getXPostData(supabase: Supabase, postId: string) {
@@ -260,7 +219,9 @@ async function getXPostData(supabase: Supabase, postId: string) {
       username: user.screen_name,
       url: `https://x.com/${user.screen_name}`,
     },
-    text: tweet.full_text.replace(/https:\/\/t\.co\/\S+\s*$/gm, '').trim() || undefined,
+    text:
+      tweet.full_text.replace(/https:\/\/t\.co\/\S+\s*$/gm, '').trim() ||
+      undefined,
     media,
     published: tweet.created_at,
   }

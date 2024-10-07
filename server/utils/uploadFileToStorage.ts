@@ -97,7 +97,14 @@ export default async function uploadFileToStorage({
       })
     }
 
-    return data
+    return {
+      name: data.name,
+      url: data.url,
+      width: data.width,
+      height: data.height,
+      mime_type: data.mime_type,
+      description: data.description ?? undefined,
+    }
   } else {
     const videoName = crypto.randomUUID()
     const thumbnailName = crypto.randomUUID()
@@ -220,6 +227,21 @@ export default async function uploadFileToStorage({
       })
     }
 
-    return videoDb
+    return {
+      name: videoDb.name,
+      url: videoDb.url,
+      width: videoDb.width,
+      height: videoDb.height,
+      duration: videoDb.duration,
+      mime_type: videoDb.mime_type,
+      description: videoDb.description ?? undefined,
+      thumbnail: {
+        name: videoDb.thumbnail.name,
+        url: videoDb.thumbnail.url,
+        width: videoDb.thumbnail.width,
+        height: videoDb.thumbnail.height,
+        mime_type: videoDb.thumbnail.mime_type,
+      },
+    }
   }
 }
