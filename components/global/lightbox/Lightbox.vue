@@ -1,12 +1,10 @@
 <template>
   <DialogRoot v-model:open="isOpen">
     <DialogPortal>
-      <Transition @enter="onOverlayOpen">
-        <DialogOverlay
-          class="fixed inset-0 transition-[background-color,backdrop-filter] duration-[333ms] z-[1] will-change-[background-color,backdrop-filter]"
-          :style="dialogOverlayStyles"
-        />
-      </Transition>
+      <DialogOverlay
+        class="fixed inset-0 transition-[background-color,backdrop-filter] duration-[333ms] z-[1] will-change-[background-color,backdrop-filter]"
+        :style="dialogOverlayStyles"
+      />
 
       <DialogContent
         aria-describedby=""
@@ -96,8 +94,16 @@ const { thumbnails } = useLightboxDialog()
 
 const isOpen = ref(false)
 
-function open() {
+const overlayBg = ref('')
+const overlayBlurSize = ref(0)
+const overlayPointerEvents = ref('auto')
+const dialogOverlayStyles = computed(() => `background-color: ${overlayBg.value}; backdrop-filter: blur(${overlayBlurSize.value}px); pointer-events: ${overlayPointerEvents.value}`)
+
+async function open() {
   isOpen.value = true
+  await promiseTimeout(0)
+  overlayBg.value = 'rgba(0, 0, 0, 0.5)',
+  overlayBlurSize.value = 4
 }
 
 async function close() {
@@ -107,16 +113,6 @@ async function close() {
   await promiseTimeout(300)
   isOpen.value = false
 }
-
-function onOverlayOpen() {
-  overlayBg.value = 'rgba(0, 0, 0, 0.5)',
-  overlayBlurSize.value = 4
-}
-
-const overlayBg = ref('')
-const overlayBlurSize = ref(0)
-const overlayPointerEvents = ref('auto')
-const dialogOverlayStyles = computed(() => `background-color: ${overlayBg.value}; backdrop-filter: blur(${overlayBlurSize.value}px); pointer-events: ${overlayPointerEvents.value}`)
 
 const swiperRef = ref<InstanceType<typeof Swiper>>()
   
@@ -156,6 +152,7 @@ function initLightbox() {
 
     if (item.dataset.wasClicked === '') {
       openItem(i)
+
       delete item.dataset.wasClicked
     }
 
