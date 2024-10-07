@@ -22,7 +22,7 @@ const props = withDefaults(
   defineProps<{
     fill?: boolean
     src: string
-    originalSrc?: string
+    name?: string
     alt?: string
     loading?: 'lazy' | 'eager'
     options?: ImageTransformOptions
@@ -61,7 +61,7 @@ const imageOptions = computed(() => {
 })
 
 const src = computed(
-  () => `${imageRoute}/${props.src}${imageOptions.value || ''}`
+  () => `${imageRoute}/${props.name}${imageOptions.value || ''}`
 )
 
 const { setItems } = useLightboxDialog()
@@ -73,7 +73,7 @@ const lightboxAttrs = computed(() => {
 
   return {
     'data-lightbox-item': true,
-    'data-lightbox-src': props.originalSrc,
+    'data-lightbox-src': props.src,
     'data-lightbox-alt': props.alt,
     'data-lightbox-width': props.originalWidth,
     'data-lightbox-height': props.originalHeight,

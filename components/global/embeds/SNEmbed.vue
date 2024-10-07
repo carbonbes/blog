@@ -12,7 +12,11 @@
           target="_blank"
           class="row-[1/2_span] col-[1] overflow-hidden rounded-full inner-border"
         >
-          <Image :src="embed.author.avatar!" class="w-full size-9" />
+          <Image
+            :src="embed.author.avatar.url"
+            :name="embed.author.avatar.name"
+            class="w-full size-9"
+          />
         </a>
         <Flex
           itemsCenter
@@ -60,7 +64,9 @@
 
       <Flex v-if="singleImage" center class="bg-gray-100">
         <Image
-          :src="singleImage.name"
+          :src="singleImage.url"
+          :name="singleImage.name"
+          :originalSrc="singleImage.name"
           :alt="singleImage.alt"
           :originalWidth="singleImage.width"
           :originalHeight="singleImage.height"
@@ -97,10 +103,11 @@ const singleImage = computed(() => {
     props.embed.media.length === 1 &&
     getFileTypeFromMimeType(props.embed.media[0].mime_type) === 'image'
   ) {
-    const { name, width, height, description: alt } = props.embed.media[0]
+    const { name, url, width, height, description: alt } = props.embed.media[0]
 
     return {
       name,
+      url,
       alt,
       width,
       height,

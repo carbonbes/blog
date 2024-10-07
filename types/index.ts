@@ -372,7 +372,7 @@ export type TwitterApiTweetResponse = {
 
 export type SNEmbed = {
   author: {
-    avatar: string
+    avatar: StorageMedia
     name: string
     username: string
     url: string

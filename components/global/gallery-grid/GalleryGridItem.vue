@@ -9,7 +9,8 @@
   >
     <Image
       v-if="type === 'image'"
-      :src="item.name"
+      :src="item.url"
+      :name="item.name"
       :alt="item.description"
       class="w-full h-full object-cover"
     />
@@ -45,11 +46,11 @@ const lightboxItemRef = ref<HTMLDivElement>()
 
 const lightboxAttrs = computed(() => ({
   'data-lightbox-item': true,
-  'data-lightbox-src': props.item.name,
+  'data-lightbox-src': props.item.url,
   'data-lightbox-alt': props.item.description,
   'data-lightbox-width': props.item.width,
   'data-lightbox-height': props.item.height,
-  'data-lightbox-type': props.item.mime_type,
+  'data-lightbox-type': type.value,
 }))
 
 const { setItems } = useLightboxDialog()
