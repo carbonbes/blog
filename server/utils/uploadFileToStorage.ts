@@ -204,7 +204,7 @@ export default async function uploadFileToStorage({
         mime_type: fileMimeType,
         description,
       })
-      .select()
+      .select('*, thumbnail(*)')
       .single()
 
     if (videoDbError) {

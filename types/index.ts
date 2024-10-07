@@ -53,8 +53,8 @@ export type StorageMedia = {
   mime_type: MimeType
   description?: string
   thumbnail?: {
-    url: string
     name: string
+    url: string
     width: number
     height: number
     mime_type: MimeType

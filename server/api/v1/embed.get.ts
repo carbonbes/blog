@@ -57,7 +57,7 @@ async function getTelegramChannelName(
     })
   )
 
-  return channelName
+  return channelName as string
 }
 
 async function uploadTelegramMedia(args: TelegramMediaArgs) {
@@ -76,14 +76,24 @@ async function uploadTelegramMedia(args: TelegramMediaArgs) {
 
   const media = await uploadFileToStorage({ supabase, file: buffer })
 
+  const { name, url, width, height, thumbnail, duration, mime_type } = media
+
   return {
-    name: media.name,
-    url: media.url,
-    width: media.width,
-    height: media.height,
-    thumbnail: media.thumbnail,
-    duration: media.duration,
-    mime_type: media.mime_type as MimeType,
+    name,
+    url,
+    width,
+    height,
+    thumbnail: thumbnail
+      ? {
+          name: thumbnail.name,
+          url: thumbnail.url,
+          width: thumbnail.width,
+          height: thumbnail.height,
+          mime_type: thumbnail.mime_type,
+        }
+      : undefined,
+    duration: duration ?? undefined,
+    mime_type: mime_type as MimeType,
   }
 }
 
@@ -278,24 +288,16 @@ export default defineApiRoute(async ({ event, supabase }) => {
 
       const telegram = await initTelegramClient()
 
-      const channelName = await getTelegramChannelName(
-        telegram,
-        channelUsername
-      )
-
-      const post = await getTelegramPostData(
-        supabase,
-        telegram,
-        channelUsername,
-        +postId
-      )
-
-      const authorAvatar = await uploadTelegramMedia({
-        supabase,
-        telegram,
-        channelUsername,
-        type: 'profile_photo',
-      })
+      const [authorAvatar, channelName, post] = await Promise.all([
+        uploadTelegramMedia({
+          supabase,
+          telegram,
+          channelUsername,
+          type: 'profile_photo',
+        }),
+        getTelegramChannelName(telegram, channelUsername),
+        getTelegramPostData(supabase, telegram, channelUsername, +postId),
+      ])
 
       if (!post)
         throw createError({
@@ -305,7 +307,7 @@ export default defineApiRoute(async ({ event, supabase }) => {
 
       return {
         author: {
-          avatar: authorAvatar?.url || null,
+          avatar: authorAvatar || null,
           name: channelName,
           username: channelUsername,
           url: `https://t.me/${channelUsername}`,
