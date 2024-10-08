@@ -2,13 +2,12 @@
   <Flex
     v-if="!isPlaying"
     center
-    class="relative bg-cover bg-center bg-no-repeat cursor-pointer group/overlay before:content-[''] before:absolute before:inset-0 before:bg-black/35 bg-gray-100/50"
+    class="relative bg-contain bg-center bg-no-repeat cursor-pointer group/overlay before:content-[''] before:absolute before:inset-0 before:bg-black/35 bg-gray-100/50"
     :class="[
-      size,
-      aspectRatio,
+      classes,
       {
         'cursor-zoom-in': zoomable || lightboxItem,
-      },
+      }
     ]"
     :style="{ backgroundImage: `url(${thumbnail}` }"
     v-bind="lightboxAttrs"
@@ -28,7 +27,7 @@
     :controls
     :playsinline="playsInline"
     :muted
-    :class="[size, aspectRatio]"
+    :class="classes"
   />
 </template>
 
@@ -46,20 +45,24 @@ const props = withDefaults(
     loop?: boolean
     controls?: boolean
     playsInline?: boolean
-    size?: string | object
-    aspectRatio?: string
     muted?: boolean
     zoomable?: boolean
     lightboxItem?: boolean
     parent?: HTMLElement
     ignoreThumbnailClick?: boolean
-    class?: string
+    classes?: string | object
   }>(),
   {
     muted: true,
     playsInline: true,
   }
 )
+
+const emits = defineEmits<{
+  playback: [void]
+  paused: [void]
+  ended: [void]
+}>()
 
 const isPlaying = ref(false)
 

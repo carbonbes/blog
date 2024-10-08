@@ -23,7 +23,7 @@
       :autoplay="isSingleItem"
       :controls="isSingleItem"
       :aspectRatio="isSingleItem ? 'aspect-video' : undefined"
-      size="w-full h-full"
+      classes="w-full h-full"
     />
   </div>
 </template>

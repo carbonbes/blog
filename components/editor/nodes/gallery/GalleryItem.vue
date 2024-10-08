@@ -52,10 +52,10 @@
         :controls="isSingle"
         :parent
         :lightboxItem="isGallery && item.uploaded"
-        :size="{
+        :classes="{
           'pointer-events-none opacity-50': state.loading,
           'w-full aspect-video': isSingle,
-          'w-20 h-20': isGallery,
+          'w-20 h-20 !bg-cover': isGallery
         }"
         ref="videoRef"
       />
@@ -145,20 +145,17 @@ watch(() => state.dragging, (v) => swipeEnabled.value = !v)
 
 function updateItem(data: StorageMedia) {
   const {
-    name,
     url: src,
     thumbnail,
     width,
     height,
-    description: alt
+    description
   } = data
 
   emits('uploaded', {
-    name,
     src,
-    originalSrc: src,
-    alt,
     thumbnail: thumbnail?.url,
+    description,
     width,
     height,
     type: props.item.type,

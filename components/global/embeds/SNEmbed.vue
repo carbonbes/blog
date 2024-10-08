@@ -81,7 +81,7 @@
         :originalHeight="singleVideo.height"
         autoplay
         controls
-        size="w-full h-80"
+        classes="w-full h-80"
       />
 
       <GalleryGrid v-else-if="gallery" :items="gallery.media" />
