@@ -139,6 +139,8 @@ const rootNode = Node.create({
           }
         }
 
+        if ($head.parent.textContent.trim() === '') return false
+
         let currentActiveNodeTo = -1
 
         doc.descendants((node, pos) => {
