@@ -29,7 +29,7 @@ const rootNode = Node.create({
           if (!attributes.pin) return
 
           return { 'data-pin': 'true' }
-        }
+        },
       },
 
       spoiler: {
@@ -40,7 +40,7 @@ const rootNode = Node.create({
           if (!attributes.spoiler) return
 
           return { 'data-spoiler': 'true' }
-        }
+        },
       },
     }
   },
@@ -100,7 +100,44 @@ const rootNode = Node.create({
 
         if (parent.type.name !== 'rootNode') return false
 
-        const textAfterCursor = parent.textBetween($head.parentOffset + 1, parent.content.size).trim()
+        const isHeading = $head.parent.type.name.startsWith('heading')
+        const isCursorAtEnd = from === to && to === $head.end()
+
+        if (isHeading) {
+          const contentAfterCursor = $head.parent.textBetween(
+            $head.parentOffset,
+            $head.parent.content.size
+          )
+
+          if (isCursorAtEnd) {
+            return editor
+              .chain()
+              .insertContentAt({ from, to }, { type: 'paragraph', content: [] })
+              .scrollIntoView()
+              .focus(to)
+              .run()
+          } else if (contentAfterCursor.length > 0) {
+            const contentBeforeCursor = $head.parent.textBetween(
+              0,
+              $head.parentOffset
+            )
+
+            return editor
+              .chain()
+              .deleteRange({ from, to: $head.end() })
+              .insertContentAt(
+                { from, to },
+                {
+                  type: $head.parent.type.name,
+                  attrs: { level: $head.parent.attrs.level },
+                  content: [{ type: 'text', text: contentAfterCursor }],
+                }
+              )
+              .scrollIntoView()
+              .focus(from + contentBeforeCursor.length)
+              .run()
+          }
+        }
 
         let currentActiveNodeTo = -1
 
