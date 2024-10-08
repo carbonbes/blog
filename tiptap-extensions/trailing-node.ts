@@ -22,17 +22,28 @@ const trailingNode = Extension.create({
 
             if (!lastNode) return false
 
-            const lastNodeDOM = view.nodeDOM(doc.content.size - lastNode.nodeSize) as HTMLElement | null
+            const lastNodeDOM = view.nodeDOM(
+              doc.content.size - lastNode.nodeSize
+            ) as HTMLElement | null
 
             if (!lastNodeDOM) return false
 
             if (lastNodeDOM) {
               const lastNodeRect = lastNodeDOM.getBoundingClientRect()
               const clickY = event.clientY
-    
+
               if (clickY > lastNodeRect.bottom) {
-                if (lastNode.textContent.trim() !== '') {
-                  const tr = state.tr.insert(doc.content.size, nodeType.create())
+                console.log(lastNode)
+
+                if (
+                  (lastNode.content.content[0].isTextblock &&
+                    lastNode.content.content[0].textContent.trim() !== '') ||
+                  !lastNode.content.content[0].isTextblock
+                ) {
+                  const tr = state.tr.insert(
+                    doc.content.size,
+                    nodeType.create()
+                  )
                   const newPos = tr.doc.content.size - 1
                   tr.setSelection(TextSelection.near(tr.doc.resolve(newPos)))
                   dispatch(tr)
