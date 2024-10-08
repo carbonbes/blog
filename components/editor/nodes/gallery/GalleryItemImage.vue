@@ -10,8 +10,8 @@
 
   <Image
     v-else-if="item.uploaded"
-    :src="item.name!"
-    :originalSrc="item.originalSrc"
+    :src="item.originalSrc"
+    :name="item.name"
     :alt="item.alt"
     :options="{ width: isGallery ? 160 : undefined, quality: 50 }"
     :originalWidth="item.width"

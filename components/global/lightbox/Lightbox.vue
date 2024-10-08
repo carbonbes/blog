@@ -101,7 +101,7 @@ const dialogOverlayStyles = computed(() => `background-color: ${overlayBg.value}
 
 async function open() {
   isOpen.value = true
-  await promiseTimeout(0)
+  await nextTick()
   overlayBg.value = 'rgba(0, 0, 0, 0.5)',
   overlayBlurSize.value = 4
 }
