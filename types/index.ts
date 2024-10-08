@@ -3,10 +3,10 @@ import {
   type AuthOtpResponse,
   type SupabaseClient,
 } from '@supabase/supabase-js'
-import type { UploadApiResponse } from 'cloudinary'
 import type { FunctionalComponent, SVGAttributes } from 'vue'
 import type { JSONContent } from '@tiptap/vue-3'
 import type { MimeType } from 'file-type'
+import type { Color, FitEnum, KernelEnum, Sharp } from 'sharp'
 
 export interface Response<T = {}> {
   success: boolean

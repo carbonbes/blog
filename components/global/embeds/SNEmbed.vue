@@ -14,7 +14,7 @@
         >
           <Image
             :src="embed.author.avatar.url"
-            class="w-full size-9"
+            class="size-9"
           />
         </a>
         <Flex
@@ -67,6 +67,7 @@
           :alt="singleImage.alt"
           :originalWidth="singleImage.width"
           :originalHeight="singleImage.height"
+          :options="{ quality: 50 }"
           zoomable
           class="w-fit max-h-80"
         />

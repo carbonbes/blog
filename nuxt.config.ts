@@ -16,10 +16,6 @@ export default defineNuxtConfig({
     supabaseUrl: env.NUXT_SUPABASE_URL,
     supabasekey: env.NUXT_SUPABASE_KEY,
 
-    cloudinaryCloudName: env.NUXT_CLOUDINARY_CLOUD_NAME,
-    cloudinaryApiKey: env.NUXT_CLOUDINARY_API_KEY,
-    cloudinaryApiSecret: env.NUXT_CLOUDINARY_API_SECRET,
-
     xApiGuestTokenUrl: env.NUXT_X_API_GUEST_TOKEN_URL,
     xApiAuthToken: env.NUXT_X_API_AUTH_TOKEN,
     xApiUrl: env.NUXT_X_API_URL,

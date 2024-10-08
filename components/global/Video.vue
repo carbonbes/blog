@@ -6,7 +6,7 @@
     :class="[
       classes,
       {
-        'cursor-zoom-in': zoomable || lightboxItem,
+        'cursor-zoom-in': zoomable || lightboxItem || ignoreThumbnailClick,
       }
     ]"
     :style="{ backgroundImage: `url(${thumbnail}` }"
