@@ -24,12 +24,16 @@
       class="bg-gray-100 rounded-xl overflow-hidden"
       :class="{ 'inner-border': isGallery }"
     >
-      <GalleryItemImage
+      <Image
         v-if="item.type === 'image'"
-        :item
+        :src="item.src"
+        :alt="item.description"
+        :options="{ width: isGallery ? 160 : undefined, quality: 50 }"
+        :originalWidth="item.width"
+        :originalHeight="item.height"
         :parent
-        :isSingle
-        :isGallery
+        :zoomable="isSingle"
+        :lightboxItem="isGallery"
         :class="{
           'pointer-events-none opacity-50': state.loading,
           'max-h-80': isSingle,
@@ -40,7 +44,7 @@
       <Video
         v-else-if="item.type === 'video'"
         :src="item.src"
-        :alt="item.alt"
+        :description="item.description"
         :thumbnail="item.thumbnail"
         :originalWidth="item.width"
         :originalHeight="item.height"
@@ -93,7 +97,6 @@
 import type { GalleryItem } from '~/components/editor/nodes/gallery/Gallery.vue'
 import type Video from '~/components/global/Video.vue'
 import type { StorageMedia } from '~/types'
-import GalleryItemImage from '~/components/editor/nodes/gallery/GalleryItemImage.vue'
 
 const props = defineProps<{
   item: GalleryItem

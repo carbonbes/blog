@@ -46,14 +46,14 @@
 </template>
 
 <script lang="ts" setup>
-import type { Item } from '~/components/global/lightbox/Lightbox.vue'
+import type { LightboxItem } from '~/components/global/lightbox/Lightbox.vue'
 import { vIntersectionObserver } from '@vueuse/components'
 import type Swiper from 'swiper'
 import { promiseTimeout } from '@vueuse/core'
 import SwiperSlide from '~/components/global/swiper/SwiperSlide.vue'
 
 const props = defineProps<{
-  item: Item
+  item: LightboxItem
   thumbnail: HTMLElement
   isActiveSlide: boolean
   swiper: Swiper
@@ -69,7 +69,7 @@ const {
   isResizing: screenIsResizing
 } = useWindowResizing()
 
-const isImage = computed(() => ['image', 'gif'].includes(props.item.type))
+const isImage = computed(() => props.item.type === 'image')
 
 const prevSlideControlRef = ref<HTMLElement>()
 const nextSlideControlRef = ref<HTMLElement>()

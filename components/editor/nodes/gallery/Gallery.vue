@@ -85,11 +85,9 @@ import type { MimeType } from 'file-type'
 import Draggable from 'vuedraggable'
 
 export type GalleryItem = {
-  name?: string
   id?: string
   src: string
-  originalSrc?: string
-  alt?: string
+  description?: string
   thumbnail?: string
   width?: number
   height?: number

@@ -10,15 +10,14 @@
     <Image
       v-if="type === 'image'"
       :src="item.url"
-      :name="item.name"
       :alt="item.description"
       class="w-full h-full object-cover"
     />
 
     <Video
       v-else-if="type === 'video'"
-      :src="item.name"
-      :alt="item.description"
+      :src="item.url"
+      :description="item.description"
       :thumbnail="item.thumbnail?.url"
       ignoreThumbnailClick
       :autoplay="isSingleItem"

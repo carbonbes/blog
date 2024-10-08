@@ -38,7 +38,7 @@ import type Flex from '~/components/global/Flex.vue'
 const props = withDefaults(
   defineProps<{
     src?: string
-    alt?: string
+    description?: string
     thumbnail?: string
     originalWidth?: number
     originalHeight?: number
@@ -69,7 +69,7 @@ const lightboxAttrs = computed(() => {
   return {
     'data-lightbox-item': true,
     'data-lightbox-src': props.src,
-    'data-lightbox-alt': props.alt,
+    'data-lightbox-alt': props.description,
     'data-lightbox-thumbnail': props.thumbnail,
     'data-lightbox-width': props.originalWidth,
     'data-lightbox-height': props.originalHeight,

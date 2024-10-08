@@ -14,7 +14,6 @@
         >
           <Image
             :src="embed.author.avatar.url"
-            :name="embed.author.avatar.name"
             class="w-full size-9"
           />
         </a>
@@ -65,8 +64,6 @@
       <Flex v-if="singleImage" center class="bg-gray-100">
         <Image
           :src="singleImage.url"
-          :name="singleImage.name"
-          :originalSrc="singleImage.name"
           :alt="singleImage.alt"
           :originalWidth="singleImage.width"
           :originalHeight="singleImage.height"
@@ -78,7 +75,7 @@
       <Video
         v-else-if="singleVideo"
         :src="singleVideo.name"
-        :alt="singleVideo.alt"
+        :description="singleVideo.alt"
         :thumbnail="singleVideo.thumbnail!.name"
         :originalWidth="singleVideo.width"
         :originalHeight="singleVideo.height"

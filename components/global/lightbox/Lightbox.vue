@@ -81,13 +81,13 @@ import Flex from '~/components/global/Flex.vue'
 import type Swiper from '~/components/global/swiper/Swiper.vue'
 import { promiseTimeout } from '@vueuse/core'
 
-export type Item = {
+export type LightboxItem = {
   src: string
   alt?: string
   thumbnail?: string
   width: number
   height: number
-  type: 'image' | 'video' | 'gif'
+  type: 'image' | 'video'
 }
 
 const { thumbnails } = useLightboxDialog()
@@ -122,7 +122,7 @@ const swiper = computed(() => {
   return swiperRef.value.swiper
 })
 
-const items = ref<Item[]>()
+const items = ref<LightboxItem[]>()
 const isSingleItem = computed(() => items.value?.length === 1)
 const activeItemIndex = ref(0)
 
@@ -145,7 +145,7 @@ function previousItem() {
 function initLightbox() {
   if (!thumbnails.value) return
 
-  items.value = thumbnails.value?.map((item, i): Item => {
+  items.value = thumbnails.value?.map((item, i): LightboxItem => {
     const thumbnailEl = item as HTMLElement
 
     useEventListener(item, 'click', () => openItem(i))
@@ -172,7 +172,7 @@ function initLightbox() {
       width,
       height,
       type,
-    } as unknown as Item
+    } as unknown as LightboxItem
   })
 }
 

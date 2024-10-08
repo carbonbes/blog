@@ -1,6 +1,6 @@
 <template>
   <NuxtImg
-    :src
+    :src="src.optimized || src.original"
     :alt
     :loading
     class="object-contain"
@@ -22,7 +22,6 @@ const props = withDefaults(
   defineProps<{
     fill?: boolean
     src: string
-    name?: string
     alt?: string
     loading?: 'lazy' | 'eager'
     options?: ImageTransformOptions
@@ -60,9 +59,24 @@ const imageOptions = computed(() => {
   return queryString ? `?${queryString}` : undefined
 })
 
-const src = computed(
-  () => `${imageRoute}/${props.name}${imageOptions.value || ''}`
-)
+const src = computed(() => {
+  const imageRouteRegex =
+    /^https?:\/\/[a-zA-Z0-9.-]+(?::\d+)?\/media\/image\/([a-f0-9-]{36})$/
+
+  const match = props.src.match(imageRouteRegex)
+
+  if (match) {
+    const imageUuid = match[1]
+
+    return {
+      original: props.src,
+      optimized: `${imageRoute}/${imageUuid}${imageOptions.value || ''}`,
+    }
+  } else
+    return {
+      original: props.src,
+    }
+})
 
 const { setItems } = useLightboxDialog()
 
@@ -73,7 +87,7 @@ const lightboxAttrs = computed(() => {
 
   return {
     'data-lightbox-item': true,
-    'data-lightbox-src': props.src,
+    'data-lightbox-src': src.value.original,
     'data-lightbox-alt': props.alt,
     'data-lightbox-width': props.originalWidth,
     'data-lightbox-height': props.originalHeight,
