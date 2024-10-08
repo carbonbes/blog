@@ -74,6 +74,7 @@ export type DropdownItem = {
   hide?: boolean
   subitems?: DropdownItem[]
   group?: DropdownItem[]
+  class?: string | object
 }
 
 export type EmbedType = 'youtube' | 'x' | 'telegram'

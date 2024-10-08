@@ -5,7 +5,7 @@
       contentEditable="false"
     >
       <NodesListDropdown @isOpen="onOpen" />
-      <NodeActionsButton :pos="getPos()" :nodeAttrs="node.attrs" @onOpen="onOpen" />
+      <NodeActionsDropdown :pos="getPos()" :nodeAttrs="selectedNodeAttrs" @onOpen="onOpen" />
     </Flex>
 
     <Flex
@@ -96,7 +96,7 @@
 <script lang="ts" setup>
 import { NodeViewWrapper, NodeViewContent, type NodeViewProps } from '@tiptap/vue-3'
 import NodesListDropdown from '~/components/editor/nodes/root-node/NodesListDropdown.vue'
-import NodeActionsButton from '~/components/editor/nodes/root-node/NodeActionsButton.vue'
+import NodeActionsDropdown from '~/components/editor/nodes/root-node/NodeActionsDropdown.vue'
 import NodesListBottomsheet from '~/components/editor/nodes/root-node/NodesListBottomsheet.vue'
 import NodeActionsBottomsheet from '~/components/editor/nodes/root-node/NodeActionsBottomsheet.vue'
 import type Flex from '~/components/global/Flex.vue'
@@ -106,7 +106,8 @@ const props = defineProps<NodeViewProps>()
 const {
   selectionIsEmpty,
   setNodeSelection,
-  toggleNodeAttribute
+  toggleNodeAttribute,
+  selectedNodeAttrs
 } = useEditor()
 
 const nodeType = computed<string>(() => props.node.content.content[0].type.name)

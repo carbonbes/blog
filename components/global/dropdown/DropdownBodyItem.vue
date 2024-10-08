@@ -4,7 +4,7 @@
     tag="button"
     itemsCenter
     class="py-1.5 px-2.5 w-full gap-3 rounded-lg hover:bg-gray-200/75 [&.active]:bg-blue-100 [&.active]:text-blue-500 disabled:pointer-events-none disabled:opacity-50 transition-colors"
-    :class="{ active: item.active }"
+    :class="[item.class, { active: item.active }]"
     :disabled="item.disabled"
     @click="item.action"
   >
@@ -18,7 +18,7 @@
         tag="button"
         itemsCenter
         class="py-1.5 px-2.5 w-full gap-3 rounded-lg hover:bg-gray-200/75 [&.active]:bg-blue-100 data-[state=open]:bg-blue-50 [&.active]:text-blue-500 disabled:pointer-events-none disabled:opacity-50 transition-colors"
-        :class="{ active: item.active }"
+        :class="[item.class, { active: item.active }]"
         :disabled="item.disabled"
         @click="item.action"
       >

@@ -1,6 +1,6 @@
 <template>
   <ScrollArea scrollAreaClass="editor-scrollable-container" :disableScroll>
-    <EditorContent :editor class="editor" />
+    <EditorContent :editor class="editor h-full" />
   </ScrollArea>
 
   <EditorInlineToolsPopover />
@@ -30,7 +30,7 @@ watch(data, () => emit('update', data.value!))
 <style lang="sass" scoped>
 :deep()
   .tiptap
-    padding-bottom: 25vh
+    height: 100%
     outline: none
 
     @media (min-width: 780px)
