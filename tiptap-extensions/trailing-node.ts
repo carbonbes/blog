@@ -33,8 +33,6 @@ const trailingNode = Extension.create({
               const clickY = event.clientY
 
               if (clickY > lastNodeRect.bottom) {
-                console.log(lastNode)
-
                 if (
                   (lastNode.content.content[0].isTextblock &&
                     lastNode.content.content[0].textContent.trim() !== '') ||
