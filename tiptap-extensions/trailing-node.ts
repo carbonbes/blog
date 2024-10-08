@@ -14,45 +14,21 @@ const trailingNode = Extension.create({
       new Plugin({
         key: plugin,
 
-        props: {
-          handleClick: (view, pos, event) => {
-            const { state, dispatch } = view
-            const { doc } = state
-            const lastNode = doc.lastChild
+        appendTransaction(transactions, oldState, newState) {
+          const { doc, tr } = newState
+          const lastNode = doc.lastChild
 
-            if (!lastNode) return false
+          if (!lastNode) return false
 
-            const lastNodeDOM = view.nodeDOM(
-              doc.content.size - lastNode.nodeSize
-            ) as HTMLElement | null
+          const lastNodeIsNotTextBlock = !lastNode.content.content[0].isTextblock
+          const lastNodeIsTextBlock = lastNode.content.content[0].isTextblock
+          const lastNodeIsNotEmpty = lastNode.content.content[0].textContent.trim() !== ''
 
-            if (!lastNodeDOM) return false
+          if ((lastNodeIsTextBlock && lastNodeIsNotEmpty) || lastNodeIsNotTextBlock) {
+            return tr.insert(doc.content.size, nodeType.create())
+          }
 
-            if (lastNodeDOM) {
-              const lastNodeRect = lastNodeDOM.getBoundingClientRect()
-              const clickY = event.clientY
-
-              if (clickY > lastNodeRect.bottom) {
-                if (
-                  (lastNode.content.content[0].isTextblock &&
-                    lastNode.content.content[0].textContent.trim() !== '') ||
-                  !lastNode.content.content[0].isTextblock
-                ) {
-                  const tr = state.tr.insert(
-                    doc.content.size,
-                    nodeType.create()
-                  )
-                  const newPos = tr.doc.content.size - 1
-                  tr.setSelection(TextSelection.near(tr.doc.resolve(newPos)))
-                  dispatch(tr)
-
-                  return true
-                }
-              }
-            }
-
-            return false
-          },
+          return null
         },
       }),
     ]
