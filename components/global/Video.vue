@@ -14,7 +14,7 @@
     ref="thumbnailRef"
     @click="onThumbnailClick"
   >
-    <div class="p-3 w-fit bg-black/50 rounded-full backdrop-blur-[2px]">
+    <div class="p-3 w-fit bg-black/50 rounded-full backdrop-blur-[2px] inner-border">
       <ITablerPlayerPlay class="text-white [&>path]:fill-white" />
     </div>
   </Flex>
