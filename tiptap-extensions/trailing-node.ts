@@ -1,7 +1,6 @@
 import { Extension } from '@tiptap/core'
 import { PluginKey } from '@tiptap/pm/state'
 import { Plugin } from 'prosemirror-state'
-import { TextSelection } from 'prosemirror-state'
 
 const trailingNode = Extension.create({
   name: 'trailing-node',
@@ -18,7 +17,7 @@ const trailingNode = Extension.create({
           const { doc, tr } = newState
           const lastNode = doc.lastChild
 
-          if (!lastNode) return false
+          if (!lastNode) return
 
           const lastNodeIsNotTextBlock = !lastNode.content.content[0].isTextblock
           const lastNodeIsTextBlock = lastNode.content.content[0].isTextblock
@@ -28,7 +27,7 @@ const trailingNode = Extension.create({
             return tr.insert(doc.content.size, nodeType.create())
           }
 
-          return null
+          return
         },
       }),
     ]
