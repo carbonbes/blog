@@ -30,6 +30,7 @@ watch(data, () => emit('update', data.value!))
 <style lang="sass" scoped>
 :deep()
   .tiptap
+    padding-bottom: 15vh
     height: 100%
     outline: none
 
