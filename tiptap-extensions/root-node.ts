@@ -95,7 +95,7 @@ const rootNode = Node.create({
       from: number,
       to: number,
       editor: Editor
-    ): boolean {
+    ) {
       const isHeading = $head.parent.type.name.startsWith('heading')
       const isCursorAtEnd = from === to && to === $head.end()
 
@@ -107,21 +107,14 @@ const rootNode = Node.create({
       )
 
       if (isCursorAtEnd) {
-        editor
+        return editor
           .chain()
           .insertContentAt({ from, to }, { type: 'paragraph', content: [] })
           .scrollIntoView()
           .focus(to)
           .run()
-
-        return true
       } else if (contentAfterCursor.length > 0) {
-        const contentBeforeCursor = $head.parent.textBetween(
-          0,
-          $head.parentOffset
-        )
-
-        editor
+        return editor
           .chain()
           .deleteRange({ from, to: $head.end() })
           .insertContentAt(
@@ -133,20 +126,16 @@ const rootNode = Node.create({
             }
           )
           .scrollIntoView()
-          .focus(from + contentBeforeCursor.length)
+          .focus(from + 4)
           .run()
-
-        return true
-      }
-
-      return false
+      } else return false
     }
 
     function moveCursorToNextEmptyNode(
       doc: Editor['state']['doc'],
       from: number,
       editor: Editor
-    ): boolean {
+    ) {
       let nextNodePos: number | null = null
 
       doc.descendants((node, pos) => {
