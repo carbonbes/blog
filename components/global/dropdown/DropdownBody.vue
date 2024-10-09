@@ -11,7 +11,7 @@
               />
             </Flex>
 
-            <Separator class="mx-2.5 h-[1px] bg-gray-200" />
+            <Separator class="mx-2.5 h-[1px] bg-gray-200/75" />
           </Flex>
 
           <DropdownBodyItem v-else :item />

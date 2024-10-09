@@ -19,11 +19,10 @@ const trailingNode = Extension.create({
 
           if (!lastNode) return
 
-          const lastNodeIsNotTextBlock = !lastNode.content.content[0].isTextblock
           const lastNodeIsTextBlock = lastNode.content.content[0].isTextblock
-          const lastNodeIsNotEmpty = lastNode.content.content[0].textContent.trim() !== ''
+          const lastNodeIsEmpty = lastNode.content.content[0].textContent.trim() === ''
 
-          if ((lastNodeIsTextBlock && lastNodeIsNotEmpty) || lastNodeIsNotTextBlock) {
+          if ((lastNodeIsTextBlock && !lastNodeIsEmpty) || !lastNodeIsTextBlock) {
             return tr.insert(doc.content.size, nodeType.create())
           }
 

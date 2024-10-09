@@ -90,16 +90,17 @@ const rootNode = Node.create({
   },
 
   addKeyboardShortcuts() {
-    function handleHeadingEnter(
+    function handleEnter(
       $head: ResolvedPos,
       from: number,
       to: number,
       editor: Editor
     ) {
       const isHeading = $head.parent.type.name.startsWith('heading')
+      const isParagraph = $head.parent.type.name === 'paragraph'
       const isCursorAtEnd = from === to && to === $head.end()
 
-      if (!isHeading) return false
+      if (!isHeading && !isParagraph) return false
 
       const contentAfterCursor = $head.parent.textBetween(
         $head.parentOffset,
@@ -121,14 +122,16 @@ const rootNode = Node.create({
             { from, to },
             {
               type: $head.parent.type.name,
-              attrs: { level: $head.parent.attrs.level },
+              attrs: isHeading ? { level: $head.parent.attrs.level } : {},
               content: [{ type: 'text', text: contentAfterCursor }],
             }
           )
           .scrollIntoView()
           .focus(from + 4)
           .run()
-      } else return false
+      }
+
+      return false
     }
 
     function moveCursorToNextEmptyNode(
@@ -144,6 +147,7 @@ const rootNode = Node.create({
 
           return false
         }
+
         return true
       })
 
@@ -151,12 +155,10 @@ const rootNode = Node.create({
         const nextNode = doc.nodeAt(nextNodePos)
 
         if (nextNode && nextNode.textContent.trim() === '') {
-          editor
+          return editor
             .chain()
             .focus(nextNodePos + 2)
             .run()
-
-          return true
         }
       }
 
@@ -185,7 +187,7 @@ const rootNode = Node.create({
 
       const content = doc.slice(from, currentActiveNodeTo)?.toJSON().content
 
-      editor
+      return editor
         .chain()
         .insertContentAt(
           { from, to: currentActiveNodeTo },
@@ -197,8 +199,6 @@ const rootNode = Node.create({
         .scrollIntoView()
         .focus(from + 4)
         .run()
-
-      return true
     }
 
     return {
@@ -209,11 +209,11 @@ const rootNode = Node.create({
         } = editor.state
 
         const parent = $head.node($head.depth - 1)
-        if (parent?.type.name !== 'rootNode') return false
 
-        if ($head.parent.textContent.trim() === '') return false
+        if (parent.type.name !== 'rootNode') return false
+        if (parent.textContent.trim() === '') return false
 
-        if (handleHeadingEnter($head, from, to, editor)) {
+        if (handleEnter($head, from, to, editor)) {
           return true
         }
 
