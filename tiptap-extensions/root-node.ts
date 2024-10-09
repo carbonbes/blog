@@ -10,7 +10,7 @@ const rootNode = Node.create({
 
   group: 'rootNode',
 
-  content: 'block',
+  content: '(heading | block)',
 
   draggable: true,
 
@@ -90,14 +90,15 @@ const rootNode = Node.create({
   },
 
   addKeyboardShortcuts() {
-    function handleEnter(
+    function handleTextNodeEnter(
+      doc: Editor['state']['doc'],
       $head: ResolvedPos,
       from: number,
       to: number,
       editor: Editor
     ) {
-      const isHeading = $head.parent.type.name.startsWith('heading')
-      const isParagraph = $head.parent.type.name === 'paragraph'
+      const isHeading = $head.parent?.type.name.startsWith('heading')
+      const isParagraph = $head.parent?.type.name === 'paragraph'
       const isCursorAtEnd = from === to && to === $head.end()
 
       if (!isHeading && !isParagraph) return false
@@ -108,12 +109,47 @@ const rootNode = Node.create({
       )
 
       if (isCursorAtEnd) {
-        return editor
-          .chain()
-          .insertContentAt({ from, to }, { type: 'paragraph', content: [] })
-          .scrollIntoView()
-          .focus(to)
-          .run()
+        let nextNodePos: number | null = null
+
+        doc.descendants((node, pos) => {
+          if (pos === from + 2 && node.type.name === 'rootNode') {
+            nextNodePos = pos
+
+            return false
+          }
+
+          return true
+        })
+
+        if (nextNodePos !== null) {
+          const nextNode = doc.nodeAt(nextNodePos)?.firstChild
+
+          if (
+            nextNode &&
+            (nextNode.type.name === 'paragraph' ||
+              nextNode.type.name.startsWith('heading')) &&
+            nextNode.textContent.trim() === ''
+          ) {
+            return editor
+              .chain()
+              .focus(from + 4)
+              .run()
+          } else {
+            return editor
+              .chain()
+              .insertContentAt({ from, to }, { type: 'paragraph', content: [] })
+              .scrollIntoView()
+              .focus(to)
+              .run()
+          }
+        } else {
+          return editor
+            .chain()
+            .insertContentAt({ from, to }, { type: 'paragraph', content: [] })
+            .scrollIntoView()
+            .focus(to)
+            .run()
+        }
       } else if (contentAfterCursor.length > 0) {
         return editor
           .chain()
@@ -213,7 +249,7 @@ const rootNode = Node.create({
         if (parent.type.name !== 'rootNode') return false
         if (parent.textContent.trim() === '') return false
 
-        if (handleEnter($head, from, to, editor)) {
+        if (handleTextNodeEnter(doc, $head, from, to, editor)) {
           return true
         }
 
