@@ -1,4 +1,5 @@
 import type Dialog from '~/components/global/Dialog.vue'
+import type { Article } from '~/types'
 
 export default function useEditorDialog(
   dialogRef?: Ref<InstanceType<typeof Dialog> | undefined>
@@ -28,5 +29,16 @@ export default function useEditorDialog(
     dialogRef.value.setOpen(route.query.dialog === 'editor')
   })
 
-  return { setOpen }
+  const state = useState(
+    (): {
+      status: Article['status']
+      pending: boolean
+    } =>
+      reactive({
+        status: 'draft',
+        pending: false,
+      })
+  )
+
+  return { setOpen, state }
 }

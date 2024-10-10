@@ -4,7 +4,7 @@
     @close="setOpen(false)"
     ref="dialogRef"
   >
-    <Editor />
+    <Editor :data="article?.body" @update="updateHandler" />
 
     <template #footer>
       <EditorPanel />
@@ -15,8 +15,94 @@
 <script lang="ts" setup>
 import type Dialog from '~/components/global/Dialog.vue'
 import type Editor from '~/components/editor/Editor.client.vue'
+import type { ArticleContent } from '~/types'
 
 const dialogRef = ref<InstanceType<typeof Dialog>>()
 
-const { setOpen } = useEditorDialog(dialogRef)
+const { setOpen, state } = useEditorDialog(dialogRef)
+
+const route = useRoute()
+
+const articleId = computed(
+  () => route.query.articleId as unknown as number | undefined
+)
+
+const { data: article, error } = await useAsyncData(async () =>
+  articleId.value ? await getArticle(articleId.value) : undefined
+)
+
+if (error.value) {
+  throw createError({
+    statusCode: error.value.statusCode,
+    message: error.value.message,
+  })
+}
+
+const updateHandler = useDebounceFn(async (body: ArticleContent) => {
+  if (!article.value) {
+    article.value = await create(body)
+  } else {
+    article.value = await update(article.value.id, body)
+  }
+}, 500)
+
+const { errorNotify } = useNotifications()
+
+async function create(body: ArticleContent) {
+  state.value.pending = true
+
+  try {
+    const newArticle = await createArticle(body)
+
+    if (!newArticle) {
+      throw createError({
+        statusCode: 400,
+        message: 'Не удалось создать пост',
+        fatal: false,
+      })
+    }
+
+    await navigateTo(
+      {
+        path: route.path,
+        query: {
+          dialog: 'editor',
+          articleId: `${newArticle.id}-${newArticle.title_slug}`,
+        },
+      },
+      { replace: true }
+    )
+
+    return newArticle
+  } catch (error: any) {
+    errorNotify({
+      text: error.message,
+    })
+  } finally {
+    state.value.pending = false
+  }
+}
+
+async function update(id: number, body: ArticleContent) {
+  state.value.pending = true
+  try {
+    const updatedArticle = await updateArticle(id, body)
+
+    if (!updatedArticle) {
+      throw createError({
+        statusCode: 400,
+        message: 'Не удалось обновить пост',
+        fatal: false,
+      })
+    }
+
+    return updatedArticle
+  } catch (error: any) {
+    errorNotify({
+      text: error.message,
+    })
+  } finally {
+    state.value.pending = false
+  }
+}
 </script>

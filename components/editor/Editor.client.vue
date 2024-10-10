@@ -11,7 +11,7 @@ import { EditorContent } from '@tiptap/vue-3'
 import type { ArticleContent } from '~/types'
 
 const props = defineProps<{
-  data?: ArticleContent
+  data: ArticleContent | undefined
   disableScroll?: boolean
 }>()
 

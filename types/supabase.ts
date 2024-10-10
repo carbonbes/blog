@@ -40,6 +40,7 @@ export type Database = {
           body: Json
           created_at: string
           id: number
+          status: Database['public']['Enums']['article-status']
           title: string | null
           title_slug: string
           updated_at: string
@@ -49,6 +50,7 @@ export type Database = {
           body: Json
           created_at?: string
           id?: number
+          status?: Database['public']['Enums']['article-status']
           title?: string | null
           title_slug: string
           updated_at?: string
@@ -58,6 +60,7 @@ export type Database = {
           body?: Json
           created_at?: string
           id?: number
+          status?: Database['public']['Enums']['article-status']
           title?: string | null
           title_slug?: string
           updated_at?: string
@@ -214,7 +217,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      'article-status': 'draft' | 'published' | 'scheduled'
     }
     CompositeTypes: {
       [_ in never]: never

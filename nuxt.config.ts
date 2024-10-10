@@ -9,7 +9,7 @@ const env = { ...process.env, ...loadEnv('', process.cwd()) }
 
 export default defineNuxtConfig({
   devtools: {
-    enabled: true,
+    enabled: false,
   },
 
   runtimeConfig: {

@@ -6,6 +6,7 @@ import {
   type Article,
   type StorageMedia,
   type SNEmbed,
+  type ArticleContent,
 } from '~/types/index'
 
 export async function signIn(body: { email: string }) {
@@ -15,20 +16,14 @@ export async function signIn(body: { email: string }) {
   })
 }
 
-export async function signUp(body: {
-  email: string
-  name: string
-}) {
+export async function signUp(body: { email: string; name: string }) {
   return await $fetch<Response<AuthResponse>>('/api/v1/auth/signup', {
     method: 'POST',
     body,
   })
 }
 
-export async function verifyOtp(body: {
-  email: string
-  token: string
-}) {
+export async function verifyOtp(body: { email: string; token: string }) {
   return await $fetch<Response<VerifyOtpResponse>>('/api/v1/auth/verify_otp', {
     method: 'POST',
     body,
@@ -46,7 +41,9 @@ export async function logout() {
 }
 
 export async function getProfileArticles(profileId: string) {
-  return await $fetch<Response<Article[]>>(`/api/v1/profile/${profileId}/articles`)
+  return await $fetch<Response<Article[]>>(
+    `/api/v1/profile/${profileId}/articles`
+  )
 }
 
 export async function uploadMediaByFile(file: File) {
@@ -68,6 +65,30 @@ export async function uploadMediaByUrl(url: string) {
 
 export async function getEmbed(url: string) {
   return await $fetch<Response<SNEmbed>>('/api/v1/embed', {
-    query: { url }
+    query: { url },
   })
+}
+
+export async function createArticle(body: ArticleContent) {
+  return (
+    await $fetch<Response<Article>>('/api/v1/article/create', {
+      method: 'POST',
+      body,
+    })
+  ).data
+}
+
+export async function updateArticle(id: number, body: ArticleContent) {
+  return (
+    await $fetch<Response<Article>>('/api/v1/article/update', {
+      method: 'PATCH',
+      body: { id, body },
+    })
+  ).data
+}
+
+export async function getArticle(id: number) {
+  return (
+    await $fetch<Response<Article>>(`/api/v1/article/${id}`)
+  ).data
 }

@@ -75,9 +75,9 @@
 
       <Video
         v-else-if="singleVideo"
-        :src="singleVideo.name"
+        :src="singleVideo.url"
         :description="singleVideo.alt"
-        :thumbnail="singleVideo.thumbnail!.name"
+        :thumbnail="singleVideo.thumbnail!.url"
         :originalWidth="singleVideo.width"
         :originalHeight="singleVideo.height"
         autoplay
@@ -120,7 +120,7 @@ const singleVideo = computed(() => {
     getFileTypeFromMimeType(props.embed.media[0].mime_type) === 'video'
   ) {
     const {
-      name,
+      url,
       thumbnail,
       width,
       height,
@@ -128,7 +128,7 @@ const singleVideo = computed(() => {
     } = props.embed.media[0]
 
     return {
-      name,
+      url,
       alt,
       thumbnail,
       width,

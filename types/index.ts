@@ -6,7 +6,6 @@ import {
 import type { FunctionalComponent, SVGAttributes } from 'vue'
 import type { JSONContent } from '@tiptap/vue-3'
 import type { MimeType } from 'file-type'
-import type { Color, FitEnum, KernelEnum, Sharp } from 'sharp'
 
 export interface Response<T = {}> {
   success: boolean
@@ -28,7 +27,10 @@ export type VerifyOtpResponse = AuthOtpResponse
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
-export type Article = Database['public']['Tables']['articles']['Row']
+export type Article = Omit<
+  Database['public']['Tables']['articles']['Row'],
+  'body'
+> & { body: ArticleContent | undefined }
 
 export type NodeType =
   | 'heading'
