@@ -2,7 +2,7 @@ import type { Profile } from '~/types'
 
 export default function useMe() {
   const pending = useState('pending', () => false)
-  const profile = useState<Profile | null>('profile', () => null)
+  const user = useState<Profile | null>('user', () => null)
   const isAuthenticated = useState('is-authenticated', () => false)
 
   async function getMe() {
@@ -12,14 +12,14 @@ export default function useMe() {
 
     if (!data.value || error.value) return
 
-    profile.value = data.value.data!
+    user.value = data.value.data!
     isAuthenticated.value = true
   }
 
   async function logoutMe() {
     try {
       await logout()
-      profile.value = null
+      user.value = null
       isAuthenticated.value = false
       await navigateTo('/login')
     } catch (error) {
@@ -27,5 +27,5 @@ export default function useMe() {
     }
   }
 
-  return { pending, profile, isAuthenticated, getMe, logoutMe }
+  return { pending, user, isAuthenticated, getMe, logoutMe }
 }

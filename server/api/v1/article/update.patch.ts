@@ -1,27 +1,25 @@
-import { ArticleContent } from '~/types'
 import getSlug from '~/utils/getSlug'
+import { z, useSafeValidatedBody } from 'h3-zod'
+import DocSchema from '~/server/schema/articleDoc'
+import findTitle from '~/server/utils/findTitle'
 
 export default defineApiRoute(
-  async ({ event, supabase, profile }) => {
-    const {
-      id,
-      body,
-    }: {
-      id: number
-      body: ArticleContent | undefined
-    } = await readBody(event)
+  async ({ event, supabase, user }) => {
+    const body = await useSafeValidatedBody(
+      event,
+      z.object({ id: z.number(), body: DocSchema })
+    )
 
-    if (!(id && body)) {
+    if (!body.success) {
       throw createError({
         statusCode: 400,
-        message: 'Заполните все необходимые поля',
+        message: 'Неправильная структура объекта поста',
       })
     }
 
-    const title =
-      body.content?.find((node) => node.content![0].type?.startsWith('heading'))
-        ?.content![0].text || `Запись пользователя ${profile!.name}`
+    const { id, body: articleBody } = body.data
 
+    const title = findTitle(articleBody) || `Запись пользователя ${user!.name}`
     const titleSlug = getSlug(title)
 
     const { data, error } = await supabase
@@ -29,7 +27,7 @@ export default defineApiRoute(
       .update({
         title,
         title_slug: titleSlug,
-        body,
+        body: articleBody,
       })
       .eq('id', id)
       .select()

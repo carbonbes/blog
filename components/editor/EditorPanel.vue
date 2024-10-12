@@ -19,12 +19,12 @@
     </UIButton>
 
     <UIButton
-      class="rounded-xl flex items-center gap-3"
+      class="rounded-xl flex items-center gap-3 disabled:opacity-100"
       @click="console.log(editor?.getJSON())"
       :disabled="state.pending"
     >
-      Сохранить
-      <Loader v-if="state.pending" />
+      <Loader v-if="state.pending" color="bg-white" class="mx-1" />
+      <p :class="{ 'opacity-50': state.pending }">Сохранить</p>
     </UIButton>
   </Flex>
 </template>

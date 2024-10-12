@@ -1,5 +1,5 @@
 <template>
-  <ScrollArea scrollAreaClass="editor-scrollable-container" :disableScroll>
+  <ScrollArea scrollAreaClass="editor-scrollable-container">
     <EditorContent :editor class="editor h-full" />
   </ScrollArea>
 
@@ -7,16 +7,15 @@
 </template>
 
 <script lang="ts" setup>
-import { EditorContent } from '@tiptap/vue-3'
-import type { ArticleContent } from '~/types'
+import { EditorContent, type JSONContent } from '@tiptap/vue-3'
+import type { ArticleBody } from '~/types'
 
 const props = defineProps<{
-  data: ArticleContent | undefined
-  disableScroll?: boolean
+  data: ArticleBody | undefined
 }>()
 
 const emit = defineEmits<{
-  update: [body: ArticleContent]
+  update: [body: ArticleBody]
 }>()
 
 const { initEditor, destroyEditor, editor, data } = useEditor()
@@ -24,7 +23,36 @@ const { initEditor, destroyEditor, editor, data } = useEditor()
 onMounted(() => initEditor(props.data))
 onUnmounted(destroyEditor)
 
-watch(data, () => emit('update', data.value!))
+function filterEmptyNodes(
+  content: JSONContent[] | undefined
+): JSONContent[] | undefined {
+  if (!content) return
+
+  return content
+    .map((node) => {
+      if (
+        ['heading', 'paragraph'].includes(node.type!) &&
+        (!node.content || !node.content[0].text.trim())
+      )
+        return
+      if (node.type === 'gallery' && !node.attrs!.items) return
+
+      return node
+    })
+    .filter((node) => node !== undefined)
+}
+
+watch(data, () => {
+  console.log(filterEmptyNodes(data.value.content))
+
+  if (
+    !filterEmptyNodes(data.value.content) ||
+    filterEmptyNodes(data.value.content)?.length === 0
+  )
+    return
+
+  emit('update', data.value!)
+})
 </script>
 
 <style lang="sass" scoped>

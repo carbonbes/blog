@@ -6,7 +6,7 @@ import {
   type Article,
   type StorageMedia,
   type SNEmbed,
-  type ArticleContent,
+  type ArticleBody,
 } from '~/types/index'
 
 export async function signIn(body: { email: string }) {
@@ -69,7 +69,7 @@ export async function getEmbed(url: string) {
   })
 }
 
-export async function createArticle(body: ArticleContent) {
+export async function createArticle(body: ArticleBody) {
   return (
     await $fetch<Response<Article>>('/api/v1/article/create', {
       method: 'POST',
@@ -78,7 +78,7 @@ export async function createArticle(body: ArticleContent) {
   ).data
 }
 
-export async function updateArticle(id: number, body: ArticleContent) {
+export async function updateArticle(id: number, body: ArticleBody) {
   return (
     await $fetch<Response<Article>>('/api/v1/article/update', {
       method: 'PATCH',

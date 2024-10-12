@@ -15,7 +15,7 @@
 <script lang="ts" setup>
 import type Dialog from '~/components/global/Dialog.vue'
 import type Editor from '~/components/editor/Editor.client.vue'
-import type { ArticleContent } from '~/types'
+import type { ArticleBody } from '~/types'
 
 const dialogRef = ref<InstanceType<typeof Dialog>>()
 
@@ -24,7 +24,7 @@ const { setOpen, state } = useEditorDialog(dialogRef)
 const route = useRoute()
 
 const articleId = computed(
-  () => route.query.articleId as unknown as number | undefined
+  () => route.query.id as unknown as number | undefined
 )
 
 const { data: article, error } = await useAsyncData(async () =>
@@ -38,7 +38,7 @@ if (error.value) {
   })
 }
 
-const updateHandler = useDebounceFn(async (body: ArticleContent) => {
+const updateHandler = useDebounceFn(async (body: ArticleBody) => {
   if (!article.value) {
     article.value = await create(body)
   } else {
@@ -48,7 +48,7 @@ const updateHandler = useDebounceFn(async (body: ArticleContent) => {
 
 const { errorNotify } = useNotifications()
 
-async function create(body: ArticleContent) {
+async function create(body: ArticleBody) {
   state.value.pending = true
 
   try {
@@ -58,16 +58,18 @@ async function create(body: ArticleContent) {
       throw createError({
         statusCode: 400,
         message: 'Не удалось создать пост',
-        fatal: false,
       })
     }
 
-    await navigateTo(
+    const { id, title_slug: title } = newArticle
+
+    navigateTo(
       {
         path: route.path,
         query: {
           dialog: 'editor',
-          articleId: `${newArticle.id}-${newArticle.title_slug}`,
+          id,
+          title,
         },
       },
       { replace: true }
@@ -76,17 +78,17 @@ async function create(body: ArticleContent) {
     return newArticle
   } catch (error: any) {
     errorNotify({
-      text: error.message,
+      text: error.data.message,
     })
   } finally {
     state.value.pending = false
   }
 }
 
-async function update(id: number, body: ArticleContent) {
+async function update(articleId: number, body: ArticleBody) {
   state.value.pending = true
   try {
-    const updatedArticle = await updateArticle(id, body)
+    const updatedArticle = await updateArticle(articleId, body)
 
     if (!updatedArticle) {
       throw createError({
@@ -96,10 +98,24 @@ async function update(id: number, body: ArticleContent) {
       })
     }
 
+    const { id, title_slug: title } = updatedArticle
+
+    navigateTo(
+      {
+        path: route.path,
+        query: {
+          dialog: 'editor',
+          id,
+          title,
+        },
+      },
+      { replace: true }
+    )
+
     return updatedArticle
   } catch (error: any) {
     errorNotify({
-      text: error.message,
+      text: error.data.message,
     })
   } finally {
     state.value.pending = false

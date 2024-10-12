@@ -4,14 +4,14 @@ import { Database } from '~/types/supabase'
 
 declare module 'h3' {
   interface H3EventContext {
-    profile: Profile | null
+    user: Profile | null
   }
 }
 
 export default defineEventHandler(async (event) => {
-  if (event.context.profile) return
-  
-  event.context.profile = null
+  if (event.context.user) return
+
+  event.context.user = null
 
   const supabase = await serverSupabaseClient<Database>(event)
   const user = await serverSupabaseUser(event)
@@ -27,5 +27,5 @@ export default defineEventHandler(async (event) => {
 
   if (!profile || error) return
 
-  event.context.profile = profile
+  event.context.user = profile
 })

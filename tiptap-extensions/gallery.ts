@@ -90,10 +90,7 @@ const GalleryNode = Node.create({
           },
 
           handleDrop(view, event) {
-            const items = getFilesFromDrop(
-              event,
-              ALLOWED_MEDIAFILE_MIME_TYPES
-            )
+            const items = getFilesFromDrop(event, ALLOWED_MEDIAFILE_MIME_TYPES)
 
             if (!items) return false
 

@@ -27,10 +27,12 @@ export type VerifyOtpResponse = AuthOtpResponse
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
+export type ArticleBody = JSONContent
+
 export type Article = Omit<
   Database['public']['Tables']['articles']['Row'],
   'body'
-> & { body: ArticleContent | undefined }
+> & { body: ArticleBody | undefined }
 
 export type NodeType =
   | 'heading'
@@ -64,8 +66,6 @@ export type StorageMedia = {
 }
 
 export type SVGIcon = FunctionalComponent<SVGAttributes, {}, any, {}>
-
-export type ArticleContent = JSONContent
 
 export type DropdownItem = {
   icon?: SVGIcon

@@ -4,6 +4,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const event = useRequestEvent()
   const { isAuthenticated } = useMe()
 
-  if (!(event?.context.profile || isAuthenticated.value))
+  if (!(event?.context.user || isAuthenticated.value))
     return navigateTo('/login', { redirectCode: 401 })
 })

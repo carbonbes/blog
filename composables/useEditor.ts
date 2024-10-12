@@ -66,7 +66,7 @@ const extensions: Extensions = [
 
 export default function useEditor() {
   const editor = useState<Editor | undefined>('editor')
-  const data = useState<JSONContent | undefined>('data')
+  const data = useState<JSONContent>('data')
   const selectedNode = useState<NodeSelection['node'] | null>(
     'selected-node',
     () => null
@@ -301,8 +301,7 @@ export default function useEditor() {
       extensions,
 
       onUpdate({ editor }) {
-        const content = editor.getJSON() as JSONContent[]
-        data.value = processContent(content)
+        data.value = editor.getJSON() as JSONContent[]
       },
 
       onSelectionUpdate({
@@ -329,21 +328,9 @@ export default function useEditor() {
     editor.value?.destroy()
   }
 
-  function processContent(content: JSONContent) {
-    const arr = content.content?.filter((node) => {
-      if (node.type !== 'gallery') return Object.hasOwn(node, 'content')
-      else if (node.type === 'gallery') return !!node.attrs?.images.length
-    })
-
-    if (!arr?.length) return
-
-    return { type: 'doc', content: arr }
-  }
-
   return {
     initEditor,
     destroyEditor,
-    processContent,
     editor,
     extensions,
     data,

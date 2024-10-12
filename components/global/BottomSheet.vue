@@ -204,7 +204,7 @@ function initDialogContentHeaderDragGesture() {
       drag: {
         axis: 'y',
         bounds: { top: 0 },
-        rubberband: true,
+        rubberband: 0.1,
         from: [0, 0],
         filterTaps: true,
         pointer: { touch: true },
@@ -263,7 +263,7 @@ function initDialogContentGestures() {
       drag: {
         axis: 'y',
         bounds: { top: 0 },
-        rubberband: true,
+        rubberband: 0.1,
         from: [0, 0],
         filterTaps: true,
         pointer: { touch: true },

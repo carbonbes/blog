@@ -23,14 +23,14 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { profile } = useMe()
+const { user } = useMe()
 const router = useRouter()
 const route = useRoute()
 
 const {
   data: articles,
   error
-} = await useAsyncData('articles', async () => await getProfileArticles(profile.value!.user_id))
+} = await useAsyncData('articles', async () => await getProfileArticles(user.value!.user_id))
 
 if (error.value)
   throw createError({

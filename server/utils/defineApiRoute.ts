@@ -5,11 +5,11 @@ import { Profile, Supabase } from '~/types'
 type Handler = ({
   event,
   supabase,
-  profile,
+  user,
 }: {
   event: H3Event
   supabase: Supabase
-  profile: Profile | null
+  user: Profile | null
 }) => any
 
 export function defineApiRoute<T extends EventHandlerRequest, D>(
@@ -18,13 +18,14 @@ export function defineApiRoute<T extends EventHandlerRequest, D>(
 ): EventHandler<T, D> {
   return defineEventHandler<T>(async (event) => {
     const supabase: Supabase = await serverSupabaseClient(event)
-    const profile = event.context.profile
+    const user = event.context.user
 
-    if (options?.requireAuth && !profile)
+    if (options?.requireAuth && !user) {
       throw createError({ statusCode: 401, message: 'Требуется авторизация' })
+    }
 
     try {
-      const response = await handler({ event, supabase, profile })
+      const response = await handler({ event, supabase, user })
 
       return { success: true, data: response }
     } catch (err: any) {
