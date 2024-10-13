@@ -1,20 +1,21 @@
 import getSlug from '~/utils/getSlug'
 import { useSafeValidatedBody } from 'h3-zod'
-import DocSchema from '~/server/schema/articleDoc'
+import articleBodySchema from '~/server/schema/articleBodySchema'
 import findTitle from '~/server/utils/findTitle'
+import { ArticleBody } from '~/types'
 
 export default defineApiRoute(
   async ({ event, supabase, user }) => {
-    const body = await useSafeValidatedBody(event, DocSchema)
+    const body = await useSafeValidatedBody(event, articleBodySchema)
 
     if (!body.success) {
       throw createError({
         statusCode: 400,
-        message: 'Неправильная структура объекта поста',
+        message: 'Не удалось создать запись',
       })
     }
 
-    const articleBody = body.data
+    const articleBody = body.data as ArticleBody
 
     const title = findTitle(articleBody) || `Запись пользователя ${user!.name}`
     const titleSlug = getSlug(title)
@@ -39,7 +40,7 @@ export default defineApiRoute(
     if (!data) {
       throw createError({
         statusCode: 400,
-        message: 'Не удалось создать пост',
+        message: 'Не удалось создать запись',
       })
     }
 

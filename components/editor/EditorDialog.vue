@@ -16,6 +16,7 @@
 import type Dialog from '~/components/global/Dialog.vue'
 import type Editor from '~/components/editor/Editor.client.vue'
 import type { ArticleBody } from '~/types'
+import getArticleURL from '~/utils/getPostUrl'
 
 const dialogRef = ref<InstanceType<typeof Dialog>>()
 
@@ -61,19 +62,8 @@ async function create(body: ArticleBody) {
       })
     }
 
-    const { id, title_slug: title } = newArticle
-
-    navigateTo(
-      {
-        path: route.path,
-        query: {
-          dialog: 'editor',
-          id,
-          title,
-        },
-      },
-      { replace: true }
-    )
+    const articleURL = getArticleURL(newArticle)
+    navigateTo(articleURL, { replace: true })
 
     return newArticle
   } catch (error: any) {
@@ -98,19 +88,8 @@ async function update(articleId: number, body: ArticleBody) {
       })
     }
 
-    const { id, title_slug: title } = updatedArticle
-
-    navigateTo(
-      {
-        path: route.path,
-        query: {
-          dialog: 'editor',
-          id,
-          title,
-        },
-      },
-      { replace: true }
-    )
+    const articleURL = getArticleURL(updatedArticle)
+    navigateTo(articleURL, { replace: true })
 
     return updatedArticle
   } catch (error: any) {
@@ -121,4 +100,11 @@ async function update(articleId: number, body: ArticleBody) {
     state.value.pending = false
   }
 }
+
+onMounted(() => {
+  if (!article.value) return
+
+  const articleURL = getArticleURL(article.value)
+  navigateTo(articleURL, { replace: true })
+})
 </script>

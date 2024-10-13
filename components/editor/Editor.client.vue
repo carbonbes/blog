@@ -7,8 +7,14 @@
 </template>
 
 <script lang="ts" setup>
-import { EditorContent, type JSONContent } from '@tiptap/vue-3'
-import type { ArticleBody } from '~/types'
+import { EditorContent } from '@tiptap/vue-3'
+import type {
+  ArticleBody,
+  GalleryNode,
+  HeadingNode,
+  ListNode,
+  ParagraphNode,
+} from '~/types'
 
 const props = defineProps<{
   data: ArticleBody | undefined
@@ -23,35 +29,36 @@ const { initEditor, destroyEditor, editor, data } = useEditor()
 onMounted(() => initEditor(props.data))
 onUnmounted(destroyEditor)
 
-function filterEmptyNodes(
-  content: JSONContent[] | undefined
-): JSONContent[] | undefined {
-  if (!content) return
+function filterEmptyNodes(content: ArticleBody['content']) {
+  return content.filter((rootNode) => {
+    const [rootChild] = rootNode.content
 
-  return content
-    .map((node) => {
-      if (
-        ['heading', 'paragraph'].includes(node.type!) &&
-        (!node.content || !node.content[0].text.trim())
-      )
-        return
-      if (node.type === 'gallery' && !node.attrs!.items) return
+    if (['heading', 'paragraph'].includes(rootChild.type)) {
+      const [textNode] = (rootChild as HeadingNode | ParagraphNode).content
 
-      return node
-    })
-    .filter((node) => node !== undefined)
+      if (!textNode || !textNode.text?.trim()) return
+    }
+
+    if (['bulletList', 'orderedList'].includes(rootChild.type)) {
+      const listItem = (rootChild as ListNode).content
+    }
+
+    if (rootChild.type === 'gallery') {
+      const items = (rootChild as GalleryNode).attrs.items
+
+      if (!items.length) return
+    }
+
+    return rootNode
+  })
 }
 
 watch(data, () => {
-  console.log(filterEmptyNodes(data.value.content))
+  const content = filterEmptyNodes(data.value.content)
 
-  if (
-    !filterEmptyNodes(data.value.content) ||
-    filterEmptyNodes(data.value.content)?.length === 0
-  )
-    return
+  if (!content || content.length === 0) return
 
-  emit('update', data.value!)
+  emit('update', { type: 'doc', content })
 })
 </script>
 

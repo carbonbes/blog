@@ -14,9 +14,6 @@ const MarkSchema = z.union([
     type: z.literal('underline'),
   }),
   z.object({
-    type: z.literal('inlineSpoiler'),
-  }),
-  z.object({
     type: z.literal('link'),
     attrs: z.object({
       href: z.string().url(),
@@ -25,11 +22,14 @@ const MarkSchema = z.union([
       class: z.string().nullable(),
     }),
   }),
+  z.object({
+    type: z.literal('inlineSpoiler'),
+  }),
 ])
 
 const TextNode = z.object({
   type: z.literal('text'),
-  text: z.string().trim().min(1),
+  text: z.string().min(1),
   marks: z.array(MarkSchema).optional(),
 })
 
@@ -48,7 +48,7 @@ const ParagraphNode = z.object({
 
 const ListItem = z.object({
   type: z.literal('listItem'),
-  content: z.array(TextNode),
+  content: z.array(ParagraphNode),
 })
 
 const ListNode = z.object({
@@ -62,6 +62,7 @@ const ListNode = z.object({
 })
 
 const GalleryItem = z.object({
+  id: z.string().uuid(),
   src: z.string().url(),
   type: z.literal('image'),
   width: z.number().int(),
@@ -94,9 +95,9 @@ const RootNode = z.object({
   ),
 })
 
-const DocSchema = z.object({
+const ArticleBodySchema = z.object({
   type: z.literal('doc'),
   content: z.array(RootNode),
 })
 
-export default DocSchema
+export default ArticleBodySchema

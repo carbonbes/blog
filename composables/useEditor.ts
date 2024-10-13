@@ -1,6 +1,6 @@
 import { Editor, type Extensions, type JSONContent } from '@tiptap/vue-3'
 import { NodeSelection } from '@tiptap/pm/state'
-import type { HeadingLevel, NodeType } from '~/types'
+import type { ArticleBody, HeadingLevel, NodeType } from '~/types'
 import Document from '~/tiptap-extensions/document'
 import RootNode from '~/tiptap-extensions/root-node'
 import Heading from '@tiptap/extension-heading'
@@ -66,8 +66,8 @@ const extensions: Extensions = [
 
 export default function useEditor() {
   const editor = useState<Editor | undefined>('editor')
-  const data = useState<JSONContent>('data')
-  const selectedNode = useState<NodeSelection['node'] | null>(
+  const data = useState<ArticleBody>('data')
+  const selectedNode = useState<ArticleBody['content'][0] | null>(
     'selected-node',
     () => null
   )
@@ -112,7 +112,7 @@ export default function useEditor() {
 
   function setNodeSelection(pos: number) {
     editor.value?.commands.setNodeSelection(pos)
-    selectedNode.value = (editor.value?.state.selection as NodeSelection).node
+    selectedNode.value = (editor.value?.state.selection as NodeSelection).node as unknown as ArticleBody['content'][0]
   }
 
   function toggleNodeAttribute(attr: 'pin' | 'spoiler') {
@@ -294,14 +294,14 @@ export default function useEditor() {
 
   const { rects } = useTextSelection()
 
-  function initEditor(content?: JSONContent) {
+  function initEditor(content?: ArticleBody) {
     editor.value = new Editor({
-      content,
+      content: content as JSONContent,
 
       extensions,
 
       onUpdate({ editor }) {
-        data.value = editor.getJSON() as JSONContent[]
+        data.value = editor.getJSON() as ArticleBody
       },
 
       onSelectionUpdate({
