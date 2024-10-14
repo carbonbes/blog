@@ -6,8 +6,8 @@ import {
   type Article,
   type StorageMedia,
   type SNEmbed,
-  type ArticleBody,
 } from '~/types/index'
+import type { ArticleBody } from '~/schema/articleBodySchema'
 
 export async function signIn(body: { email: string }) {
   return await $fetch<Response<AuthResponse>>('/api/v1/auth/signin', {
@@ -88,7 +88,5 @@ export async function updateArticle(id: number, body: ArticleBody) {
 }
 
 export async function getArticle(id: number) {
-  return (
-    await $fetch<Response<Article>>(`/api/v1/article/${id}`)
-  ).data
+  return (await $fetch<Response<Article>>(`/api/v1/article/${id}`)).data
 }

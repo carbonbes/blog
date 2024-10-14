@@ -8,13 +8,7 @@
 
 <script lang="ts" setup>
 import { EditorContent } from '@tiptap/vue-3'
-import type {
-  ArticleBody,
-  GalleryNode,
-  HeadingNode,
-  ListNode,
-  ParagraphNode,
-} from '~/types'
+import type { ArticleBody } from '~/schema/articleBodySchema'
 
 const props = defineProps<{
   data: ArticleBody | undefined
@@ -29,37 +23,7 @@ const { initEditor, destroyEditor, editor, data } = useEditor()
 onMounted(() => initEditor(props.data))
 onUnmounted(destroyEditor)
 
-function filterEmptyNodes(content: ArticleBody['content']) {
-  return content.filter((rootNode) => {
-    const [rootChild] = rootNode.content
-
-    if (['heading', 'paragraph'].includes(rootChild.type)) {
-      const [textNode] = (rootChild as HeadingNode | ParagraphNode).content
-
-      if (!textNode || !textNode.text?.trim()) return
-    }
-
-    if (['bulletList', 'orderedList'].includes(rootChild.type)) {
-      const listItem = (rootChild as ListNode).content
-    }
-
-    if (rootChild.type === 'gallery') {
-      const items = (rootChild as GalleryNode).attrs.items
-
-      if (!items.length) return
-    }
-
-    return rootNode
-  })
-}
-
-watch(data, () => {
-  const content = filterEmptyNodes(data.value.content)
-
-  if (!content || content.length === 0) return
-
-  emit('update', { type: 'doc', content })
-})
+watch(data, (v) => emit('update', v))
 </script>
 
 <style lang="sass" scoped>

@@ -5,7 +5,7 @@ import {
 } from '@supabase/supabase-js'
 import type { FunctionalComponent, SVGAttributes } from 'vue'
 import type { MimeType } from 'file-type'
-import type { GalleryItem } from '~/components/editor/nodes/gallery/Gallery.vue'
+import type { ArticleBody } from '~/schema/articleBodySchema'
 
 export interface Response<T = {}> {
   success: boolean
@@ -27,64 +27,10 @@ export type VerifyOtpResponse = AuthOtpResponse
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
-export type TextNode = { type: 'text'; text: string }
-
-export type HeadingNode = {
-  type: 'heading'
-  attrs: { level: 1 | 2 }
-  content: [TextNode]
-}
-
-export type ParagraphNode = {
-  type: 'paragraph'
-  content: [TextNode]
-}
-
-export type ListItemNode = {
-  type: 'listItem'
-  content: [ParagraphNode]
-}
-
-export type ListNode = {
-  type: 'bulletList' | 'orderedList'
-  attrs: { start: number }
-  content: ListItemNode[]
-}
-
-export type GalleryNode = {
-  type: 'gallery'
-  attrs: {
-    items: GalleryItem[]
-    forUpload: File[]
-    galleryOpenFileFromDeviceDialog: boolean
-    galleryOpenFileFromClipboardDialog: boolean
-  }
-}
-
-export type SNEmbedNode = {
-  type: 'sn-embed'
-  attrs: {
-    url: string
-    embed: SNEmbed
-    type: 'x' | 'telegram'
-  }
-}
-
-export type ArticleBody = {
-  type: 'doc'
-  content: {
-    type: 'rootNode'
-    attrs: { pin: boolean; spoiler: boolean }
-    content: [
-      HeadingNode | ParagraphNode | ListNode | GalleryNode | SNEmbedNode
-    ]
-  }[]
-}
-
 export type Article = Omit<
   Database['public']['Tables']['articles']['Row'],
   'body'
-> & { body: ArticleBody | undefined }
+> & { body: ArticleBody }
 
 export type NodeType =
   | 'heading'

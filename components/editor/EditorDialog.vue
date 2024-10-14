@@ -4,10 +4,10 @@
     @close="setOpen(false)"
     ref="dialogRef"
   >
-    <Editor :data="article?.body" @update="updateHandler" />
+    <Editor :data="article?.body" @update="onUpdate" />
 
     <template #footer>
-      <EditorPanel />
+      <EditorPanel @save="onSave" />
     </template>
   </Dialog>
 </template>
@@ -15,11 +15,19 @@
 <script lang="ts" setup>
 import type Dialog from '~/components/global/Dialog.vue'
 import type Editor from '~/components/editor/Editor.client.vue'
-import type { ArticleBody } from '~/types'
+import type {
+  ArticleBody,
+  GalleryNode,
+  HeadingNode,
+  ListNode,
+  ParagraphNode,
+} from '~/schema/articleBodySchema'
 import getArticleURL from '~/utils/getPostUrl'
+import { isEqual } from 'lodash'
 
 const dialogRef = ref<InstanceType<typeof Dialog>>()
 
+const { editor } = useEditor()
 const { setOpen, state } = useEditorDialog(dialogRef)
 
 const route = useRoute()
@@ -39,15 +47,22 @@ if (error.value) {
   })
 }
 
-const updateHandler = useDebounceFn(async (body: ArticleBody) => {
+const onUpdate = useDebounceFn(async (body: ArticleBody) => {
+  const processedBody = {
+    type: 'doc',
+    content: filterEmptyNodes(body.content),
+  } as ArticleBody
+
   if (!article.value) {
-    article.value = await create(body)
+    article.value = await create(processedBody)
   } else {
-    article.value = await update(article.value.id, body)
+    if (isEqual(article.value.body, processedBody)) return
+
+    article.value = await update(article.value.id, processedBody)
   }
 }, 500)
 
-const { errorNotify } = useNotifications()
+const { successNotify, errorNotify } = useNotifications()
 
 async function create(body: ArticleBody) {
   state.value.pending = true
@@ -77,6 +92,7 @@ async function create(body: ArticleBody) {
 
 async function update(articleId: number, body: ArticleBody) {
   state.value.pending = true
+
   try {
     const updatedArticle = await updateArticle(articleId, body)
 
@@ -100,6 +116,53 @@ async function update(articleId: number, body: ArticleBody) {
     state.value.pending = false
   }
 }
+
+function filterEmptyNodes(content: ArticleBody['content']) {
+  return content.filter((rootNode) => {
+    const [node] = rootNode.content
+
+    if (['heading', 'paragraph'].includes(node.type)) {
+      const [textNode] = (node as HeadingNode | ParagraphNode).content || []
+
+      if (!textNode || !textNode.text.trim()) return false
+    }
+
+    if (['bulletList', 'orderedList'].includes(node.type)) {
+      const listNode = node as ListNode
+
+      listNode.content = listNode.content.filter((listItem) => {
+        const [paragraphNode] = listItem.content
+        const [textNode] = paragraphNode.content || []
+
+        return textNode && textNode.text?.trim()
+      })
+
+      if (!listNode.content.length) return false
+    }
+
+    if (node.type === 'gallery') {
+      const items = (node as GalleryNode).attrs.items
+
+      if (!items.length) return false
+    }
+
+    return true
+  })
+}
+
+const onSave = useThrottleFn(async () => {
+  const body = editor.value?.getJSON() as ArticleBody
+
+  const processedBody = {
+    type: 'doc',
+    content: filterEmptyNodes(body.content),
+  } as ArticleBody
+
+  try {
+    await update(+articleId.value!, processedBody)
+    successNotify({ text: 'Запись сохранена' })
+  } catch (error) {}
+}, 2000)
 
 onMounted(() => {
   if (!article.value) return

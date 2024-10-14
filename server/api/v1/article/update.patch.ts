@@ -1,8 +1,7 @@
 import getSlug from '~/utils/getSlug'
 import { z, useSafeValidatedBody } from 'h3-zod'
-import articleBodySchema from '~/server/schema/articleBodySchema'
+import articleBodySchema from '~/schema/articleBodySchema'
 import findTitle from '~/server/utils/findTitle'
-import { ArticleBody } from '~/types'
 
 export default defineApiRoute(
   async ({ event, supabase, user }) => {
@@ -12,21 +11,13 @@ export default defineApiRoute(
     )
 
     if (!body.success) {
-      console.log(body.error)
-
       throw createError({
         statusCode: 400,
         message: 'Не удалось обновить запись',
       })
     }
 
-    const {
-      id,
-      body: articleBody,
-    }: {
-      id: number
-      body: ArticleBody
-    } = body.data
+    const { id, body: articleBody } = body.data
 
     const title = findTitle(articleBody) || `Запись пользователя ${user!.name}`
     const titleSlug = getSlug(title)

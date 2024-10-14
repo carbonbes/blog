@@ -1,5 +1,11 @@
 import { z } from 'h3-zod'
 
+export type HeadingNode = z.infer<typeof HeadingNode>
+export type ParagraphNode = z.infer<typeof ParagraphNode>
+export type ListNode = z.infer<typeof ListNode>
+export type GalleryNode = z.infer<typeof GalleryNode>
+export type ArticleBody = z.infer<typeof ArticleBodySchema>
+
 const MarkSchema = z.union([
   z.object({
     type: z.literal('bold'),
@@ -43,7 +49,7 @@ const HeadingNode = z.object({
 
 const ParagraphNode = z.object({
   type: z.literal('paragraph'),
-  content: z.array(TextNode),
+  content: z.array(TextNode).optional(),
 })
 
 const ListItem = z.object({
@@ -53,16 +59,14 @@ const ListItem = z.object({
 
 const ListNode = z.object({
   type: z.union([z.literal('bulletList'), z.literal('orderedList')]),
-  attrs: z
-    .object({
-      start: z.number().int(),
-    })
-    .optional(),
+  attrs: z.object({
+    start: z.number().int(),
+  }),
   content: z.array(ListItem),
 })
 
 const GalleryItem = z.object({
-  id: z.string().uuid(),
+  id: z.string().uuid().optional(),
   src: z.string().url(),
   type: z.literal('image'),
   width: z.number().int(),
@@ -74,7 +78,7 @@ const GalleryNode = z.object({
   type: z.literal('gallery'),
   attrs: z.object({
     items: z.array(GalleryItem),
-    forUpload: z.nullable(z.void()),
+    forUpload: z.array(z.union([z.instanceof(File), z.nullable(z.void())])),
     galleryOpenFileFromDeviceDialog: z.boolean(),
     galleryOpenFileFromClipboardDialog: z.boolean(),
   }),

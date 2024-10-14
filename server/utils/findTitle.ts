@@ -1,4 +1,4 @@
-import { ArticleBody } from '~/types'
+import { ArticleBody } from '~/schema/articleBodySchema'
 
 export default function findTitle(content: ArticleBody) {
   for (const rootNode of content.content) {

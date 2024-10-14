@@ -1,21 +1,33 @@
 <template>
   <Flex
     itemsCenter
-    :class="notificationClasses"
+    class="relative p-4 gap-3 border-2 rounded-xl pointer-events-auto overflow-hidden"
+    :class="{
+      'bg-green-100 border-green-200': isSuccess,
+      'bg-red-100 border-red-200': !isSuccess,
+    }"
     @mouseenter="state.isHovered = true"
     @mouseleave="mouseLeaveHandler"
   >
-    <div :class="iconClasses">
+    <div
+      class="rounded-full self-start p-1"
+      :class="{
+        'bg-green-500': isSuccess,
+        'bg-red-500': !isSuccess,
+      }"
+    >
       <Component :is="icon" class="text-white !w-3 !h-3" />
     </div>
 
     <Flex col class="gap-2">
-      <p class="font-medium" v-if="notification.title">{{ notification.title }}</p>
+      <p class="font-medium" v-if="notification.title">
+        {{ notification.title }}
+      </p>
       <p>{{ notification.text }}</p>
     </Flex>
 
     <button
-      class="ml-2 self-start hover:opacity-50 transition-opacity"
+      class="ml-auto sm:ml-4 self-start hover:opacity-50 transition-opacity"
       @click="remove(props.notification.id)"
     >
       <ITablerX class="!w-5 !h-5" />
@@ -32,20 +44,7 @@ import X from '~icons/tabler/X'
 const props = defineProps<{ notification: Notification }>()
 
 const isSuccess = computed(() => props.notification.type === 'success')
-
-const notificationClasses = computed(() => ({
-  'relative p-4 gap-3 border-2 rounded-xl pointer-events-auto overflow-hidden': true,
-  'bg-green-100 border-green-200': isSuccess.value,
-  'bg-red-100 border-red-200': !isSuccess.value
-}))
-
-const icon = computed(() => isSuccess.value ? Check : X)
-
-const iconClasses = computed(() => ({
-  'rounded-full self-start p-1': true,
-  'bg-green-500': isSuccess.value,
-  'bg-red-500': !isSuccess.value,
-}))
+const icon = computed(() => (isSuccess.value ? Check : X))
 
 const { remove } = useNotifications()
 
@@ -54,7 +53,7 @@ const state: {
   timerIsExpired: boolean
 } = reactive({
   isHovered: false,
-  timerIsExpired: false
+  timerIsExpired: false,
 })
 
 function mouseLeaveHandler() {

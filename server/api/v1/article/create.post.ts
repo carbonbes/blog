@@ -1,8 +1,7 @@
 import getSlug from '~/utils/getSlug'
 import { useSafeValidatedBody } from 'h3-zod'
-import articleBodySchema from '~/server/schema/articleBodySchema'
+import articleBodySchema from '~/schema/articleBodySchema'
 import findTitle from '~/server/utils/findTitle'
-import { ArticleBody } from '~/types'
 
 export default defineApiRoute(
   async ({ event, supabase, user }) => {
@@ -15,7 +14,7 @@ export default defineApiRoute(
       })
     }
 
-    const articleBody = body.data as ArticleBody
+    const articleBody = body.data
 
     const title = findTitle(articleBody) || `Запись пользователя ${user!.name}`
     const titleSlug = getSlug(title)

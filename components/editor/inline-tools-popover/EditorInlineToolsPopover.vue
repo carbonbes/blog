@@ -12,7 +12,7 @@
       <template v-for="mark in marks">
         <Flex
           tag="button"
-          class="p-1 rounded-lg hover:bg-gray-200 [&.active]:bg-blue-100 [&.active]:text-blue-500 transition-colors"
+          class="p-1 rounded-lg touch-manipulation hover:bg-gray-200 [&.active]:bg-blue-100 [&.active]:text-blue-500 transition-colors"
           :class="{ active: mark.active }"
           @click="mark.action"
           v-if="!mark.disabled"
