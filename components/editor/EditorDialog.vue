@@ -1,20 +1,32 @@
 <template>
   <Dialog
-    class="fixed inset-0 w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none sm:!rounded-xl"
+    class="w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none sm:!rounded-xl"
+    footerClass="sm:justify-end"
     @close="setOpen(false)"
     ref="dialogRef"
   >
     <Editor :data="article?.body" @update="onUpdate" />
 
+    <template #header>
+      <EditorPanel class="sm:hidden flex-row-reverse" @save="onSave" />
+    </template>
+
     <template #footer>
-      <EditorPanel @save="onSave" />
+      <Flex itemsCenter justifyBetween class="w-full">
+        <p
+          class="px-3 py-1 bg-red-400 text-sm font-medium text-white rounded-full"
+        >
+          {{ status }}
+        </p>
+
+        <EditorPanel class="hidden sm:flex" @save="onSave" />
+      </Flex>
     </template>
   </Dialog>
 </template>
 
 <script lang="ts" setup>
 import type Dialog from '~/components/global/Dialog.vue'
-import type Editor from '~/components/editor/Editor.client.vue'
 import type {
   ArticleBody,
   GalleryNode,
@@ -28,7 +40,8 @@ import { isEqual } from 'lodash'
 const dialogRef = ref<InstanceType<typeof Dialog>>()
 
 const { editor } = useEditor()
-const { setOpen, state } = useEditorDialog(dialogRef)
+const { setOpen } = useEditorDialog(dialogRef)
+const { pending, article, requestArticle } = useArticle()
 
 const route = useRoute()
 
@@ -36,16 +49,21 @@ const articleId = computed(
   () => route.query.id as unknown as number | undefined
 )
 
-const { data: article, error } = await useAsyncData(async () =>
-  articleId.value ? await getArticle(articleId.value) : undefined
+await useAsyncData(async () =>
+  articleId.value ? await requestArticle(articleId.value) : undefined
 )
 
-if (error.value) {
-  throw createError({
-    statusCode: error.value.statusCode,
-    message: error.value.message,
-  })
-}
+const status = computed(() => {
+  if (!article.value) return
+
+  const statuses = {
+    draft: 'Черновик',
+    published: 'Опубликован',
+    scheduled: 'Запланирован',
+  }
+
+  return statuses[article.value.status]
+})
 
 const onUpdate = useDebounceFn(async (body: ArticleBody) => {
   const processedBody = {
@@ -62,10 +80,10 @@ const onUpdate = useDebounceFn(async (body: ArticleBody) => {
   }
 }, 500)
 
-const { successNotify, errorNotify } = useNotifications()
+const { errorNotify } = useNotifications()
 
 async function create(body: ArticleBody) {
-  state.value.pending = true
+  pending.value = true
 
   try {
     const newArticle = await createArticle(body)
@@ -86,12 +104,12 @@ async function create(body: ArticleBody) {
       text: error.data.message,
     })
   } finally {
-    state.value.pending = false
+    pending.value = false
   }
 }
 
 async function update(articleId: number, body: ArticleBody) {
-  state.value.pending = true
+  pending.value = true
 
   try {
     const updatedArticle = await updateArticle(articleId, body)
@@ -113,7 +131,7 @@ async function update(articleId: number, body: ArticleBody) {
       text: error.data.message,
     })
   } finally {
-    state.value.pending = false
+    pending.value = false
   }
 }
 
@@ -158,10 +176,7 @@ const onSave = useThrottleFn(async () => {
     content: filterEmptyNodes(body.content),
   } as ArticleBody
 
-  try {
-    await update(+articleId.value!, processedBody)
-    successNotify({ text: 'Запись сохранена' })
-  } catch (error) {}
+  await update(+articleId.value!, processedBody)
 }, 2000)
 
 onMounted(() => {

@@ -1,9 +1,9 @@
 <template>
-  <Flex itemsCenter class="ml-auto gap-2">
-    <Flex v-if="savingIndicatorIsShow" center class="relative mx-2 w-6 h-6">
+  <Flex itemsCenter class="gap-2">
+    <Flex v-if="savingIndicatorIsShow" center class="relative px-2">
       <FadeInOpacityTransition>
         <Loader
-          v-if="state.pending"
+          v-if="pending"
           color="!bg-black"
           class="absolute"
           @vue:mounted="savingIndicatorIsShow = true"
@@ -22,7 +22,7 @@
     <Tooltip tooltip="Отменить">
       <UIButton
         variant="secondary"
-        :disabled="!canUndo || state.pending"
+        :disabled="!canUndo || pending"
         class="rounded-xl"
         @click="undo"
       >
@@ -33,7 +33,7 @@
     <Tooltip tooltip="Вернуть">
       <UIButton
         variant="secondary"
-        :disabled="!canRedo || state.pending"
+        :disabled="!canRedo || pending"
         class="rounded-xl"
         @click="redo"
       >
@@ -43,21 +43,22 @@
 
     <UIButton
       class="rounded-xl flex items-center gap-3"
-      @click="emits('save')"
-      :disabled="state.pending"
+      @click="article?.status === 'draft' ? emits('publish') : emits('save')"
+      :disabled="pending"
     >
-      <p>Сохранить</p>
+      {{ article?.status === 'draft' ? 'Опубликовать' : 'Сохранить' }}
     </UIButton>
   </Flex>
 </template>
 
 <script lang="ts" setup>
 const emits = defineEmits<{
+  publish: [void]
   save: [void]
 }>()
 
 const { editor } = useEditor()
-const { state } = useEditorDialog()
+const { pending, article } = useArticle()
 
 const savingIndicatorIsShow = ref(true)
 

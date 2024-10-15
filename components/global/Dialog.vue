@@ -15,7 +15,9 @@
             <DialogTitle />
           </VisuallyHidden>
 
-          <Flex itemsCenter class="pb-4">
+          <Flex itemsCenter class="pb-4" :class="[headerClass]">
+            <slot name="header" />
+            
             <DialogClose class="ml-auto">
               <ITablerX class="hover:opacity-50 transition-opacity" />
             </DialogClose>
@@ -23,7 +25,12 @@
 
           <slot />
 
-          <Flex v-if="$slots.footer" itemsCenter class="pt-4">
+          <Flex
+            v-if="$slots.footer"
+            itemsCenter
+            class="pt-4"
+            :class="[footerClass]"
+          >
             <slot name="footer" />
           </Flex>
         </DialogContent>
@@ -36,16 +43,22 @@
 import {
   useEmitAsProps,
   type DialogContentEmits,
-  type DialogContentProps
+  type DialogContentProps,
 } from 'radix-vue'
 
-const props = defineProps<DialogContentProps & {
-  class?: string
-}>()
+const props = defineProps<
+  DialogContentProps & {
+    class?: string | object
+    headerClass?: string | object
+    footerClass?: string | object
+  }
+>()
 
-const emits = defineEmits<DialogContentEmits & {
-  close: any
-}>()
+const emits = defineEmits<
+  DialogContentEmits & {
+    close: any
+  }
+>()
 
 const emitsAsProps = useEmitAsProps(emits)
 

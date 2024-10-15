@@ -49,7 +49,7 @@ const HeadingNode = z.object({
 
 const ParagraphNode = z.object({
   type: z.literal('paragraph'),
-  content: z.array(TextNode).optional(),
+  content: z.array(TextNode),
 })
 
 const ListItem = z.object({
@@ -59,16 +59,17 @@ const ListItem = z.object({
 
 const ListNode = z.object({
   type: z.union([z.literal('bulletList'), z.literal('orderedList')]),
-  attrs: z.object({
-    start: z.number().int(),
-  }),
+  attrs: z
+    .object({
+      start: z.number().int(),
+    })
+    .optional(),
   content: z.array(ListItem),
 })
 
 const GalleryItem = z.object({
-  id: z.string().uuid().optional(),
   src: z.string().url(),
-  type: z.literal('image'),
+  type: z.union([z.literal('image'), z.literal('video')]),
   width: z.number().int(),
   height: z.number().int(),
   uploaded: z.boolean(),
@@ -78,7 +79,7 @@ const GalleryNode = z.object({
   type: z.literal('gallery'),
   attrs: z.object({
     items: z.array(GalleryItem),
-    forUpload: z.array(z.union([z.instanceof(File), z.nullable(z.void())])),
+    forUpload: z.union([z.array(z.instanceof(File)), z.nullable(z.void())]),
     galleryOpenFileFromDeviceDialog: z.boolean(),
     galleryOpenFileFromClipboardDialog: z.boolean(),
   }),
