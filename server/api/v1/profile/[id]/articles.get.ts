@@ -9,7 +9,7 @@ export default defineApiRoute(async ({ event, supabase }) => {
 
   const { data, error } = await supabase
     .from('articles')
-    .select()
+    .select('*, author(id, name)')
     .eq('author', profileId)
     .limit(10)
 

@@ -1,5 +1,8 @@
 <template>
-  <Flex itemsCenter :class="headerClasses">
+  <Flex
+    itemsCenter
+    class="sticky bottom-0 sm:top-0 sm:bottom-[unset] w-full px-6 h-[60px] bg-white border-t-2 sm:border-t-0 sm:border-b-2 order-1 sm:order-[-1]"
+  >
     <Flex itemsCenter class="ml-auto gap-2" v-if="isAuthenticated">
       {{ user?.name }}
       <button
@@ -14,8 +17,4 @@
 
 <script lang="ts" setup>
 const { isAuthenticated, user, logoutMe } = useMe()
-
-const headerClasses = computed(() =>
-  'fixed sm:sticky bottom-0 sm:bottom-[unset] sm:top-0 w-full px-6 h-[60px] bg-white border-t-2 sm:border-t-0 sm:border-b-2 order-1 sm:order-[-1]'
-)
 </script>

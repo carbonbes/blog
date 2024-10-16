@@ -41,9 +41,9 @@ export async function logout() {
 }
 
 export async function getProfileArticles(profileId: string) {
-  return await $fetch<Response<Article[]>>(
-    `/api/v1/profile/${profileId}/articles`
-  )
+  return (
+    await $fetch<Response<Article[]>>(`/api/v1/profile/${profileId}/articles`)
+  ).data
 }
 
 export async function uploadMediaByFile(file: File) {

@@ -4,6 +4,7 @@ export type HeadingNode = z.infer<typeof HeadingNode>
 export type ParagraphNode = z.infer<typeof ParagraphNode>
 export type ListNode = z.infer<typeof ListNode>
 export type GalleryNode = z.infer<typeof GalleryNode>
+
 export type ArticleBody = z.infer<typeof ArticleBodySchema>
 
 const MarkSchema = z.union([

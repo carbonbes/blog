@@ -1,6 +1,6 @@
 <template>
   <Header />
-  <main>
+  <main class="mx-auto w-full max-w-[680px]">
     <NuxtPage />
   </main>
 

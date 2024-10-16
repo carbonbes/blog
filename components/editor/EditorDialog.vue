@@ -14,7 +14,7 @@
     <template #footer>
       <Flex itemsCenter justifyBetween class="w-full">
         <p
-          class="px-3 py-1 bg-red-400 text-sm font-medium text-white rounded-full"
+          class="px-3 py-1 self-end bg-red-400 text-sm font-medium text-white rounded-full"
         >
           {{ status }}
         </p>

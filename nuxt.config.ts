@@ -41,6 +41,7 @@ export default defineNuxtConfig({
     'dayjs-nuxt',
     'radix-vue/nuxt',
     '@nuxt/scripts',
+    '@bicou/prosemirror-render-nuxt'
   ],
 
   supabase: {
