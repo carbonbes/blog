@@ -1,5 +1,6 @@
 <template>
   <Transition
+    :mode
     :enterActiveClass
     :leaveActiveClass
     enterFromClass="opacity-0"
@@ -12,9 +13,12 @@
 </template>
 
 <script lang="ts" setup>
-const props = withDefaults(defineProps<{ duration?: string }>(), {
-  duration: '250ms',
-})
+const props = withDefaults(
+  defineProps<{ mode?: 'out-in' | 'in-out'; duration?: string }>(),
+  {
+    duration: '250ms',
+  }
+)
 
 const emits = defineEmits<{
   beforeEnter: [void]

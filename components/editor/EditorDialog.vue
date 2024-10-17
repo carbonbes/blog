@@ -6,37 +6,37 @@
     @close="onClose"
     ref="dialogRef"
   >
+    <template v-if="article" #header>
+      <EditorPanel class="sm:hidden flex-row-reverse" @save="onSave" />
+    </template>
+
     <FadeInOpacityTransition>
-      <Flex v-if="!article" center class="h-full">
+      <Flex v-if="!article" center class="absolute inset-0">
         <Loader color="!bg-black" />
       </Flex>
 
       <Flex v-else col class="overflow-hidden">
-        <template #header>
-          <EditorPanel class="sm:hidden flex-row-reverse" @save="onSave" />
-        </template>
-
         <Editor
           :data="article?.body"
           manualInit
           @update="onUpdate"
           ref="editorRef"
         />
-
-        <template #footer>
-          <Flex itemsCenter justifyBetween class="w-full">
-            <p
-              v-if="article"
-              class="px-3 py-1 self-end bg-red-400 text-sm font-medium text-white rounded-full"
-            >
-              {{ status }}
-            </p>
-
-            <EditorPanel class="hidden sm:flex" @save="onSave" />
-          </Flex>
-        </template>
       </Flex>
     </FadeInOpacityTransition>
+
+    <template v-if="article" #footer>
+      <Flex itemsCenter justifyBetween class="w-full">
+        <p
+          v-if="article"
+          class="px-3 py-1 self-end bg-red-400 text-sm font-medium text-white rounded-full"
+        >
+          {{ status }}
+        </p>
+
+        <EditorPanel class="hidden sm:flex" @save="onSave" />
+      </Flex>
+    </template>
   </Dialog>
 </template>
 
@@ -67,6 +67,11 @@ const articleId = computed(
 )
 
 async function onOpen() {
+  if (article.value) {
+    const articleURL = getArticleURL(article.value)
+    navigateTo(articleURL, { replace: true })
+  }
+
   if (articleId.value) {
     await requestArticle(articleId.value)
     editorRef.value?.manualInit()
@@ -203,11 +208,4 @@ const onSave = useThrottleFn(async () => {
 
   await update(+articleId.value!, processedBody)
 }, 2000)
-
-onMounted(() => {
-  if (!article.value) return
-
-  const articleURL = getArticleURL(article.value)
-  navigateTo(articleURL, { replace: true })
-})
 </script>
