@@ -2,26 +2,41 @@
   <Dialog
     class="w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none sm:!rounded-xl"
     footerClass="sm:justify-end"
-    @close="setOpen(false)"
+    @open="onOpen"
+    @close="onClose"
     ref="dialogRef"
   >
-    <Editor :data="article?.body" @update="onUpdate" />
-
-    <template #header>
-      <EditorPanel class="sm:hidden flex-row-reverse" @save="onSave" />
-    </template>
-
-    <template #footer>
-      <Flex itemsCenter justifyBetween class="w-full">
-        <p
-          class="px-3 py-1 self-end bg-red-400 text-sm font-medium text-white rounded-full"
-        >
-          {{ status }}
-        </p>
-
-        <EditorPanel class="hidden sm:flex" @save="onSave" />
+    <FadeInOpacityTransition>
+      <Flex v-if="!article" center class="h-full">
+        <Loader color="!bg-black" />
       </Flex>
-    </template>
+
+      <Flex v-else col class="overflow-hidden">
+        <template #header>
+          <EditorPanel class="sm:hidden flex-row-reverse" @save="onSave" />
+        </template>
+
+        <Editor
+          :data="article?.body"
+          manualInit
+          @update="onUpdate"
+          ref="editorRef"
+        />
+
+        <template #footer>
+          <Flex itemsCenter justifyBetween class="w-full">
+            <p
+              v-if="article"
+              class="px-3 py-1 self-end bg-red-400 text-sm font-medium text-white rounded-full"
+            >
+              {{ status }}
+            </p>
+
+            <EditorPanel class="hidden sm:flex" @save="onSave" />
+          </Flex>
+        </template>
+      </Flex>
+    </FadeInOpacityTransition>
   </Dialog>
 </template>
 
@@ -36,12 +51,14 @@ import type {
 } from '~/schema/articleBodySchema'
 import getArticleURL from '~/utils/getPostUrl'
 import { isEqual } from 'lodash'
+import type Editor from '~/components/editor/Editor.client.vue'
 
 const dialogRef = ref<InstanceType<typeof Dialog>>()
+const editorRef = ref<InstanceType<typeof Editor>>()
 
 const { editor } = useEditor()
 const { setOpen } = useEditorDialog(dialogRef)
-const { pending, article, requestArticle } = useArticle()
+const { pending, article, requestArticle } = useEditorDialogArticle()
 
 const route = useRoute()
 
@@ -49,9 +66,17 @@ const articleId = computed(
   () => route.query.id as unknown as number | undefined
 )
 
-await useAsyncData(async () =>
-  articleId.value ? await requestArticle(articleId.value) : undefined
-)
+async function onOpen() {
+  if (articleId.value) {
+    await requestArticle(articleId.value)
+    editorRef.value?.manualInit()
+  }
+}
+
+function onClose() {
+  setOpen(false)
+  article.value = undefined
+}
 
 const status = computed(() => {
   if (!article.value) return

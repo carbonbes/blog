@@ -17,7 +17,7 @@
 
           <Flex itemsCenter class="pb-4" :class="[headerClass]">
             <slot name="header" />
-            
+
             <DialogClose class="ml-auto">
               <ITablerX class="hover:opacity-50 transition-opacity" />
             </DialogClose>
@@ -56,7 +56,8 @@ const props = defineProps<
 
 const emits = defineEmits<
   DialogContentEmits & {
-    close: any
+    open: [void]
+    close: [void]
   }
 >()
 
@@ -72,7 +73,10 @@ function toggleOpen() {
   isOpen.value = !isOpen.value
 }
 
-watch(isOpen, (v) => !v && emits('close'))
+watch(isOpen, (v) => {
+  if (!v) emits('close')
+  else emits('open')
+})
 
 defineExpose({ setOpen, toggleOpen })
 </script>

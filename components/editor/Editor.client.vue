@@ -12,18 +12,35 @@ import type { ArticleBody } from '~/schema/articleBodySchema'
 
 const props = defineProps<{
   data: ArticleBody | undefined
+  manualInit?: boolean
 }>()
 
-const emit = defineEmits<{
+const emits = defineEmits<{
+  ready: [void]
   update: [body: ArticleBody]
 }>()
 
+function onReady() {
+  emits('ready')
+}
+
 const { initEditor, destroyEditor, editor, data } = useEditor()
 
-onMounted(() => initEditor(props.data))
+onMounted(() => {
+  if (props.manualInit) return
+
+  initEditor({ content: props.data, readyCallback: onReady })
+})
+
 onUnmounted(destroyEditor)
 
-watch(data, (v) => emit('update', v))
+watch(data, (v) => emits('update', v))
+
+function manualInit() {
+  initEditor({ content: props.data, readyCallback: onReady })
+}
+
+defineExpose({ manualInit })
 </script>
 
 <style lang="sass" scoped>

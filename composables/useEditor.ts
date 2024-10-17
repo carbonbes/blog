@@ -113,7 +113,8 @@ export default function useEditor() {
 
   function setNodeSelection(pos: number) {
     editor.value?.commands.setNodeSelection(pos)
-    selectedNode.value = (editor.value?.state.selection as NodeSelection).node as unknown as ArticleBody['content'][0]
+    selectedNode.value = (editor.value?.state.selection as NodeSelection)
+      .node as unknown as ArticleBody['content'][0]
   }
 
   function toggleNodeAttribute(attr: 'pin' | 'spoiler') {
@@ -295,11 +296,23 @@ export default function useEditor() {
 
   const { rects } = useTextSelection()
 
-  function initEditor(content?: ArticleBody) {
+  function initEditor({
+    content,
+    readyCallback,
+  }: {
+    content?: ArticleBody
+    readyCallback?: () => void
+  }) {
     editor.value = new Editor({
       content: content as JSONContent,
 
       extensions,
+
+      onCreate() {
+        if (!readyCallback) return
+
+        readyCallback()
+      },
 
       onUpdate({ editor }) {
         data.value = editor.getJSON() as ArticleBody

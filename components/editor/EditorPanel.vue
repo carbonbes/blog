@@ -58,7 +58,7 @@ const emits = defineEmits<{
 }>()
 
 const { editor } = useEditor()
-const { pending, article } = useArticle()
+const { pending, article } = useEditorDialogArticle()
 
 const savingIndicatorIsShow = ref(true)
 

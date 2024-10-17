@@ -16,6 +16,7 @@ declare module 'vue' {
     ITablerChevronLeft: typeof import('~icons/tabler/chevron-left')['default']
     ITablerChevronRight: typeof import('~icons/tabler/chevron-right')['default']
     ITablerClipboard: typeof import('~icons/tabler/clipboard')['default']
+    ITablerDots: typeof import('~icons/tabler/dots')['default']
     ITablerEyeOff: typeof import('~icons/tabler/eye-off')['default']
     ITablerGripVertical: typeof import('~icons/tabler/grip-vertical')['default']
     ITablerPencil: typeof import('~icons/tabler/pencil')['default']
