@@ -3,12 +3,12 @@
     <h1 class="px-6 text-lg font-medium">Мои записи</h1>
 
     <Flex col>
-      <template v-if="articles">
+      <Flex v-if="articles" col class="gap-6">
         <ArticleCard
           v-for="article in articles"
           :article
         />
-      </template>
+      </Flex>
 
       <Flex v-else col itemsCenter class="gap-2 text-gray-500">
         У вас еще нет записей

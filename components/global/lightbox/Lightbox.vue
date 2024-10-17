@@ -8,7 +8,7 @@
 
       <DialogContent
         aria-describedby=""
-        class="absolute inset-0 overflow-hidden"
+        class="fixed inset-0 overflow-hidden z-[1]"
         @closeAutoFocus="(e) => e.preventDefault()"
         @escapeKeyDown="(e) => e.preventDefault()"
       >
