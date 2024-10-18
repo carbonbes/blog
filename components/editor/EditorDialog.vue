@@ -1,40 +1,34 @@
 <template>
   <Dialog
     class="w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none sm:!rounded-xl"
-    footerClass="sm:justify-end"
     @open="onOpen"
     @close="onClose"
     ref="dialogRef"
   >
-    <template v-if="article" #header>
-      <EditorPanel class="sm:hidden flex-row-reverse" @save="onSave" />
+    <template v-if="isReady" #header>
+      <EditorActionsPanel class="sm:hidden" @save="onSave" />
     </template>
 
     <FadeInOpacityTransition>
-      <Flex v-if="!article" center class="absolute inset-0">
+      <Flex v-if="articleId && !article" center class="absolute inset-0">
         <Loader color="!bg-black" />
       </Flex>
 
-      <Flex v-else col class="overflow-hidden">
+      <Flex v-else col class="h-full overflow-hidden">
         <Editor
           :data="article?.body"
-          manualInit
+          :manualInit="!!articleId"
+          @ready="isReady = true"
           @update="onUpdate"
           ref="editorRef"
         />
       </Flex>
     </FadeInOpacityTransition>
 
-    <template v-if="article" #footer>
-      <Flex itemsCenter justifyBetween class="w-full">
-        <p
-          v-if="article"
-          class="px-3 py-1 self-end bg-red-400 text-sm font-medium text-white rounded-full"
-        >
-          {{ status }}
-        </p>
-
-        <EditorPanel class="hidden sm:flex" @save="onSave" />
+    <template v-if="isReady" #footer>
+      <Flex class="w-full">
+        <EditorHistoryActions class="sm:hidden" />
+        <EditorActionsPanel class="ml-auto hidden sm:flex" @save="onSave" />
       </Flex>
     </template>
   </Dialog>
@@ -55,6 +49,8 @@ import type Editor from '~/components/editor/Editor.client.vue'
 
 const dialogRef = ref<InstanceType<typeof Dialog>>()
 const editorRef = ref<InstanceType<typeof Editor>>()
+
+const isReady = ref(false)
 
 const { editor } = useEditor()
 const { setOpen } = useEditorDialog(dialogRef)
@@ -82,18 +78,6 @@ function onClose() {
   setOpen(false)
   article.value = undefined
 }
-
-const status = computed(() => {
-  if (!article.value) return
-
-  const statuses = {
-    draft: 'Черновик',
-    published: 'Опубликован',
-    scheduled: 'Запланирован',
-  }
-
-  return statuses[article.value.status]
-})
 
 const onUpdate = useDebounceFn(async (body: ArticleBody) => {
   const processedBody = {

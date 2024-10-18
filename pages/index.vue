@@ -1,13 +1,16 @@
 <template>
-  <Flex col justifyCenter class="mt-8 w-full gap-4">
-    <h1 class="px-6 text-lg font-medium">Мои записи</h1>
+  <Flex col justifyCenter class="my-8 w-full gap-6">
+    <Flex itemsCenter class="px-6 gap-4">
+      <h1 class="text-lg font-medium">Мои записи</h1>
+
+      <UIButton variant="secondary" size="s" @click="openEditor">
+        <ITablerPencil class="!size-4" />
+      </UIButton>
+    </Flex>
 
     <Flex col>
-      <Flex v-if="articles" col class="gap-6">
-        <ArticleCard
-          v-for="article in articles"
-          :article
-        />
+      <Flex v-if="articles" col class="gap-10">
+        <ArticleCard v-for="article in articles" :article />
       </Flex>
 
       <Flex v-else col itemsCenter class="gap-2 text-gray-500">

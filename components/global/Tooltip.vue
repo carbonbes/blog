@@ -4,16 +4,19 @@
       <TooltipTrigger asChild>
         <slot />
       </TooltipTrigger>
-      
+
       <TooltipPortal>
         <FadeInOpacityTransition>
           <TooltipContent
-            class="px-[15px] py-[10px] bg-black text-white text-[15px] leading-none select-none rounded-lg will-change-[opacity]"
-            :side-offset="5"
+            class="px-[15px] py-[10px] bg-black border border-gray-700 text-white text-[15px] leading-none select-none rounded-2xl will-change-[opacity]"
+            :side-offset="2.5"
             v-bind="forward"
           >
             {{ tooltip }}
-            <TooltipArrow class="fill-black" :width="8" />
+
+            <TooltipArrow asChild>
+              <div class="size-2 bg-black border-b border-r border-gray-700 -translate-y-1 rotate-45"></div>
+            </TooltipArrow>
           </TooltipContent>
         </FadeInOpacityTransition>
       </TooltipPortal>
