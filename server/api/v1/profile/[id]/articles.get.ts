@@ -11,7 +11,8 @@ export default defineApiRoute(async ({ event, supabase }) => {
     .from('articles')
     .select('*, author(id, name)')
     .eq('author', profileId)
-    .limit(10)
+    .order('created_at', { ascending: false })
+    .range(0, 9)
 
   if (error)
     throw createError({

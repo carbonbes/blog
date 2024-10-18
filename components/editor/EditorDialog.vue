@@ -43,7 +43,6 @@ import type {
   ListNode,
   ParagraphNode,
 } from '~/schema/articleBodySchema'
-import getArticleURL from '~/utils/getPostUrl'
 import { isEqual } from 'lodash'
 import type Editor from '~/components/editor/Editor.client.vue'
 
@@ -64,7 +63,7 @@ const articleId = computed(
 
 async function onOpen() {
   if (article.value) {
-    const articleURL = getArticleURL(article.value)
+    const articleURL = getArticleEditorURL(article.value)
     navigateTo(articleURL, { replace: true })
   }
 
@@ -109,7 +108,7 @@ async function create(body: ArticleBody) {
       })
     }
 
-    const articleURL = getArticleURL(newArticle)
+    const articleURL = getArticleEditorURL(newArticle)
     navigateTo(articleURL, { replace: true })
 
     return newArticle
@@ -136,7 +135,7 @@ async function update(articleId: number, body: ArticleBody) {
       })
     }
 
-    const articleURL = getArticleURL(updatedArticle)
+    const articleURL = getArticleEditorURL(updatedArticle)
     navigateTo(articleURL, { replace: true })
 
     return updatedArticle

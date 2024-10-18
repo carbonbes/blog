@@ -8,6 +8,7 @@
 <script lang="ts" setup>
 import type { Article } from '~/types'
 import Gallery from '~/components/article/nodes/Gallery.vue'
+import SNEmbed from '~/components/article/nodes/SNEmbed.vue'
 
 const props = defineProps<{
   article: Article
@@ -17,6 +18,7 @@ const props = defineProps<{
 provideProsemirrorOptions({
   types: {
     gallery: () => Gallery,
+    embed: () => SNEmbed,
   },
 })
 
@@ -30,6 +32,10 @@ const processedContent = computed(() => {
       ...(node.content && { content: node.content }),
     }
   })
+
+  if (props.short) {
+    return { type: 'doc', content: body.splice(0, 3) }
+  }
 
   return { type: 'doc', content: body }
 })
