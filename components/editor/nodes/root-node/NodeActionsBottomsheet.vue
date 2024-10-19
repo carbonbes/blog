@@ -1,66 +1,74 @@
 <template>
-  <BottomSheet
-    class="top-full !bg-gray-100 after:!bg-gray-100"
-    contentClass="!px-0"
-    @onOpen="onOpen"
-    ref="bottomsheetRef"
+  <Html v-if="state.view === 2" :style="'--drawer-footer-height: 80px'" />
+
+  <Drawer
+    class="!bg-gray-100 after:!bg-gray-100"
+    contentClass="px-0"
+    @update:open="onOpen"
+    ref="drawerRef"
   >
     <template #footer>
       <FadeInOpacityTransition>
-        <UIButton
-          v-if="state.view === 2"
-          size="l"
-          class="w-full flex items-center justify-center gap-3 !rounded-2xl !shadow"
-          @click="prevView"
-        >
-          Назад
-        </UIButton>
+        <div v-if="state.view === 2" class="p-4">
+          <UIButton
+            size="l"
+            class="w-full flex items-center justify-center gap-3 !rounded-2xl !shadow"
+            @click="prevView"
+          >
+            Назад
+          </UIButton>
+        </div>
       </FadeInOpacityTransition>
     </template>
 
-    <Swiper
-      :spaceBetween="50"
-      :speed="250"
-      :allowTouchMove="false"
-      ref="swiperRef"
-    >
-      <SwiperSlide class="px-4 pb-4 w-full h-full !flex flex-col gap-4">
-        <UIButton
-          v-for="(button, i) in nodeActionButtons"
-          :key="i"
-          variant="secondary"
-          size="l"
-          class="flex items-center gap-3 !rounded-2xl !shadow"
-          :class="{ 'text-blue-500': button.active }"
-          @click="button.action"
-          :disabled="button.disabled"
-        >
-          <Component :is="button.icon" />
-          {{ button.label }}
-          <ITablerChevronRight v-if="button.additional" class="ml-auto" />
-        </UIButton>
-      </SwiperSlide>
+    <div>
+      <Swiper
+        :spaceBetween="50"
+        :speed="250"
+        :allowTouchMove="false"
+        slide-prev-class="h-0"
+        slide-next-class="!h-0"
+        slide-active-class="!h-full"
+        ref="swiperRef"
+      >
+        <SwiperSlide class="px-4 pb-4 w-full h-full flex flex-col gap-4">
+          <UIButton
+            v-for="(button, i) in nodeActionButtons"
+            :key="i"
+            variant="secondary"
+            size="l"
+            class="flex items-center gap-3 !rounded-2xl !shadow"
+            :class="{ 'text-blue-500': button.active }"
+            @click="button.action"
+            :disabled="button.disabled"
+          >
+            <Component :is="button.icon" />
+            {{ button.label }}
+            <ITablerChevronRight v-if="button.additional" class="ml-auto" />
+          </UIButton>
+        </SwiperSlide>
 
-      <SwiperSlide class="px-4 pb-4 w-full h-full !flex flex-col gap-4">
-        <UIButton
-          v-for="(button, i) in changeNodeTypeButtons"
-          :key="i"
-          variant="secondary"
-          size="l"
-          class="flex items-center gap-3 !rounded-2xl !shadow"
-          @click="button.action"
-          :disabled="button.disabled"
-        >
-          <Component :is="button.icon" />
-          {{ button.label }}
-        </UIButton>
-      </SwiperSlide>
-    </Swiper>
-  </BottomSheet>
+        <SwiperSlide class="px-4 pb-4 w-full h-full flex flex-col gap-4">
+          <UIButton
+            v-for="(button, i) in changeNodeTypeButtons"
+            :key="i"
+            variant="secondary"
+            size="l"
+            class="flex items-center gap-3 !rounded-2xl !shadow"
+            @click="button.action"
+            :disabled="button.disabled"
+          >
+            <Component :is="button.icon" />
+            {{ button.label }}
+          </UIButton>
+        </SwiperSlide>
+      </Swiper>
+    </div>
+  </Drawer>
 </template>
 
 <script lang="ts" setup>
-import type BottomSheet from '~/components/global/BottomSheet.vue'
+import type Drawer from '~/components/global/Drawer.vue'
 import Swiper from '~/components/global/swiper/Swiper.vue'
 import SwiperSlide from '~/components/global/swiper/SwiperSlide.vue'
 import Pin from '~icons/tabler/pin'
@@ -92,7 +100,7 @@ const {
 } = useEditor()
 
 const state = reactive({
-  view: 1
+  view: 1,
 })
 
 function onOpen(value: boolean) {
@@ -124,7 +132,7 @@ const nodeActionButtons = computed(() => [
     action: () => {
       toggleNodeAttribute('pin')
       setOpen(false)
-    }
+    },
   },
   {
     icon: EyeOff,
@@ -133,7 +141,7 @@ const nodeActionButtons = computed(() => [
     action: () => {
       toggleNodeAttribute('spoiler')
       setOpen(false)
-    }
+    },
   },
   {
     icon: ArrowUp,
@@ -142,7 +150,7 @@ const nodeActionButtons = computed(() => [
     action: () => {
       moveNode('up')
       setOpen(false)
-    }
+    },
   },
   {
     icon: ArrowDown,
@@ -151,14 +159,16 @@ const nodeActionButtons = computed(() => [
     action: () => {
       moveNode('down')
       setOpen(false)
-    }
+    },
   },
   {
     icon: Refresh,
     label: 'Поменять на',
-    disabled: ['sn-embed', 'gallery', 'link', 'separator'].includes(selectedNodeType.value),
+    disabled: ['sn-embed', 'gallery', 'link', 'separator'].includes(
+      selectedNodeType.value
+    ),
     action: () => nextView(),
-    additional: true
+    additional: true,
   },
   {
     icon: Trash,
@@ -166,7 +176,7 @@ const nodeActionButtons = computed(() => [
     action: () => {
       removeNode()
       setOpen(false)
-    }
+    },
   },
 ])
 
@@ -174,7 +184,9 @@ const changeNodeTypeButtons = computed(() => [
   {
     icon: Heading1,
     label: 'Заголовок 1',
-    disabled: selectedNodeType.value === 'heading' && selectedNodeAttrs.value.level === 1,
+    disabled:
+      selectedNodeType.value === 'heading' &&
+      selectedNodeAttrs.value.level === 1,
     action: () => {
       changeNodeType({ type: 'heading', attrs: { level: 1 } })
       setOpen(false)
@@ -183,7 +195,9 @@ const changeNodeTypeButtons = computed(() => [
   {
     icon: Heading2,
     label: 'Заголовок 2',
-    disabled: selectedNodeType.value === 'heading' && selectedNodeAttrs.value.level === 2,
+    disabled:
+      selectedNodeType.value === 'heading' &&
+      selectedNodeAttrs.value.level === 2,
     action: () => {
       changeNodeType({ type: 'heading', attrs: { level: 2 } })
       setOpen(false)
@@ -218,10 +232,10 @@ const changeNodeTypeButtons = computed(() => [
   },
 ])
 
-const bottomsheetRef = ref<InstanceType<typeof BottomSheet>>()
+const drawerRef = ref<InstanceType<typeof Drawer>>()
 
 function setOpen(value: boolean) {
-  bottomsheetRef.value?.setOpen(value)
+  drawerRef.value?.setOpen(value)
 }
 
 defineExpose({ setOpen })

@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ScrollAreaViewport } from 'radix-vue'
+import type { ScrollAreaViewport } from 'radix-vue'
 
 withDefaults(defineProps<{
   direction?: 'horizontal' | 'vertical'

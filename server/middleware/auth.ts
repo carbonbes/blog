@@ -10,22 +10,24 @@ declare module 'h3' {
 
 export default defineEventHandler(async (event) => {
   if (event.context.profile) return
-  
+
   event.context.profile = null
 
   const supabase = await serverSupabaseClient<Database>(event)
-  const user = await serverSupabaseUser(event)
 
-  if (!user) return
+  try {
+    const user = await serverSupabaseUser(event)
 
-  const { data: profile, error } = await supabase
-    .from('profiles')
-    .select()
-    .eq('user_id', user.id)
-    .limit(1)
-    .single()
+    if (!user) return
 
-  if (!profile || error) return
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select()
+      .eq('user_id', user.id)
+      .single()
 
-  event.context.profile = profile
+    if (!profile || error) return
+
+    event.context.profile = profile
+  } catch (error) {}
 })
