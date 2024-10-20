@@ -10,6 +10,7 @@
           aria-describedby=""
           class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 flex flex-col bg-white rounded-xl"
           v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
+          ref="dialogContentRef"
         >
           <VisuallyHidden>
             <DialogTitle />
@@ -34,6 +35,7 @@
 
 <script lang="ts" setup>
 import {
+  type DialogContent,
   useEmitAsProps,
   type DialogContentEmits,
   type DialogContentProps
@@ -49,6 +51,8 @@ const emits = defineEmits<DialogContentEmits & {
 
 const emitsAsProps = useEmitAsProps(emits)
 
+const dialogContentRef = ref<InstanceType<typeof DialogContent>>()
+
 const isOpen = ref(false)
 
 function setOpen(value: boolean) {
@@ -61,5 +65,5 @@ function toggleOpen() {
 
 watch(isOpen, (v) => !v && emits('close'))
 
-defineExpose({ setOpen, toggleOpen })
+defineExpose({ setOpen, toggleOpen, dialogContentRef })
 </script>

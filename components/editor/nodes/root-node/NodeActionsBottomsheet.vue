@@ -3,7 +3,7 @@
 
   <Drawer
     class="!bg-gray-100 after:!bg-gray-100"
-    contentClass="px-0"
+    contentClass="!px-0"
     @update:open="onOpen"
     ref="drawerRef"
   >
@@ -26,9 +26,9 @@
         :spaceBetween="50"
         :speed="250"
         :allowTouchMove="false"
-        slide-prev-class="h-0"
-        slide-next-class="!h-0"
-        slide-active-class="!h-full"
+        slidePrevClass="!h-0"
+        slideNextClass="!h-0"
+        slideActiveClass="!h-full"
         ref="swiperRef"
       >
         <SwiperSlide class="px-4 pb-4 w-full h-full flex flex-col gap-4">
@@ -38,7 +38,7 @@
             variant="secondary"
             size="l"
             class="flex items-center gap-3 !rounded-2xl !shadow"
-            :class="{ 'text-blue-500': button.active }"
+            :class="[button.class, { 'text-blue-500': button.active }]"
             @click="button.action"
             :disabled="button.disabled"
           >
@@ -173,6 +173,7 @@ const nodeActionButtons = computed(() => [
   {
     icon: Trash,
     label: 'Удалить',
+    class: 'text-red-500',
     action: () => {
       removeNode()
       setOpen(false)

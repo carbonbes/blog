@@ -7,10 +7,13 @@
     :snapPoints
     :activeSnapPoint
     :fadeFromIndex="0"
-    v-model:active-snap-point="activeSnapPoint"
+    v-model:activeSnapPoint="activeSnapPoint"
   >
     <DrawerPortal>
-      <DrawerOverlay class="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+      <DrawerOverlay
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        @click="isOpen = false"
+      />
 
       <DrawerContent
         aria-describedby=""
@@ -38,7 +41,7 @@
 
         <Primitive
           v-if="$slots.footer"
-          class="sticky bottom-0 z-[1]"
+          class="sticky bottom-0 h-20 z-[1]"
           :class="[footerClass]"
           asChild
         >
@@ -81,19 +84,30 @@ async function setOpen(value: boolean) {
 const snapPoints = ref([0.5, 1])
 const activeSnapPoint = ref(snapPoints.value[0])
 
+function expandTo(value: number) {
+  activeSnapPoint.value = value
+}
+
 function expandToMax() {
-  activeSnapPoint.value = 1
+  activeSnapPoint.value = snapPoints.value[snapPoints.value.length - 1]
 }
 
 const drawerContentRef = ref<InstanceType<typeof DrawerContent>>()
 const drawerContentScrollableContentRef = ref<HTMLElement>()
 const scrollableContentRef = ref<HTMLDivElement>()
 
-watch(isOpen, async (v) => {
+async function setDrawerContentScrollableContentRef() {
   await nextTick()
+  drawerContentScrollableContentRef.value = drawerContentRef.value?.$el
+}
+
+const { setOpen: setDrawerOpen } = useDrawer()
+
+watch(isOpen, (v) => {
+  setDrawerOpen(v)
 
   if (v) {
-    drawerContentScrollableContentRef.value = drawerContentRef.value?.$el
+    setDrawerContentScrollableContentRef()
   }
 })
 
@@ -119,5 +133,5 @@ const scrollableContentClasses = computed(() => ({
     swipeDirection.value === 'up',
 }))
 
-defineExpose({ setOpen, expandToMax })
+defineExpose({ setOpen, expandTo, expandToMax })
 </script>
