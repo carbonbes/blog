@@ -7,7 +7,11 @@
         <FadeInOpacityTransition>
           <Loader v-if="pending" color="!bg-black" class="absolute" />
 
-          <TemporalElement v-else :timeout="1500">
+          <TemporalElement
+            v-else
+            :timeout="1500"
+            @unmounted="onTemporalElIsUnmounted"
+          >
             <ITablerCheck class="absolute text-green-500" />
           </TemporalElement>
         </FadeInOpacityTransition>
@@ -49,14 +53,16 @@ const emits = defineEmits<{
 
 const { pending, article } = useEditorDialogArticle()
 
-watch(pending, async (v) => {
-  await until(v).toBe(false)
-  await promiseTimeout(1500)
-
-  savingIndicatorIsShow.value = false
+watch(pending, (v) => {
+  if (v) savingIndicatorIsShow.value = true
 })
 
-const savingIndicatorIsShow = ref(true)
+async function onTemporalElIsUnmounted() {
+  await promiseTimeout(250)
+  savingIndicatorIsShow.value = false
+}
+
+const savingIndicatorIsShow = ref(false)
 
 const status = computed(() => {
   if (!article.value) return

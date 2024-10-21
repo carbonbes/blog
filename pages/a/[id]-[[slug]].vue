@@ -1,11 +1,10 @@
 <template>
-  <ArticleHeader :article />
-  <ArticleContent :article />
+  <div class="sm:my-8">
+    <ArticleCard :article />
+  </div>
 </template>
 
 <script lang="ts" setup>
-import getArticleURL from '~/utils/getArticleURL'
-
 const route = useRoute()
 
 const articleId = computed(() => route.params.id as unknown as number)
@@ -18,6 +17,6 @@ onMounted(() => {
   if (!article.value) return
 
   const articleURL = getArticleURL(article.value)
-  navigateTo(articleURL, { replace: true })
+  navigateTo({ path: articleURL, query: route.query }, { replace: true })
 })
 </script>

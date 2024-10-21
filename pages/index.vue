@@ -10,7 +10,7 @@
 
     <Flex col>
       <Flex v-if="articles" col class="gap-10">
-        <ArticleCard v-for="article in articles" :article />
+        <ArticleCard v-for="article in articles" :article short />
       </Flex>
 
       <Flex v-else col itemsCenter class="gap-2 text-gray-500">
