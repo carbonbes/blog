@@ -26,9 +26,9 @@
         :spaceBetween="50"
         :speed="250"
         :allowTouchMove="false"
-        slidePrevClass="!h-0"
-        slideNextClass="!h-0"
-        slideActiveClass="!h-full"
+        slidePrevClass="h-0"
+        slideNextClass="h-0"
+        slideActiveClass="h-full"
         ref="swiperRef"
       >
         <SwiperSlide class="px-4 pb-4 w-full h-full flex flex-col gap-4">

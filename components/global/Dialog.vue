@@ -10,7 +10,6 @@
           aria-describedby=""
           class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 flex flex-col bg-white rounded-xl"
           v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
-          ref="dialogContentRef"
         >
           <VisuallyHidden>
             <DialogTitle />
@@ -38,20 +37,22 @@ import {
   type DialogContent,
   useEmitAsProps,
   type DialogContentEmits,
-  type DialogContentProps
+  type DialogContentProps,
 } from 'radix-vue'
 
-const props = defineProps<DialogContentProps & {
-  class?: string
-}>()
+const props = defineProps<
+  DialogContentProps & {
+    class?: string
+  }
+>()
 
-const emits = defineEmits<DialogContentEmits & {
-  close: any
-}>()
+const emits = defineEmits<
+  DialogContentEmits & {
+    close: any
+  }
+>()
 
 const emitsAsProps = useEmitAsProps(emits)
-
-const dialogContentRef = ref<InstanceType<typeof DialogContent>>()
 
 const isOpen = ref(false)
 
@@ -65,5 +66,5 @@ function toggleOpen() {
 
 watch(isOpen, (v) => !v && emits('close'))
 
-defineExpose({ setOpen, toggleOpen, dialogContentRef })
+defineExpose({ setOpen, toggleOpen })
 </script>

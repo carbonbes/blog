@@ -9,7 +9,7 @@
     :fadeFromIndex="0"
     v-model:activeSnapPoint="activeSnapPoint"
   >
-    <DrawerPortal>
+    <DrawerPortal to="#drawer-portal">
       <DrawerOverlay
         class="fixed inset-0 bg-black/50 backdrop-blur-sm"
         @click="isOpen = false"
@@ -20,7 +20,6 @@
         v-bind="props"
         class="fixed right-0 bottom-0 left-0 w-full h-full max-h-[95%] bg-white rounded-t-2xl"
         ref="drawerContentRef"
-        @closeAutoFocus="(e) => e.preventDefault()"
       >
         <VisuallyHidden>
           <DialogTitle />
@@ -41,7 +40,7 @@
 
         <Primitive
           v-if="$slots.footer"
-          class="sticky bottom-0 h-20 z-[1]"
+          class="h-20"
           :class="[footerClass]"
           asChild
         >
@@ -101,11 +100,7 @@ async function setDrawerContentScrollableContentRef() {
   drawerContentScrollableContentRef.value = drawerContentRef.value?.$el
 }
 
-const { setOpen: setDrawerOpen } = useDrawer()
-
 watch(isOpen, (v) => {
-  setDrawerOpen(v)
-
   if (v) {
     setDrawerContentScrollableContentRef()
   }
