@@ -17,7 +17,7 @@
         </FadeInOpacityTransition>
       </Flex>
 
-      <Tooltip :tooltip="`Статус: ${status?.label}`">
+      <Tooltip v-if="article" :tooltip="`Статус: ${status?.label}`">
         <Flex center class="size-[40px] cursor-pointer group">
           <div
             class="size-2 rounded-full cursor-pointer transition-colors duration-[250ms]"
@@ -33,6 +33,7 @@
       </Tooltip>
 
       <UIButton
+        v-if="article"
         class="flex items-center gap-3 rounded-xl"
         @click="article?.status === 'draft' ? emits('publish') : emits('save')"
         :disabled="pending"

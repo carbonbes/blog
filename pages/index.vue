@@ -1,15 +1,9 @@
 <template>
   <Flex col justifyCenter class="my-8 w-full gap-6">
-    <Flex itemsCenter class="px-6 gap-4">
-      <h1 class="text-lg font-medium">Мои записи</h1>
-
-      <UIButton variant="secondary" size="s" @click="openEditor">
-        <ITablerPencil class="!size-4" />
-      </UIButton>
-    </Flex>
+    <h1 class="px-6 text-lg font-medium">Мои записи</h1>
 
     <Flex col>
-      <Flex v-if="articles" col class="gap-10">
+      <Flex v-if="articles" col class="gap-6">
         <ArticleCard v-for="article in articles" :article short />
       </Flex>
 
@@ -29,23 +23,20 @@
 
 <script lang="ts" setup>
 definePageMeta({
+  name: 'IndexPage',
   middleware: 'auth',
 })
 
 const { user } = useMe()
-const { setOpen } = useEditorDialog()
 
 const { data: articles, error } = await useAsyncData(
   async () => await getProfileArticles(user.value!.user_id)
 )
 
-if (error.value)
+if (error.value) {
   throw createError({
     statusCode: error.value.statusCode,
     message: error.value.message,
   })
-
-function openEditor() {
-  setOpen(true)
 }
 </script>

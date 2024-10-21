@@ -1,7 +1,13 @@
 <template>
   <ProsemirrorRender
     :node="processedContent"
-    :class="[nodesClasses, headingClasses, paragraphClasses, listClasses]"
+    :class="[
+      nodesClasses,
+      headingClasses,
+      paragraphClasses,
+      listClasses,
+      galleryClasses,
+    ]"
   />
 </template>
 
@@ -50,4 +56,6 @@ const paragraphClasses = ''
 
 const listClasses =
   '[&_>_ol]:pl-4 [&_>_ul]:pl-4 [&_>_ol]:list-decimal [&_>_ul]:list-disc not-first:[&_ul_>_li]:mt-2 not-first:[&_ol_>_li]:mt-2'
+
+const galleryClasses = '[&_>img]:last:-mb-6'
 </script>

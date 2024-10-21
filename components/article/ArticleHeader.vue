@@ -6,7 +6,7 @@
     </Flex>
 
     <Dropdown :collisionPadding="10" :items ref="dropdownRef">
-      <button>
+      <button class="hover:opacity-50 transition-opacity duration-[250ms]">
         <ITablerDots />
       </button>
     </Dropdown>

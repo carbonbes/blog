@@ -1,20 +1,58 @@
 <template>
   <Flex
     itemsCenter
-    class="sticky bottom-0 sm:top-0 sm:bottom-[unset] w-full px-6 h-[60px] bg-white border-t-2 sm:border-t-0 sm:border-b-2 order-1 sm:order-[-1]"
+    justifyBetween
+    class="fixed bottom-0 sm:sticky sm:top-0 sm:bottom-[unset] w-full px-6 h-[60px] bg-white sm:shadow-sm"
   >
-    <Flex itemsCenter class="ml-auto gap-2" v-if="isAuthenticated">
-      {{ user?.name }}
+    <NuxtLoadingIndicator class="!absolute !top-full" />
+
+    <Tooltip tooltip="На главную">
       <button
-        class="p-1 bg-gray-200 rounded-lg text-sm hover:opacity-50"
-        @click="logoutMe"
+        class="hover:opacity-50 transition-opacity duration-[250ms] disabled:pointer-events-none"
+        :class="{ 'text-blue-500': isIndexPage }"
+        :disabled="isIndexPage"
       >
-        Выйти
+        <NuxtLink :to="{ name: 'IndexPage' }">
+          <ITablerHome />
+        </NuxtLink>
       </button>
+    </Tooltip>
+
+    <UIButton
+      v-if="isAuthenticated"
+      variant="secondary"
+      size="s"
+      class="!p-2.5 sm:hidden !rounded-full"
+      @click="openEditor"
+    >
+      <ITablerPencil />
+    </UIButton>
+
+    <Flex class="gap-4">
+      <UIButton
+        variant="secondary"
+        size="s"
+        class="hidden sm:flex items-center gap-2"
+        @click="openEditor"
+      >
+        <ITablerPencil class="!size-5" />
+      </UIButton>
+
+      <Flex v-if="isAuthenticated" itemsCenter class="gap-2">
+        <ITablerUserCircle />
+      </Flex>
     </Flex>
   </Flex>
 </template>
 
 <script lang="ts" setup>
+const route = useRoute()
+const isIndexPage = computed(() => route.name === 'IndexPage')
+
+const { setOpen } = useEditorDialog()
+function openEditor() {
+  setOpen(true)
+}
+
 const { isAuthenticated, user, logoutMe } = useMe()
 </script>
