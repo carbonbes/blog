@@ -9,14 +9,16 @@
         <FadeInOpacityTransition>
           <TooltipContent
             class="px-[15px] py-[10px] bg-black border border-gray-700 text-white text-[15px] leading-none select-none rounded-2xl z-[3] will-change-[opacity]"
-            :side-offset="2.5"
-            :collision-padding="10"
+            :sideOffset="2.5"
+            :collisionPadding="10"
             v-bind="forward"
           >
             {{ tooltip }}
 
             <TooltipArrow asChild>
-              <div class="size-2 bg-black border-b border-r border-gray-700 -translate-y-1 rotate-45"></div>
+              <div
+                class="size-2 bg-black border-b border-r border-gray-700 -translate-y-1 rotate-45"
+              ></div>
             </TooltipArrow>
           </TooltipContent>
         </FadeInOpacityTransition>
@@ -38,6 +40,7 @@ const props = defineProps<
     class?: string
   }
 >()
+
 const emits = defineEmits<TooltipRootEmits>()
 
 const forward = useForwardPropsEmits(props, emits)

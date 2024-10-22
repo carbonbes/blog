@@ -46,6 +46,12 @@ export async function getProfileArticles(profileId: string) {
   ).data
 }
 
+export async function getProfileDrafts(profileId: number) {
+  return (
+    await $fetch<Response<Article[]>>(`/api/v1/profile/${profileId}/drafts`)
+  ).data
+}
+
 export async function uploadMediaByFile(file: File) {
   const formData = new FormData()
   formData.append('file', file)

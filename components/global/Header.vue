@@ -1,6 +1,7 @@
 <template>
   <Flex
     v-if="isAuthenticated"
+    id="header"
     class="fixed bottom-0 sm:sticky sm:top-0 sm:bottom-[unset] w-full px-6 h-[60px] bg-white border border-t-gray-100 sm:border-none sm:shadow-sm z-[1]"
   >
     <NuxtLoadingIndicator
