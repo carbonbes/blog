@@ -2,13 +2,13 @@
   <DialogRoot v-model:open="isOpen">
     <DialogPortal>
       <DialogOverlay
-        class="fixed inset-0 transition-[background-color,backdrop-filter] duration-[333ms] z-[1] will-change-[background-color,backdrop-filter]"
+        class="fixed inset-0 transition-[background-color,backdrop-filter] duration-[333ms] z-[3] will-change-[background-color,backdrop-filter]"
         :style="dialogOverlayStyles"
       />
 
       <DialogContent
         aria-describedby=""
-        class="fixed inset-0 overflow-hidden z-[1]"
+        class="fixed inset-0 overflow-hidden z-[3]"
         @closeAutoFocus="(e) => e.preventDefault()"
         @escapeKeyDown="(e) => e.preventDefault()"
       >

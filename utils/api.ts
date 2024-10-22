@@ -87,6 +87,12 @@ export async function updateArticle(id: number, body: ArticleBody) {
   ).data
 }
 
+export async function removeArticle(id: number) {
+  return await $fetch<Response>(`/api/v1/article/${id}`, {
+    method: 'DELETE',
+  })
+}
+
 export async function getArticle(id: number) {
   return (await $fetch<Response<Article>>(`/api/v1/article/${id}`)).data
 }

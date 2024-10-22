@@ -30,7 +30,7 @@ export type Profile = Database['public']['Tables']['profiles']['Row']
 export type Article = Omit<
   Database['public']['Tables']['articles']['Row'],
   'body'
-> & { author: { id: string; name: string }; body: ArticleBody }
+> & { author: Profile; body: ArticleBody }
 
 export type NodeType =
   | 'heading'

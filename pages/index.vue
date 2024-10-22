@@ -1,10 +1,10 @@
 <template>
-  <Flex col justifyCenter class="my-8 w-full gap-6">
+  <Flex col justifyCenter class="py-8 w-full gap-4">
     <h1 class="px-6 text-lg font-medium">Мои записи</h1>
 
     <Flex col>
       <Flex v-if="articles" col class="gap-6">
-        <ArticleCard v-for="article in articles" :article short />
+        <ArticleCard v-for="article in articles" :article />
       </Flex>
 
       <Flex v-else col itemsCenter class="gap-2 text-gray-500">
@@ -27,6 +27,10 @@ definePageMeta({
   middleware: 'auth',
 })
 
+useSeoMeta({
+  title: 'Мои записи',
+})
+
 const { user } = useMe()
 
 const { data: articles, error } = await useAsyncData(
@@ -38,5 +42,11 @@ if (error.value) {
     statusCode: error.value.statusCode,
     message: error.value.message,
   })
+}
+
+const { setOpen } = useEditorDialog()
+
+function openEditor() {
+  setOpen(true)
 }
 </script>

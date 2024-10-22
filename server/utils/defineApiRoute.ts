@@ -2,19 +2,23 @@ import type { H3Event, EventHandler, EventHandlerRequest } from 'h3'
 import { serverSupabaseClient } from '#supabase/server'
 import { Profile, Supabase } from '~/types'
 
-type Handler = ({
+type Handler<RequireAuth extends boolean> = ({
   event,
   supabase,
   user,
 }: {
   event: H3Event
   supabase: Supabase
-  user: Profile | null
+  user: RequireAuth extends true ? Profile : Profile | null
 }) => any
 
-export function defineApiRoute<T extends EventHandlerRequest, D>(
-  handler: Handler,
-  options?: { requireAuth?: boolean }
+export function defineApiRoute<
+  T extends EventHandlerRequest,
+  D,
+  RequireAuth extends boolean
+>(
+  handler: Handler<RequireAuth>,
+  options?: { requireAuth?: RequireAuth }
 ): EventHandler<T, D> {
   return defineEventHandler<T>(async (event) => {
     const supabase: Supabase = await serverSupabaseClient(event)
@@ -25,7 +29,13 @@ export function defineApiRoute<T extends EventHandlerRequest, D>(
     }
 
     try {
-      const response = await handler({ event, supabase, user })
+      const response = await handler({
+        event,
+        supabase,
+        user: (options?.requireAuth
+          ? (user as Profile)
+          : user) as RequireAuth extends true ? Profile : Profile | null,
+      })
 
       return { success: true, data: response }
     } catch (err: any) {

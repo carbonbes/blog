@@ -1,14 +1,16 @@
 <template>
-  <ProsemirrorRender
-    :node="processedContent"
-    :class="[
-      nodesClasses,
-      headingClasses,
-      paragraphClasses,
-      listClasses,
-      galleryClasses,
-    ]"
-  />
+  <Flex col class="relative">
+    <ProsemirrorRender
+      :node="processedContent"
+      :class="[nodesClasses, headingClasses, paragraphClasses, listClasses]"
+    />
+
+    <NuxtLink
+      v-if="isCard"
+      :to="articleURL"
+      class="absolute inset-0 -ml-6 w-[calc(100%_+_3rem)]"
+    />
+  </Flex>
 </template>
 
 <script lang="ts" setup>
@@ -19,6 +21,7 @@ import SNEmbed from '~/components/article/nodes/SNEmbed.vue'
 const props = defineProps<{
   article: Article
   short?: boolean
+  isCard?: boolean
 }>()
 
 provideProsemirrorOptions({
@@ -57,5 +60,5 @@ const paragraphClasses = ''
 const listClasses =
   '[&_>_ol]:pl-4 [&_>_ul]:pl-4 [&_>_ol]:list-decimal [&_>_ul]:list-disc not-first:[&_ul_>_li]:mt-2 not-first:[&_ol_>_li]:mt-2'
 
-const galleryClasses = '[&_>img]:last:-mb-6'
+const articleURL = computed(() => getArticleURL(props.article))
 </script>

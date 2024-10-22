@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import type Dropdown from '~/components/global/dropdown/Dropdown.vue'
+import type Dropdown from '~/components/global/dropdown/Dropdown.client.vue'
 import Heading from '~icons/tabler/heading'
 import Heading1 from '~icons/tabler/h1'
 import Heading2 from '~icons/tabler/h2'

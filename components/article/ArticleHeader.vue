@@ -16,13 +16,15 @@
 <script lang="ts" setup>
 import type { Article } from '~/types'
 import Pencil from '~icons/tabler/pencil'
-import type Dropdown from '~/components/global/dropdown/Dropdown.vue'
+import Trash from '~icons/tabler/trash'
+import type Dropdown from '~/components/global/dropdown/Dropdown.client.vue'
 
 const props = defineProps<{
   article: Article
 }>()
 
 const { setOpen } = useEditorDialog()
+const { errorNotify } = useNotifications()
 
 const dropdownRef = ref<InstanceType<typeof Dropdown>>()
 
@@ -37,6 +39,20 @@ const items = computed(() => [
       })
 
       dropdownRef.value?.setOpen(false)
+    },
+  },
+  {
+    icon: Trash,
+    label: 'Удалить',
+    class: 'text-red-500',
+    action: async () => {
+      try {
+        await removeArticle(props.article.id)
+      } catch (error: any) {
+        errorNotify({ text: error.data.message })
+      } finally {
+        dropdownRef.value?.setOpen(false)
+      }
     },
   },
 ])
