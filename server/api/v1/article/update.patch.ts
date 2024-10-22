@@ -4,7 +4,7 @@ import articleBodySchema from '~/schema/articleBodySchema'
 import findTitle from '~/server/utils/findTitle'
 
 export default defineApiRoute(
-  async ({ event, supabase, user }) => {
+  async ({ event, supabase, user: { name: userName } }) => {
     const body = await useSafeValidatedBody(
       event,
       z.object({ id: z.number(), body: articleBodySchema })
@@ -19,7 +19,7 @@ export default defineApiRoute(
 
     const { id, body: articleBody } = body.data
 
-    const title = findTitle(articleBody) || `Запись пользователя ${user!.name}`
+    const title = findTitle(articleBody) || `Запись пользователя ${userName}`
     const titleSlug = getSlug(title)
 
     const { data, error } = await supabase
@@ -37,13 +37,6 @@ export default defineApiRoute(
       throw createError({
         statusCode: +error.code,
         message: error.message,
-      })
-    }
-
-    if (!data) {
-      throw createError({
-        statusCode: 400,
-        message: 'Не удалось обновить запись',
       })
     }
 

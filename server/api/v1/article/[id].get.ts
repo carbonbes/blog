@@ -21,12 +21,5 @@ export default defineApiRoute(async ({ event, supabase }) => {
     })
   }
 
-  if (!data) {
-    throw createError({
-      statusCode: 400,
-      message: 'Не удалось получить пост',
-    })
-  }
-
   return data
 })
