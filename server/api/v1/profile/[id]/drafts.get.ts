@@ -2,7 +2,7 @@ import { useSafeValidatedParams, z } from 'h3-zod'
 
 export default defineApiRoute(
   async ({ event, supabase, user }) => {
-    const params = await useSafeValidatedParams(event, { id: z.number() })
+    const params = await useSafeValidatedParams(event, { id: z.string() })
 
     if (!params.success) {
       throw createError({
@@ -15,7 +15,7 @@ export default defineApiRoute(
       data: { id: profileId },
     } = params
 
-    if (profileId !== user.id) {
+    if (+profileId !== user.id) {
       throw createError({
         statusCode: 403,
         message: 'У вас нет прав на просмотр чужих черновиков',
@@ -29,11 +29,12 @@ export default defineApiRoute(
       .order('created_at', { ascending: false })
       .range(0, 9)
 
-    if (error)
+    if (error) {
       throw createError({
         statusCode: +error.code,
         message: error.message,
       })
+    }
 
     return data
   },

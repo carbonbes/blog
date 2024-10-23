@@ -11,6 +11,7 @@ declare module 'vue' {
     IIconsYoutube: typeof import('~icons/icons/youtube')['default']
     ITablerArrowBackUp: typeof import('~icons/tabler/arrow-back-up')['default']
     ITablerArrowForwardUp: typeof import('~icons/tabler/arrow-forward-up')['default']
+    ITablerArticle: typeof import('~icons/tabler/article')['default']
     ITablerBrandX: typeof import('~icons/tabler/brand-x')['default']
     ITablerCheck: typeof import('~icons/tabler/check')['default']
     ITablerChevronLeft: typeof import('~icons/tabler/chevron-left')['default']

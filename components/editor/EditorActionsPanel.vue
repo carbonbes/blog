@@ -35,10 +35,10 @@
       <UIButton
         v-if="article"
         class="flex items-center gap-3 rounded-xl"
-        @click="article?.status === 'draft' ? emits('publish') : emits('save')"
+        @click="emits('save')"
         :disabled="pending"
       >
-        {{ article?.status === 'draft' ? 'Опубликовать' : 'Сохранить' }}
+        Сохранить
       </UIButton>
     </Flex>
   </Flex>

@@ -40,7 +40,7 @@ export async function logout() {
   return await $fetch('/api/v1/me/logout')
 }
 
-export async function getProfileArticles(profileId: string) {
+export async function getProfileArticles(profileId: number) {
   return (
     await $fetch<Response<Article[]>>(`/api/v1/profile/${profileId}/articles`)
   ).data
@@ -48,7 +48,9 @@ export async function getProfileArticles(profileId: string) {
 
 export async function getProfileDrafts(profileId: number) {
   return (
-    await $fetch<Response<Article[]>>(`/api/v1/profile/${profileId}/drafts`)
+    await $fetch<Response<Article[]>>(`/api/v1/profile/${profileId}/drafts`, {
+      headers: import.meta.server ? useRequestHeaders(['cookie']) : undefined,
+    })
   ).data
 }
 
