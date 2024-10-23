@@ -153,7 +153,7 @@ const SNEmbedNode = z.object({
         username: z.string().trim().min(1),
         url: z.string().url(),
       }),
-      text: z.string().trim().min(1),
+      text: z.string().trim().min(1).optional(),
       media: z.array(StorageMediaSchema),
       published: Rfc2822DateSchema,
       type: z.union([z.literal('x'), z.literal('telegram')]),
