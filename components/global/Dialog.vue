@@ -1,14 +1,14 @@
 <template>
   <DialogRoot v-model:open="isOpen">
-    <DialogPortal>
+    <DialogPortal to="#teleports">
       <FadeInOpacityTransition>
-        <DialogOverlay class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[2]" />
+        <DialogOverlay class="fixed inset-0 bg-black/50 backdrop-blur-sm" />
       </FadeInOpacityTransition>
 
       <FadeInScaleTransition>
         <DialogContent
           aria-describedby=""
-          class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 flex flex-col bg-white rounded-xl z-[2]"
+          class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 flex flex-col bg-white rounded-xl"
           v-bind="{ ...props, ...emitsAsProps, ...$attrs }"
         >
           <VisuallyHidden>

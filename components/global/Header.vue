@@ -54,7 +54,7 @@ const route = useRoute()
 
 const isIndexPage = computed(() => route.name === 'IndexPage')
 
-const { isAuthenticated } = useMe()
+const { isAuthenticated } = useUser()
 
 const { setOpen } = useEditorDialog()
 

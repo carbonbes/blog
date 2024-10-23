@@ -5,10 +5,10 @@
         <slot />
       </TooltipTrigger>
 
-      <TooltipPortal>
+      <TooltipPortal to="#teleports">
         <FadeInOpacityTransition>
           <TooltipContent
-            class="px-[15px] py-[10px] bg-black border border-gray-700 text-white text-[15px] leading-none select-none rounded-2xl z-[3] will-change-[opacity]"
+            class="px-[15px] py-[10px] bg-black border border-gray-700 text-white text-[15px] leading-none select-none rounded-2xl will-change-[opacity]"
             :sideOffset="2.5"
             :collisionPadding="10"
             v-bind="forward"

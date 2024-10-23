@@ -11,6 +11,6 @@
 </template>
 
 <script lang="ts" setup>
-const { getMe } = useMe()
+const { getMe } = useUser()
 await getMe()
 </script>

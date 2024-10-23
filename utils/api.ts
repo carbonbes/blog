@@ -31,9 +31,11 @@ export async function verifyOtp(body: { email: string; token: string }) {
 }
 
 export async function me() {
-  return await $fetch<Response<Profile>>('/api/v1/me', {
-    headers: import.meta.server ? useRequestHeaders(['cookie']) : undefined,
-  })
+  return (
+    await $fetch<Response<Profile>>('/api/v1/me', {
+      headers: import.meta.server ? useRequestHeaders(['cookie']) : undefined,
+    })
+  ).data
 }
 
 export async function logout() {

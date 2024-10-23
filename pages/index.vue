@@ -32,7 +32,7 @@ useSeoMeta({
   title: 'Мои записи',
 })
 
-const { user } = useMe()
+const { user } = useUser()
 
 const { data: articles, error } = await useAsyncData(
   async () => await getProfileArticles(user.value!.id)

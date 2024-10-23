@@ -4,7 +4,7 @@
       <slot />
     </DropdownMenuTrigger>
 
-    <DropdownMenuPortal>
+    <DropdownMenuPortal to="#teleports">
       <FadeInOpacityTransition>
         <DropdownMenuContent v-bind="forwarded" asChild>
           <DropdownBody :items="items" :maxHeight />

@@ -169,7 +169,7 @@ definePageMeta({
   name: 'LoginPage'
 })
 
-const { getMe } = useMe()
+const { getMe } = useUser()
 const { successNotify, errorNotify } = useNotifications()
 
 const state = reactive({

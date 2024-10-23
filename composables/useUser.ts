@@ -1,6 +1,6 @@
 import type { Profile } from '~/types'
 
-export default function useMe() {
+export default function useUser() {
   const pending = useState('pending', () => false)
   const user = useState<Profile | null>('user', () => null)
   const isAuthenticated = useState('is-authenticated', () => false)
@@ -12,7 +12,7 @@ export default function useMe() {
 
     if (!data.value || error.value) return
 
-    user.value = data.value.data!
+    user.value = data.value
     isAuthenticated.value = true
   }
 
@@ -22,9 +22,7 @@ export default function useMe() {
       user.value = null
       isAuthenticated.value = false
       await navigateTo('/login')
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   }
 
   return { pending, user, isAuthenticated, getMe, logoutMe }
