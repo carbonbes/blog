@@ -130,6 +130,8 @@ const StorageMediaSchema = z.object({
   width: z.number(),
   height: z.number(),
   mime_type: MimeTypeSchema,
+  duration: z.number().optional(),
+  description: z.string().trim().min(1).optional(),
 })
 
 const Rfc2822DateSchema = z.string().refine(
