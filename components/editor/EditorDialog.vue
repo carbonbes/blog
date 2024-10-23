@@ -84,7 +84,11 @@ const onUpdate = useDebounceFn(async (body: ArticleBody) => {
     content: filterEmptyNodes(body.content),
   } as ArticleBody
 
+  if (!processedBody.content.length) return
+
   if (!article.value) {
+    if (isEqual(body, processedBody)) return
+
     article.value = await create(processedBody)
   } else {
     if (isEqual(article.value.body, processedBody)) return
@@ -96,9 +100,9 @@ const onUpdate = useDebounceFn(async (body: ArticleBody) => {
 const { errorNotify } = useNotifications()
 
 async function create(body: ArticleBody) {
-  pending.value = true
-
   try {
+    pending.value = true
+
     const newArticle = await createArticle(body)
 
     if (!newArticle) {
@@ -122,9 +126,9 @@ async function create(body: ArticleBody) {
 }
 
 async function update(articleId: number, body: ArticleBody) {
-  pending.value = true
-
   try {
+    pending.value = true
+
     const updatedArticle = await updateArticle(articleId, body)
 
     if (!updatedArticle) {
@@ -177,6 +181,10 @@ function filterEmptyNodes(content: ArticleBody['content']) {
       if (!items.length) return false
     }
 
+    if (node.type === 'sn-embed') {
+      if (!node.attrs.embed) return false
+    }
+
     return true
   })
 }
@@ -188,6 +196,8 @@ const onSave = useThrottleFn(async () => {
     type: 'doc',
     content: filterEmptyNodes(body.content),
   } as ArticleBody
+
+  if (!processedBody.content.length) return
 
   await update(+articleId.value!, processedBody)
 }, 2000)

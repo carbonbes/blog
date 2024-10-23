@@ -126,14 +126,6 @@ const nodesList = markRaw([
     ]
   },
   {
-    icon: Link,
-    label: 'Ссылка',
-    action: () => {
-      insertNode({ type: 'link' })
-      close()
-    }
-  },
-  {
     icon: Separator,
     label: 'Разделитель',
     action: () => {

@@ -1,6 +1,6 @@
 <template>
   <DialogRoot v-model:open="isOpen">
-    <DialogPortal>
+    <DialogPortal to="#teleports">
       <DialogOverlay class="fixed inset-0" :style="dialogOverlayStyles" />
 
       <DialogContent

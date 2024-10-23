@@ -1,10 +1,15 @@
 import { z } from 'h3-zod'
+import { type MimeType } from 'file-type'
+import { ALLOWED_MEDIAFILE_MIME_TYPES } from '~/utils/consts'
 
 export type HeadingNode = z.infer<typeof HeadingNode>
 export type ParagraphNode = z.infer<typeof ParagraphNode>
 export type ListNode = z.infer<typeof ListNode>
 export type GalleryNode = z.infer<typeof GalleryNode>
+export type YoutubeEmbedNode = z.infer<typeof YoutubeEmbedNode>
+export type SNEmbedNode = z.infer<typeof SNEmbedNode>
 
+export type StorageMedia = z.infer<typeof StorageMediaSchema>
 export type ArticleBody = z.infer<typeof ArticleBodySchema>
 
 const MarkSchema = z.union([
@@ -90,6 +95,73 @@ const SeparatorNode = z.object({
   type: z.literal('horizontalRule'),
 })
 
+const YoutubeEmbedNode = z.object({
+  type: z.literal('youtube-embed'),
+  attrs: z.object({
+    thumbnail: z.string().url(),
+    video_id: z.string().min(1),
+  }),
+})
+
+const MimeTypeSchema = z.custom<MimeType>(
+  (value) => {
+    return (
+      typeof value === 'string' &&
+      ALLOWED_MEDIAFILE_MIME_TYPES.includes(value as MimeType)
+    )
+  },
+  {
+    message: 'Invalid MimeType',
+  }
+)
+
+const StorageMediaSchema = z.object({
+  name: z.string().uuid(),
+  url: z.string().url(),
+  thumbnail: z
+    .object({
+      name: z.string().uuid(),
+      url: z.string().url(),
+      width: z.number(),
+      height: z.number(),
+      mime_type: MimeTypeSchema,
+    })
+    .optional(),
+  width: z.number(),
+  height: z.number(),
+  mime_type: MimeTypeSchema,
+})
+
+const Rfc2822DateSchema = z.string().refine(
+  (dateString) => {
+    return !isNaN(Date.parse(dateString))
+  },
+  {
+    message: 'Invalid RFC 2822 date format',
+  }
+)
+
+const SNEmbedNode = z.object({
+  type: z.literal('sn-embed'),
+  attrs: z.object({
+    embed: z.object({
+      author: z.object({
+        avatar: StorageMediaSchema,
+        name: z.string().trim().min(1),
+        username: z.string().trim().min(1),
+        url: z.string().url(),
+      }),
+      text: z.string().trim().min(1),
+      media: z.array(StorageMediaSchema),
+      published: Rfc2822DateSchema,
+      type: z.union([z.literal('x'), z.literal('telegram')]),
+      url: z.string().url(),
+    }),
+    type: z.union([z.literal('x'), z.literal('telegram')]),
+    url: z.null(),
+  }),
+})
+
 const RootNode = z.object({
   type: z.literal('rootNode'),
   attrs: z.object({
@@ -97,7 +169,15 @@ const RootNode = z.object({
     spoiler: z.boolean(),
   }),
   content: z.array(
-    z.union([HeadingNode, ParagraphNode, ListNode, GalleryNode, SeparatorNode])
+    z.union([
+      HeadingNode,
+      ParagraphNode,
+      ListNode,
+      GalleryNode,
+      SeparatorNode,
+      YoutubeEmbedNode,
+      SNEmbedNode,
+    ])
   ),
 })
 

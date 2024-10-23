@@ -100,14 +100,6 @@ const buttons = markRaw([
     },
   },
   {
-    icon: Link,
-    label: 'Ссылка',
-    action: () => {
-      insertNode({ type: 'link' })
-      setOpen(false)
-    }
-  },
-  {
     icon: Divider,
     label: 'Разделитель',
     action: () => {
