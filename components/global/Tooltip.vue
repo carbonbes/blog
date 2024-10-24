@@ -8,7 +8,7 @@
       <TooltipPortal to="#teleports">
         <FadeInOpacityTransition>
           <TooltipContent
-            class="px-[15px] py-[10px] bg-black border border-gray-700 text-white text-[15px] leading-none select-none rounded-2xl will-change-[opacity]"
+            class="py-2 px-3 bg-black border border-gray-700 text-white text-[14px] leading-none select-none rounded-xl will-change-[opacity]"
             :sideOffset="2.5"
             :collisionPadding="10"
             v-bind="forward"

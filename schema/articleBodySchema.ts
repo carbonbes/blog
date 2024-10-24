@@ -6,6 +6,7 @@ export type HeadingNode = z.infer<typeof HeadingNode>
 export type ParagraphNode = z.infer<typeof ParagraphNode>
 export type ListNode = z.infer<typeof ListNode>
 export type GalleryNode = z.infer<typeof GalleryNode>
+export type HorizontalRuleNode = z.infer<typeof HorizontalRuleNode>
 export type YoutubeEmbedNode = z.infer<typeof YoutubeEmbedNode>
 export type SNEmbedNode = z.infer<typeof SNEmbedNode>
 
@@ -91,7 +92,7 @@ const GalleryNode = z.object({
   }),
 })
 
-const SeparatorNode = z.object({
+const HorizontalRuleNode = z.object({
   type: z.literal('horizontalRule'),
 })
 
@@ -176,7 +177,7 @@ const RootNode = z.object({
       ParagraphNode,
       ListNode,
       GalleryNode,
-      SeparatorNode,
+      HorizontalRuleNode,
       YoutubeEmbedNode,
       SNEmbedNode,
     ])

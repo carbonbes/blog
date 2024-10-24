@@ -8,7 +8,7 @@
     <NuxtLink
       v-if="isCard"
       :to="articleURL"
-      class="absolute inset-0 -ml-6 w-[calc(100%_+_3rem)]"
+      class="absolute inset-0 -ml-6 w-[calc(100%_+_3rem)] sm:rounded-b-xl"
     />
   </Flex>
 </template>
@@ -17,6 +17,7 @@
 import type { Article } from '~/types'
 import Gallery from '~/components/article/nodes/Gallery.vue'
 import SNEmbed from '~/components/article/nodes/SNEmbed.vue'
+import HorizontalRule from '~/components/article/nodes/HorizontalRule.vue'
 
 const props = defineProps<{
   article: Article
@@ -25,9 +26,11 @@ const props = defineProps<{
 }>()
 
 provideProsemirrorOptions({
+  skipUnknown: true,
   types: {
+    horizontal_rule: () => HorizontalRule,
     gallery: () => Gallery,
-    embed: () => SNEmbed,
+    sn_embed: () => SNEmbed,
   },
 })
 

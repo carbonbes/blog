@@ -5,7 +5,7 @@
       <DateTime :dateTime="article.created_at" class="text-gray-500" />
     </Flex>
 
-    <Dropdown :collisionPadding="10" :items ref="dropdownRef">
+    <Dropdown :collisionPadding="10" :items="dropdownItems" ref="dropdownRef">
       <button class="hover:opacity-50 transition-opacity duration-[250ms]">
         <ITablerDots />
       </button>
@@ -28,7 +28,7 @@ const { successNotify, errorNotify } = useNotifications()
 
 const dropdownRef = ref<InstanceType<typeof Dropdown>>()
 
-const items = computed(() => [
+const dropdownItems = computed(() => [
   {
     icon: Pencil,
     label: 'Редактировать',
@@ -49,7 +49,6 @@ const items = computed(() => [
       try {
         await removeArticle(props.article.id)
         successNotify({ text: 'Запись удалена' })
-        
       } catch (error: any) {
         errorNotify({ text: error.data.message })
       } finally {

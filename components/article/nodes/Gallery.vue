@@ -5,7 +5,7 @@
     :originalWidth="singleImage.width"
     :originalHeight="singleImage.height"
     zoomable
-    class="-ml-6 w-[calc(100%+3rem)] max-w-[unset] last:-mb-6"
+    class="-ml-6 w-[calc(100%+3rem)] max-w-[unset]"
   />
 
   <Video
@@ -16,7 +16,7 @@
     :originalHeight="singleVideo.height"
     autoplay
     controls
-    class="-ml-6 w-[calc(100%+3rem)] max-w-[unset] last:-mb-6"
+    class="-ml-6 w-[calc(100%+3rem)] max-w-[unset]"
   />
 </template>
 
