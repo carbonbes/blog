@@ -2,24 +2,27 @@
   <Component :is="tag">
     <slot />
 
-    <template v-if="page !== totalPages" name="loader">
-      <Flex center>
-        <Loader color="!bg-black" ref="loaderRef" />
-      </Flex>
-    </template>
+    <Flex v-if="page !== totalPages" center>
+      <Loader color="!bg-black" ref="loaderRef" />
+    </Flex>
   </Component>
 </template>
 
 <script lang="ts" setup>
+import { promiseTimeout } from '@vueuse/core'
+
 const props = withDefaults(
   defineProps<{
     tag?: 'div'
     page: number
     totalPages: number
     pending?: boolean
+    loaderThreshold?: number
+    delayBeforeEmit?: number
   }>(),
   {
     tag: 'div',
+    loaderThreshold: 1,
   }
 )
 
@@ -31,15 +34,19 @@ const loaderRef = ref<HTMLDivElement>()
 
 const { stop } = useIntersectionObserver(
   loaderRef,
-  ([{ isIntersecting }]) => {
+  async ([{ isIntersecting }]) => {
     if (isIntersecting && props.page !== props.totalPages) {
       if (props.pending) return
+
+      if (props.delayBeforeEmit) {
+        await promiseTimeout(props.delayBeforeEmit)
+      }
 
       emits('nextPage')
     }
 
     if (props.page === props.totalPages) stop()
   },
-  { threshold: 1 }
+  { threshold: props.loaderThreshold }
 )
 </script>
