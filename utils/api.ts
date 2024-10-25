@@ -42,16 +42,19 @@ export async function logout() {
   return await $fetch('/api/v1/me/logout')
 }
 
-export async function getProfileArticles(profileId: number) {
+export async function getProfileArticles(profileId: number, page = 1) {
   return (
-    await $fetch<Response<Article[]>>(`/api/v1/profile/${profileId}/articles`)
+    await $fetch<Response<Article[]>>(`/api/v1/profile/${profileId}/articles`, {
+      query: { page },
+    })
   ).data
 }
 
-export async function getProfileDrafts(profileId: number) {
+export async function getProfileDrafts(profileId: number, page = 1) {
   return (
     await $fetch<Response<Article[]>>(`/api/v1/profile/${profileId}/drafts`, {
       headers: import.meta.server ? useRequestHeaders(['cookie']) : undefined,
+      query: { page },
     })
   ).data
 }

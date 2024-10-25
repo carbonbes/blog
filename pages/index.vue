@@ -2,22 +2,35 @@
   <Flex col justifyCenter class="py-8 w-full gap-4">
     <h1 class="px-6 text-lg font-medium">Мои записи</h1>
 
-    <Flex v-if="articles" col class="gap-6">
+    <PaginatedContent
+      v-if="articles?.length"
+      :page
+      :totalPages
+      :pending
+      @nextPage="onNextPage"
+      class="flex flex-col gap-6"
+    >
       <ArticleCard v-for="article in articles" :article />
-    </Flex>
+    </PaginatedContent>
 
     <Flex
       v-else
       col
       itemsCenter
-      class="p-4 bg-white gap-2 text-gray-500 rounded-xl"
+      class="p-4 bg-white gap-4 text-gray-500 rounded-xl"
     >
       <ITablerArticle />
-      У вас еще нет записей
-      <UIButton class="flex items-center gap-2 font-medium" @click="openEditor">
-        <ITablerPencil class="!size-5" />
-        Написать
-      </UIButton>
+
+      <Flex col itemsCenter class="gap-2">
+        У вас еще нет записей
+        <UIButton
+          class="flex items-center gap-2 font-medium rounded-xl"
+          @click="openEditor"
+        >
+          <ITablerPencil class="!size-5" />
+          Написать
+        </UIButton>
+      </Flex>
     </Flex>
   </Flex>
 </template>
@@ -33,16 +46,20 @@ useSeoMeta({
 })
 
 const { user } = useUser()
+const { pending, articles, getProfileArticles } = useArticlesPage()
 
-const { data: articles, error } = await useAsyncData(
-  async () => await getProfileArticles(user.value!.id)
-)
+const page = ref(1)
+const totalPages = ref(Math.ceil(user.value?.articles! / 10))
 
-if (error.value) {
-  throw createError({
-    statusCode: error.value.statusCode,
-    message: error.value.message,
-  })
+await useAsyncData(async () => {
+  await getProfileArticles(page.value)
+
+  return true
+})
+
+async function onNextPage() {
+  await getProfileArticles(page.value + 1)
+  page.value += 1
 }
 
 const { setOpen } = useEditorDialog()
