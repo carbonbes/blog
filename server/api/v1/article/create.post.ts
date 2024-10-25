@@ -1,7 +1,7 @@
 import getSlug from '~/utils/getSlug'
 import { useSafeValidatedBody } from 'h3-zod'
 import articleBodySchema from '~/schema/articleBodySchema'
-import findTitle from '~/server/utils/findTitle'
+import getArticleTitle from '~/server/utils/getArticleTitle'
 
 export default defineApiRoute(
   async ({ event, supabase, user: { name: userName } }) => {
@@ -16,7 +16,7 @@ export default defineApiRoute(
 
     const articleBody = body.data
 
-    const title = findTitle(articleBody) || `Запись пользователя ${userName}`
+    const title = getArticleTitle(articleBody) || `Запись пользователя ${userName}`
     const titleSlug = getSlug(title)
 
     const { data, error } = await supabase

@@ -1,13 +1,22 @@
 import getSlug from '~/utils/getSlug'
-import { z, useSafeValidatedBody } from 'h3-zod'
+import { z, useSafeValidatedBody, useSafeValidatedParams } from 'h3-zod'
 import articleBodySchema from '~/schema/articleBodySchema'
-import findTitle from '~/server/utils/findTitle'
+import getArticleTitle from '~/server/utils/getArticleTitle'
 
 export default defineApiRoute(
   async ({ event, supabase, user: { name: userName } }) => {
+    const params = await useSafeValidatedParams(event, { id: z.string() })
+
+    if (!params.success) {
+      throw createError({
+        statusCode: 400,
+        message: 'Укажите ID записи',
+      })
+    }
+
     const body = await useSafeValidatedBody(
       event,
-      z.object({ id: z.number(), body: articleBodySchema })
+      z.object({ body: articleBodySchema })
     )
 
     if (!body.success) {
@@ -17,9 +26,10 @@ export default defineApiRoute(
       })
     }
 
-    const { id, body: articleBody } = body.data
+    const id = params.data.id
+    const articleBody = body.data.body
 
-    const title = findTitle(articleBody) || `Запись пользователя ${userName}`
+    const title = getArticleTitle(articleBody) || `Запись пользователя ${userName}`
     const titleSlug = getSlug(title)
 
     const { data, error } = await supabase

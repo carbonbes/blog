@@ -90,9 +90,9 @@ export async function createArticle(body: ArticleBody) {
 
 export async function updateArticle(id: number, body: ArticleBody) {
   return (
-    await $fetch<Response<Article>>('/api/v1/article/update', {
+    await $fetch<Response<Article>>(`/api/v1/article/${id}`, {
       method: 'PATCH',
-      body: { id, body },
+      body: { body },
     })
   ).data
 }
