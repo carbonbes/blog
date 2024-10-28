@@ -7,7 +7,7 @@ import {
   type StorageMedia,
   type SNEmbed,
 } from '~/types/index'
-import type { ArticleBody } from '~/schema/articleBodySchema'
+import type { ArticleBody } from '~/types'
 
 export async function signIn(body: { email: string }) {
   return await $fetch<Response<AuthResponse>>('/api/v1/auth/signin', {
@@ -63,10 +63,12 @@ export async function uploadMediaByFile(file: File) {
   const formData = new FormData()
   formData.append('file', file)
 
-  return await $fetch<Response<StorageMedia>>('/api/v1/upload/media/by_file', {
-    method: 'POST',
-    body: formData,
-  })
+  return (
+    await $fetch<Response<StorageMedia>>('/api/v1/upload/media/by_file', {
+      method: 'POST',
+      body: formData,
+    })
+  ).data
 }
 
 export async function uploadMediaByUrl(url: string) {

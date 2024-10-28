@@ -1,7 +1,7 @@
 import { Editor, type Extensions, type JSONContent } from '@tiptap/vue-3'
 import { NodeSelection } from '@tiptap/pm/state'
 import type { HeadingLevel, NodeType } from '~/types'
-import type { ArticleBody } from '~/schema/articleBodySchema'
+import type { ArticleBody } from '~/types'
 import Document from '~/tiptap-extensions/document'
 import RootNode from '~/tiptap-extensions/root-node'
 import Heading from '@tiptap/extension-heading'

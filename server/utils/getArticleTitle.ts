@@ -1,4 +1,4 @@
-import { ArticleBody } from '~/schema/articleBodySchema'
+import { ArticleBody } from '~/types'
 
 export default function getArticleTitle(body: ArticleBody) {
   const firstRootChild = body.content[0]

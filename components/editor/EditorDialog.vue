@@ -42,7 +42,7 @@ import type {
   HeadingNode,
   ListNode,
   ParagraphNode,
-} from '~/schema/articleBodySchema'
+} from '~/types'
 import { isEqual } from 'lodash'
 import type Editor from '~/components/editor/Editor.client.vue'
 

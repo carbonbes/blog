@@ -2,17 +2,6 @@ import { z } from 'h3-zod'
 import { type MimeType } from 'file-type'
 import { ALLOWED_MEDIAFILE_MIME_TYPES } from '~/utils/consts'
 
-export type HeadingNode = z.infer<typeof HeadingNode>
-export type ParagraphNode = z.infer<typeof ParagraphNode>
-export type ListNode = z.infer<typeof ListNode>
-export type GalleryNode = z.infer<typeof GalleryNode>
-export type HorizontalRuleNode = z.infer<typeof HorizontalRuleNode>
-export type YoutubeEmbedNode = z.infer<typeof YoutubeEmbedNode>
-export type SNEmbedNode = z.infer<typeof SNEmbedNode>
-
-export type StorageMedia = z.infer<typeof StorageMediaSchema>
-export type ArticleBody = z.infer<typeof ArticleBodySchema>
-
 const MarkSchema = z.union([
   z.object({
     type: z.literal('bold'),
@@ -46,7 +35,7 @@ const TextNode = z.object({
   marks: z.array(MarkSchema).optional(),
 })
 
-const HeadingNode = z.object({
+export const HeadingNode = z.object({
   type: z.literal('heading'),
   attrs: z.object({
     level: z.number().int().min(1).max(2),
@@ -54,7 +43,7 @@ const HeadingNode = z.object({
   content: z.array(TextNode),
 })
 
-const ParagraphNode = z.object({
+export const ParagraphNode = z.object({
   type: z.literal('paragraph'),
   content: z.array(TextNode),
 })
@@ -64,7 +53,7 @@ const ListItem = z.object({
   content: z.array(ParagraphNode),
 })
 
-const ListNode = z.object({
+export const ListNode = z.object({
   type: z.union([z.literal('bulletList'), z.literal('orderedList')]),
   attrs: z
     .object({
@@ -72,36 +61,6 @@ const ListNode = z.object({
     })
     .optional(),
   content: z.array(ListItem),
-})
-
-const GalleryItem = z.object({
-  src: z.string().url(),
-  type: z.union([z.literal('image'), z.literal('video')]),
-  width: z.number().int(),
-  height: z.number().int(),
-  uploaded: z.boolean(),
-})
-
-const GalleryNode = z.object({
-  type: z.literal('gallery'),
-  attrs: z.object({
-    items: z.array(GalleryItem),
-    forUpload: z.union([z.array(z.instanceof(File)), z.nullable(z.void())]),
-    galleryOpenFileFromDeviceDialog: z.boolean(),
-    galleryOpenFileFromClipboardDialog: z.boolean(),
-  }),
-})
-
-const HorizontalRuleNode = z.object({
-  type: z.literal('horizontalRule'),
-})
-
-const YoutubeEmbedNode = z.object({
-  type: z.literal('youtube-embed'),
-  attrs: z.object({
-    thumbnail: z.string().url(),
-    video_id: z.string().min(1),
-  }),
 })
 
 const MimeTypeSchema = z.custom<MimeType>(
@@ -116,7 +75,7 @@ const MimeTypeSchema = z.custom<MimeType>(
   }
 )
 
-const StorageMediaSchema = z.object({
+export const StorageMediaSchema = z.object({
   name: z.string().uuid(),
   url: z.string().url(),
   thumbnail: z
@@ -135,6 +94,37 @@ const StorageMediaSchema = z.object({
   description: z.string().trim().min(1).optional(),
 })
 
+const GalleryItem = z.object({
+  src: z.string().url(),
+  type: z.union([z.literal('image'), z.literal('video')]),
+  width: z.number().int(),
+  height: z.number().int(),
+  media: StorageMediaSchema,
+  uploaded: z.boolean(),
+})
+
+export const GalleryNode = z.object({
+  type: z.literal('gallery'),
+  attrs: z.object({
+    items: z.array(GalleryItem),
+    forUpload: z.union([z.array(z.instanceof(File)), z.nullable(z.void())]),
+    galleryOpenFileFromDeviceDialog: z.boolean(),
+    galleryOpenFileFromClipboardDialog: z.boolean(),
+  }),
+})
+
+export const HorizontalRuleNode = z.object({
+  type: z.literal('horizontalRule'),
+})
+
+export const YoutubeEmbedNode = z.object({
+  type: z.literal('youtube-embed'),
+  attrs: z.object({
+    thumbnail: z.string().url(),
+    video_id: z.string().min(1),
+  }),
+})
+
 const Rfc2822DateSchema = z.string().refine(
   (dateString) => {
     return !isNaN(Date.parse(dateString))
@@ -144,7 +134,7 @@ const Rfc2822DateSchema = z.string().refine(
   }
 )
 
-const SNEmbedNode = z.object({
+export const SNEmbedNode = z.object({
   type: z.literal('sn-embed'),
   attrs: z.object({
     embed: z.object({
@@ -184,7 +174,7 @@ const RootNode = z.object({
   ),
 })
 
-const ArticleBodySchema = z.object({
+export const ArticleBodySchema = z.object({
   type: z.literal('doc'),
   content: z.array(RootNode),
 })

@@ -4,8 +4,18 @@ import {
   type SupabaseClient,
 } from '@supabase/supabase-js'
 import type { FunctionalComponent, SVGAttributes } from 'vue'
-import type { MimeType } from 'file-type'
-import type { ArticleBody } from '~/schema/articleBodySchema'
+import type { z } from 'zod'
+import type ArticleBodySchema from '~/server/schema/articleBodySchema'
+import type {
+  GalleryNode,
+  HeadingNode,
+  HorizontalRuleNode,
+  ListNode,
+  ParagraphNode,
+  SNEmbedNode,
+  StorageMediaSchema,
+  YoutubeEmbedNode,
+} from '~/server/schema/articleBodySchema'
 
 export interface Response<T = {}> {
   success: boolean
@@ -27,6 +37,17 @@ export type VerifyOtpResponse = AuthOtpResponse
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
+export type HeadingNode = z.infer<typeof HeadingNode>
+export type ParagraphNode = z.infer<typeof ParagraphNode>
+export type ListNode = z.infer<typeof ListNode>
+export type GalleryNode = z.infer<typeof GalleryNode>
+export type HorizontalRuleNode = z.infer<typeof HorizontalRuleNode>
+export type YoutubeEmbedNode = z.infer<typeof YoutubeEmbedNode>
+export type SNEmbedNode = z.infer<typeof SNEmbedNode>
+
+export type StorageMedia = z.infer<typeof StorageMediaSchema>
+export type ArticleBody = z.infer<typeof ArticleBodySchema>
+
 export type Article = Omit<
   Database['public']['Tables']['articles']['Row'],
   'body'
@@ -45,23 +66,6 @@ export type NodeType =
 export type HeadingLevel = 1 | 2
 
 export type NodeAttrs = Record<string, any>
-
-export type StorageMedia = {
-  name: string
-  url: string
-  width: number
-  height: number
-  duration?: number
-  mime_type: MimeType
-  description?: string
-  thumbnail?: {
-    name: string
-    url: string
-    width: number
-    height: number
-    mime_type: MimeType
-  }
-}
 
 export type SVGIcon = FunctionalComponent<SVGAttributes, {}, any, {}>
 

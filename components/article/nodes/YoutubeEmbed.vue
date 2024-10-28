@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { YoutubeEmbedNode } from '~/schema/articleBodySchema'
+import type { YoutubeEmbedNode } from '~/types'
 
 const props = defineProps<{
   mark?: number

@@ -1,6 +1,6 @@
 import getSlug from '~/server/utils/getSlug'
 import { useSafeValidatedBody } from 'h3-zod'
-import articleBodySchema from '~/schema/articleBodySchema'
+import articleBodySchema from '~/server/schema/articleBodySchema'
 import getArticleTitle from '~/server/utils/getArticleTitle'
 
 export default defineApiRoute(

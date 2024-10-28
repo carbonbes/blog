@@ -1,5 +1,6 @@
 <template>
   <Flex
+    tag="article"
     col
     class="p-6 min-[640px]:rounded-xl bg-white shadow-sm overflow-hidden"
     :class="{ 'pb-0': lastNodeIsMedia }"

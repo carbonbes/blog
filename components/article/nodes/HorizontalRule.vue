@@ -4,7 +4,7 @@
 
 <script lang="ts" setup>
 import HorizontalRule from '~/components/global/HorizontalRule.vue'
-import type { HorizontalRuleNode } from '~/schema/articleBodySchema'
+import type { HorizontalRuleNode } from '~/types'
 
 const props = defineProps<{
   mark?: number

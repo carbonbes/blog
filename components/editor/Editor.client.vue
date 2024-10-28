@@ -8,7 +8,7 @@
 
 <script lang="ts" setup>
 import { EditorContent } from '@tiptap/vue-3'
-import type { ArticleBody } from '~/schema/articleBodySchema'
+import type { ArticleBody } from '~/types'
 
 const props = defineProps<{
   data: ArticleBody | undefined

@@ -9,7 +9,7 @@
         'cursor-zoom-in': zoomable || lightboxItem || ignoreThumbnailClick,
       }
     ]"
-    :style="{ backgroundImage: `url(${thumbnail}` }"
+    :style="{ backgroundImage: `url(${thumbnail})` }"
     v-bind="lightboxAttrs"
     ref="thumbnailRef"
     @click="onThumbnailClick"
