@@ -1,4 +1,4 @@
-import getSlug from '~/utils/getSlug'
+import getSlug from '~/server/utils/getSlug'
 import { useSafeValidatedBody } from 'h3-zod'
 import articleBodySchema from '~/schema/articleBodySchema'
 import getArticleTitle from '~/server/utils/getArticleTitle'
