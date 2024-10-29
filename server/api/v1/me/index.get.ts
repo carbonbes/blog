@@ -1,6 +1,6 @@
 export default defineApiRoute(
   async ({ event }) => {
-    return event.context.profile
+    return event.context.user
   },
   { requireAuth: true }
 )

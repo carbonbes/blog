@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts" setup>
-import type Dropdown from '~/components/global/dropdown/Dropdown.vue'
+import type Dropdown from '~/components/global/dropdown/Dropdown.client.vue'
 import Paragraph from '~icons/tabler/letter-case'
 import Heading from '~icons/tabler/heading'
 import List from '~icons/tabler/list'

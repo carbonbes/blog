@@ -1,6 +1,7 @@
 import { Editor, type Extensions, type JSONContent } from '@tiptap/vue-3'
 import { NodeSelection } from '@tiptap/pm/state'
 import type { HeadingLevel, NodeType } from '~/types'
+import type { ArticleBody } from '~/types'
 import Document from '~/tiptap-extensions/document'
 import RootNode from '~/tiptap-extensions/root-node'
 import Heading from '@tiptap/extension-heading'
@@ -66,8 +67,8 @@ const extensions: Extensions = [
 
 export default function useEditor() {
   const editor = useState<Editor | undefined>('editor')
-  const data = useState<JSONContent | undefined>('data')
-  const selectedNode = useState<NodeSelection['node'] | null>(
+  const data = useState<ArticleBody>('data')
+  const selectedNode = useState<ArticleBody['content'][0] | null>(
     'selected-node',
     () => null
   )
@@ -76,10 +77,10 @@ export default function useEditor() {
 
   const selectedNodeAttrs = computed<Record<string, any>>(() => ({
     ...selectedNode.value?.attrs,
-    ...selectedNode.value?.content.content[0].attrs,
+    ...selectedNode.value?.content.content[0]?.attrs,
   }))
   const selectedNodeType = computed<NodeType>(
-    () => selectedNode.value?.content.content[0].type.name
+    () => selectedNode.value?.content.content[0]?.type.name
   )
 
   const selectedNodePos = computed(() => {
@@ -112,7 +113,8 @@ export default function useEditor() {
 
   function setNodeSelection(pos: number) {
     editor.value?.commands.setNodeSelection(pos)
-    selectedNode.value = (editor.value?.state.selection as NodeSelection).node
+    selectedNode.value = (editor.value?.state.selection as NodeSelection)
+      .node as unknown as ArticleBody['content'][0]
   }
 
   function toggleNodeAttribute(attr: 'pin' | 'spoiler') {
@@ -130,6 +132,8 @@ export default function useEditor() {
   function insertNode({
     type,
     attrs,
+    preventAddToHistory,
+    preventUpdateEmit,
   }: {
     type: NodeType
     attrs?: {
@@ -137,6 +141,8 @@ export default function useEditor() {
       galleryOpenFileFromDeviceDialog?: boolean
       galleryOpenFileFromClipboardDialog?: boolean
     }
+    preventAddToHistory?: boolean
+    preventUpdateEmit?: boolean
   }) {
     function scrollToNode(pos: number) {
       const editorScrollableContainer = document.querySelector(
@@ -188,16 +194,24 @@ export default function useEditor() {
       !selectedNode.value?.content.content[0].textContent
     ) {
       dispatch(
-        state.tr.replaceRangeWith(
-          selectedNodePos.value?.from!,
-          selectedNodePos.value?.to!,
-          newNode
-        )
+        state.tr
+          .setMeta('addToHistory', preventAddToHistory)
+          .setMeta('preventUpdateEmit', preventUpdateEmit)
+          .replaceRangeWith(
+            selectedNodePos.value?.from!,
+            selectedNodePos.value?.to!,
+            newNode
+          )
       )
 
       scrollToNode(selectedNodePos.value?.from!)
     } else {
-      dispatch(state.tr.insert(selectedNodePos.value?.to!, newNode))
+      dispatch(
+        state.tr
+          .setMeta('addToHistory', preventAddToHistory)
+          .setMeta('preventUpdateEmit', preventUpdateEmit)
+          .insert(selectedNodePos.value?.to!, newNode)
+      )
       scrollToNode(selectedNodePos.value?.to!)
     }
   }
@@ -292,17 +306,72 @@ export default function useEditor() {
         .run()
   }
 
+  function updateNodeAttributes({
+    pos,
+    attrs,
+    preventAddToHistory,
+    preventUpdateEmit,
+  }: {
+    pos: number
+    attrs: Record<string, any>
+    preventAddToHistory?: boolean
+    preventUpdateEmit?: boolean
+  }) {
+    if (!editor.value) return
+
+    const {
+      state: { selection, doc, tr },
+      view: { dispatch },
+    } = editor.value
+
+    setNodeSelection(pos)
+
+    const { $from } = selection
+    const node = doc.nodeAt($from.pos)
+
+    if (!node) {
+      return
+    }
+
+    tr.setNodeMarkup($from.pos, undefined, { ...node.attrs, ...attrs })
+
+    if (preventAddToHistory) {
+      tr.setMeta('addToHistory', false)
+    }
+
+    if (preventUpdateEmit) {
+      tr.setMeta('preventUpdateEmit', true)
+    }
+
+    dispatch(tr)
+  }
+
   const { rects } = useTextSelection()
 
-  function initEditor(content?: JSONContent) {
+  function initEditor({
+    content,
+    readyCallback,
+  }: {
+    content?: ArticleBody
+    readyCallback?: () => void
+  }) {
     editor.value = new Editor({
-      content,
+      content: content as JSONContent,
 
       extensions,
 
-      onUpdate({ editor }) {
-        const content = editor.getJSON() as JSONContent[]
-        data.value = processContent(content)
+      onCreate() {
+        if (!readyCallback) return
+
+        readyCallback()
+      },
+
+      onUpdate({ editor, transaction }) {
+        console.log(transaction)
+
+        if (transaction.getMeta('preventUpdateEmit')) return
+
+        data.value = editor.getJSON() as ArticleBody
       },
 
       onSelectionUpdate({
@@ -329,21 +398,9 @@ export default function useEditor() {
     editor.value?.destroy()
   }
 
-  function processContent(content: JSONContent) {
-    const arr = content.content?.filter((node) => {
-      if (node.type !== 'gallery') return Object.hasOwn(node, 'content')
-      else if (node.type === 'gallery') return !!node.attrs?.images.length
-    })
-
-    if (!arr?.length) return
-
-    return { type: 'doc', content: arr }
-  }
-
   return {
     initEditor,
     destroyEditor,
-    processContent,
     editor,
     extensions,
     data,
@@ -358,6 +415,7 @@ export default function useEditor() {
     moveNode,
     removeNode,
     changeNodeType,
+    updateNodeAttributes,
     selectionIsEmpty,
     selectionRect,
   }

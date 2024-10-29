@@ -4,16 +4,22 @@
       <TooltipTrigger asChild>
         <slot />
       </TooltipTrigger>
-      
-      <TooltipPortal>
+
+      <TooltipPortal to="#teleports">
         <FadeInOpacityTransition>
           <TooltipContent
-            class="px-[15px] py-[10px] bg-black text-white text-[15px] leading-none select-none rounded-lg will-change-[opacity]"
-            :side-offset="5"
+            class="py-2 px-3 bg-black border border-gray-700 text-white text-[14px] leading-none select-none rounded-xl will-change-[opacity]"
+            :sideOffset="2.5"
+            :collisionPadding="10"
             v-bind="forward"
           >
             {{ tooltip }}
-            <TooltipArrow class="fill-black" :width="8" />
+
+            <TooltipArrow asChild>
+              <div
+                class="size-2 bg-black border-b border-r border-gray-700 -translate-y-1 rotate-45"
+              ></div>
+            </TooltipArrow>
           </TooltipContent>
         </FadeInOpacityTransition>
       </TooltipPortal>
@@ -34,6 +40,7 @@ const props = defineProps<
     class?: string
   }
 >()
+
 const emits = defineEmits<TooltipRootEmits>()
 
 const forward = useForwardPropsEmits(props, emits)

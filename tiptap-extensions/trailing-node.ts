@@ -23,7 +23,7 @@ const trailingNode = Extension.create({
           const lastNodeIsEmpty = lastNode.content.content[0].textContent.trim() === ''
 
           if ((lastNodeIsTextBlock && !lastNodeIsEmpty) || !lastNodeIsTextBlock) {
-            return tr.insert(doc.content.size, nodeType.create())
+            return tr.setMeta('addToHistory', false).insert(doc.content.size, nodeType.create())
           }
 
           return

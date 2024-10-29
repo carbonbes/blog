@@ -1,14 +1,17 @@
 html
-  background-color: #f6f6f6
-  word-break: break-word
+  @apply bg-[#f6f6f6] break-words
+
+body
+  @apply h-full
 
 #__nuxt
-  display: flex
-  flex-direction: column
+  @apply w-full h-full grid grid-rows-[1fr] sm:grid-rows-[auto,1fr] grid-cols-[100%]
+
+#teleports
+  @apply fixed z-[999]
 
 .icon
-  width: 24px
-  height: 24px
+  @apply size-6
 
 *:focus-visible
-  outline: none
+  @apply outline-none

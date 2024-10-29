@@ -1,5 +1,5 @@
 <template>
-  <ScrollArea scrollAreaClass="editor-scrollable-container" :disableScroll>
+  <ScrollArea scrollAreaClass="editor-scrollable-container">
     <EditorContent :editor class="editor h-full" />
   </ScrollArea>
 
@@ -8,23 +8,39 @@
 
 <script lang="ts" setup>
 import { EditorContent } from '@tiptap/vue-3'
-import type { ArticleContent } from '~/types'
+import type { ArticleBody } from '~/types'
 
 const props = defineProps<{
-  data?: ArticleContent
-  disableScroll?: boolean
+  data: ArticleBody | undefined
+  manualInit?: boolean
 }>()
 
-const emit = defineEmits<{
-  update: [body: ArticleContent]
+const emits = defineEmits<{
+  ready: [void]
+  update: [body: ArticleBody]
 }>()
+
+function onReady() {
+  emits('ready')
+}
 
 const { initEditor, destroyEditor, editor, data } = useEditor()
 
-onMounted(() => initEditor(props.data))
+onMounted(() => {
+  if (props.manualInit) return
+
+  initEditor({ content: props.data, readyCallback: onReady })
+})
+
 onUnmounted(destroyEditor)
 
-watch(data, () => emit('update', data.value!))
+watch(data, (v) => emits('update', v))
+
+function manualInit() {
+  initEditor({ content: props.data, readyCallback: onReady })
+}
+
+defineExpose({ manualInit })
 </script>
 
 <style lang="sass" scoped>

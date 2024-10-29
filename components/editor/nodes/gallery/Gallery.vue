@@ -83,6 +83,7 @@ import type Dialog from '~/components/global/Dialog.vue'
 import GalleryItem from '~/components/editor/nodes/gallery/GalleryItem.vue'
 import type { MimeType } from 'file-type'
 import Draggable from 'vuedraggable'
+import type { StorageMedia } from '~/types'
 
 export type GalleryItem = {
   id?: string
@@ -92,6 +93,7 @@ export type GalleryItem = {
   width?: number
   height?: number
   type: MediaType
+  media?: StorageMedia
   uploaded: boolean
 }
 
@@ -99,6 +101,7 @@ export type MediaType = 'image' | 'video'
 
 const props = defineProps<NodeViewProps>()
 
+const { updateNodeAttributes } = useEditor()
 const { errorNotify } = useNotifications()
 
 const pasteFromClipboardDialogRef = ref<InstanceType<typeof Dialog>>()
@@ -144,6 +147,7 @@ async function addItems(files: File[]) {
       if (!base64Item) return
 
       const type = getFileTypeFromMimeType(file.type)
+
       const thumbnail = type === 'video'
         ? await getScreenshotFromBase64Video(base64Item as string)
         : undefined
@@ -157,8 +161,11 @@ async function addItems(files: File[]) {
     })
   )
 
-  props.updateAttributes({
-    items: items.value,
+  updateNodeAttributes({
+    pos: props.getPos(),
+    attrs: { items: items.value },
+    preventAddToHistory: true,
+    preventUpdateEmit: true
   })
 }
 

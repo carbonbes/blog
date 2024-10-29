@@ -1,14 +1,14 @@
 <template>
   <DialogRoot v-model:open="isOpen">
-    <DialogPortal>
+    <DialogPortal to="#teleports">
       <DialogOverlay
-        class="fixed inset-0 transition-[background-color,backdrop-filter] duration-[333ms] z-[1] will-change-[background-color,backdrop-filter]"
+        class="fixed inset-0 z-[1] transition-[background-color,backdrop-filter] duration-[333ms] will-change-[background-color,backdrop-filter]"
         :style="dialogOverlayStyles"
       />
 
       <DialogContent
         aria-describedby=""
-        class="absolute inset-0 overflow-hidden"
+        class="fixed inset-0 overflow-hidden z-[1]"
         @closeAutoFocus="(e) => e.preventDefault()"
         @escapeKeyDown="(e) => e.preventDefault()"
       >
@@ -16,7 +16,7 @@
           <DialogTitle />
         </VisuallyHidden>
 
-        <button class="absolute top-0 right-0 p-4 z-10">
+        <button class="absolute top-0 right-0 p-4 z-[2]">
           <ITablerX
             class="!size-8 text-white/30 hover:text-white transition-colors"
           />

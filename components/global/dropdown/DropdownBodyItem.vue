@@ -3,7 +3,7 @@
     v-if="!(item.subitems || item.hide)"
     tag="button"
     itemsCenter
-    class="py-1.5 px-2.5 w-full gap-3 rounded-lg hover:bg-gray-200/75 [&.active]:bg-blue-100 [&.active]:text-blue-500 disabled:pointer-events-none disabled:opacity-50 transition-colors"
+    class="py-1.5 px-2.5 w-full gap-3 rounded-lg hover:bg-gray-100 [&.active]:bg-blue-100 [&.active]:text-blue-500 disabled:pointer-events-none disabled:opacity-50 transition-colors"
     :class="[item.class, { active: item.active }]"
     :disabled="item.disabled"
     @click="item.action"
@@ -28,7 +28,7 @@
       </Flex>
     </DropdownMenuSubTrigger>
 
-    <DropdownMenuPortal>
+    <DropdownMenuPortal to="#teleports">
       <FadeInOpacityTransition>
         <DropdownMenuSubContent :side-offset="5" asChild>
           <DropdownBody :items="item.subitems!" />

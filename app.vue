@@ -1,6 +1,7 @@
 <template>
   <Header />
-  <main>
+
+  <main class="mx-auto pb-[60px] sm:pb-[unset] w-full max-w-[640px] h-full">
     <NuxtPage />
   </main>
 
@@ -10,6 +11,6 @@
 </template>
 
 <script lang="ts" setup>
-const { getMe } = useMe()
+const { getMe } = useUser()
 await getMe()
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <Flex center class="h-[calc(100vh_-_60px)]">
+  <Flex center class="h-full">
     <Flex
       center
       class="w-full h-full sm:w-96 sm:h-96 bg-white sm:ring-1 sm:ring-gray-200 sm:rounded-xl sm:shadow-md overflow-hidden"
@@ -169,7 +169,7 @@ definePageMeta({
   name: 'LoginPage'
 })
 
-const { getMe } = useMe()
+const { getMe } = useUser()
 const { successNotify, errorNotify } = useNotifications()
 
 const state = reactive({

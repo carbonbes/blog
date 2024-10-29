@@ -1,18 +1,35 @@
 <template>
-  <Flex justifyCenter class="sm:mt-8">
-    <Flex col class="p-6 w-full max-w-[680px] gap-4 bg-white min-[680px]:rounded-lg">
-      <h1 class="font-medium">
-        Мои записи
-      </h1>
+  <Flex col justifyCenter class="py-8 w-full gap-4">
+    <h1 class="px-6 text-lg font-medium">Мои записи</h1>
 
-      <Flex col>
-        <Flex v-if="!articles?.data?.length" col itemsCenter class="gap-2 text-gray-500">
-          У вас еще нет записей
-          <UIButton class="flex items-center gap-2 font-medium" @click="openEditor">
-            <ITablerPencil class="!w-5 !h-5" />
-            Написать
-          </UIButton>
-        </Flex>
+    <PaginatedContent
+      v-if="articles?.length"
+      :page
+      :totalPages
+      :pending
+      @nextPage="onNextPage"
+      class="flex flex-col gap-6"
+    >
+      <ArticleCard v-for="article in articles" :article />
+    </PaginatedContent>
+
+    <Flex
+      v-else
+      col
+      itemsCenter
+      class="p-4 bg-white gap-4 text-gray-500 rounded-xl"
+    >
+      <ITablerArticle />
+
+      <Flex col itemsCenter class="gap-2">
+        У вас еще нет записей
+        <UIButton
+          class="flex items-center gap-2 font-medium rounded-xl"
+          @click="openEditor"
+        >
+          <ITablerPencil class="!size-5" />
+          Написать
+        </UIButton>
       </Flex>
     </Flex>
   </Flex>
@@ -20,25 +37,34 @@
 
 <script lang="ts" setup>
 definePageMeta({
-  middleware: 'auth'
+  name: 'IndexPage',
+  middleware: 'auth',
 })
 
-const { profile } = useMe()
-const router = useRouter()
-const route = useRoute()
+useSeoMeta({
+  title: 'Мои записи',
+})
 
-const {
-  data: articles,
-  error
-} = await useAsyncData('articles', async () => await getProfileArticles(profile.value!.user_id))
+const { user } = useUser()
+const { pending, articles, getProfileArticles } = useArticlesPage()
 
-if (error.value)
-  throw createError({
-    statusCode: error.value.statusCode,
-    message: error.value.message,
-  })
+const page = ref(1)
+const totalPages = ref(Math.ceil(user.value?.articles! / 10))
+
+await useAsyncData(async () => {
+  await getProfileArticles(page.value)
+
+  return true
+})
+
+async function onNextPage() {
+  await getProfileArticles(page.value + 1)
+  page.value += 1
+}
+
+const { setOpen } = useEditorDialog()
 
 function openEditor() {
-  router.push({ path: route.path, query: { dialog: 'editor' }, replace: true })
+  setOpen(true)
 }
 </script>

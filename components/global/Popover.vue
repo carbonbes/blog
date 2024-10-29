@@ -6,7 +6,7 @@
       </template>
     </PopoverTrigger>
 
-    <PopoverPortal>
+    <PopoverPortal to="#teleports">
       <FadeInOpacityTransition>
         <PopoverContent
           v-bind="{ ...forwarded, ...$attrs }"

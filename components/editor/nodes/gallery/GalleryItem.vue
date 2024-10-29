@@ -159,6 +159,7 @@ function updateItem(data: StorageMedia) {
     width,
     height,
     type: props.item.type,
+    media: data,
     uploaded: true,
   })
 }
@@ -179,7 +180,7 @@ async function upload() {
       return
     }
 
-    const { data } = await uploadMediaByFile(file)
+    const data = await uploadMediaByFile(file)
 
     if (!data) {
       showError()

@@ -9,7 +9,7 @@ const env = { ...process.env, ...loadEnv('', process.cwd()) }
 
 export default defineNuxtConfig({
   devtools: {
-    enabled: true,
+    enabled: false,
   },
 
   runtimeConfig: {
@@ -41,6 +41,7 @@ export default defineNuxtConfig({
     'dayjs-nuxt',
     'radix-vue/nuxt',
     '@nuxt/scripts',
+    '@bicou/prosemirror-render-nuxt'
   ],
 
   supabase: {
@@ -102,7 +103,7 @@ export default defineNuxtConfig({
       meta: [
         {
           name: 'viewport',
-          content: 'width=device-width,initial-scale=1.0,maximum-scale=1.0',
+          content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0',
         },
       ],
     },
