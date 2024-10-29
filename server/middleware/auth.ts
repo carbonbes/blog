@@ -28,6 +28,6 @@ export default defineEventHandler(async (event) => {
 
     if (!profile || error) return
 
-    event.context.user = user
+    event.context.user = profile
   } catch (error) {}
 })
