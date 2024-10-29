@@ -96,9 +96,10 @@ export const StorageMediaSchema = z.object({
 
 const GalleryItem = z.object({
   src: z.string().url(),
-  type: z.union([z.literal('image'), z.literal('video')]),
   width: z.number().int(),
   height: z.number().int(),
+  thumbnail: z.string().url().optional(),
+  type: z.union([z.literal('image'), z.literal('video')]),
   media: StorageMediaSchema,
   uploaded: z.boolean(),
 })
