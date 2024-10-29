@@ -187,14 +187,6 @@ export default function useEditor() {
               : null
           )
 
-    if (preventAddToHistory) {
-      state.tr.setMeta('addToHistory', false)
-    }
-
-    if (preventUpdateEmit) {
-      state.tr.setMeta('preventUpdateEmit', true)
-    }
-
     if (
       ['paragraph', 'heading', 'bulletList', 'orderedList'].includes(
         selectedNodeType.value
@@ -202,16 +194,24 @@ export default function useEditor() {
       !selectedNode.value?.content.content[0].textContent
     ) {
       dispatch(
-        state.tr.replaceRangeWith(
-          selectedNodePos.value?.from!,
-          selectedNodePos.value?.to!,
-          newNode
-        )
+        state.tr
+          .setMeta('addToHistory', preventAddToHistory)
+          .setMeta('preventUpdateEmit', preventUpdateEmit)
+          .replaceRangeWith(
+            selectedNodePos.value?.from!,
+            selectedNodePos.value?.to!,
+            newNode
+          )
       )
 
       scrollToNode(selectedNodePos.value?.from!)
     } else {
-      dispatch(state.tr.insert(selectedNodePos.value?.to!, newNode))
+      dispatch(
+        state.tr
+          .setMeta('addToHistory', preventAddToHistory)
+          .setMeta('preventUpdateEmit', preventUpdateEmit)
+          .insert(selectedNodePos.value?.to!, newNode)
+      )
       scrollToNode(selectedNodePos.value?.to!)
     }
   }
@@ -367,6 +367,8 @@ export default function useEditor() {
       },
 
       onUpdate({ editor, transaction }) {
+        console.log(transaction)
+
         if (transaction.getMeta('preventUpdateEmit')) return
 
         data.value = editor.getJSON() as ArticleBody
