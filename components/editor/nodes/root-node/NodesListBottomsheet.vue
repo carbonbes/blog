@@ -1,6 +1,7 @@
 <template>
   <Drawer
-    class="!bg-gray-100 after:!bg-gray-100"
+    class="!bg-gray-100 after:!bg-gray-100 z-[1]"
+    portalTo="#drawer-portal"
     ref="drawerRef"
     @update:open="onOpen"
   >

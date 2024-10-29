@@ -2,8 +2,9 @@
   <Html v-if="state.view === 2" :style="'--drawer-footer-height: 80px'" />
 
   <Drawer
-    class="!bg-gray-100 after:!bg-gray-100"
+    class="!bg-gray-100 after:!bg-gray-100  z-[1]"
     contentClass="!px-0"
+    portalTo="#drawer-portal"
     @update:open="onOpen"
     ref="drawerRef"
   >

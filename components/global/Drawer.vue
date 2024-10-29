@@ -9,7 +9,7 @@
     :fadeFromIndex="0"
     v-model:activeSnapPoint="activeSnapPoint"
   >
-    <DrawerPortal to="#drawer-portal">
+    <DrawerPortal :to="portalTo">
       <DrawerOverlay
         class="fixed inset-0 bg-black/50 backdrop-blur-sm"
         @click="isOpen = false"
@@ -62,13 +62,19 @@ import {
   type DrawerRootEmits,
 } from 'vaul-vue'
 
-const props = defineProps<
-  DrawerRootProps & {
-    class?: string
-    contentClass?: string
-    footerClass?: string
+const props = withDefaults(
+  defineProps<
+    DrawerRootProps & {
+      class?: string
+      contentClass?: string
+      footerClass?: string
+      portalTo: string
+    }
+  >(),
+  {
+    portalTo: 'body',
   }
->()
+)
 
 const emits = defineEmits<DrawerRootEmits>()
 
