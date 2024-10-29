@@ -77,10 +77,10 @@ export default function useEditor() {
 
   const selectedNodeAttrs = computed<Record<string, any>>(() => ({
     ...selectedNode.value?.attrs,
-    ...selectedNode.value?.content.content[0].attrs,
+    ...selectedNode.value?.content.content[0]?.attrs,
   }))
   const selectedNodeType = computed<NodeType>(
-    () => selectedNode.value?.content.content[0].type.name
+    () => selectedNode.value?.content.content[0]?.type.name
   )
 
   const selectedNodePos = computed(() => {
@@ -132,6 +132,8 @@ export default function useEditor() {
   function insertNode({
     type,
     attrs,
+    preventAddToHistory,
+    preventUpdateEmit,
   }: {
     type: NodeType
     attrs?: {
@@ -139,6 +141,8 @@ export default function useEditor() {
       galleryOpenFileFromDeviceDialog?: boolean
       galleryOpenFileFromClipboardDialog?: boolean
     }
+    preventAddToHistory?: boolean
+    preventUpdateEmit?: boolean
   }) {
     function scrollToNode(pos: number) {
       const editorScrollableContainer = document.querySelector(
@@ -182,6 +186,14 @@ export default function useEditor() {
               ? content.map((item) => state.schema.nodeFromJSON(item))
               : null
           )
+
+    if (preventAddToHistory) {
+      state.tr.setMeta('addToHistory', false)
+    }
+
+    if (preventUpdateEmit) {
+      state.tr.setMeta('preventUpdateEmit', true)
+    }
 
     if (
       ['paragraph', 'heading', 'bulletList', 'orderedList'].includes(
@@ -294,6 +306,46 @@ export default function useEditor() {
         .run()
   }
 
+  function updateNodeAttributes({
+    pos,
+    attrs,
+    preventAddToHistory,
+    preventUpdateEmit,
+  }: {
+    pos: number
+    attrs: Record<string, any>
+    preventAddToHistory?: boolean
+    preventUpdateEmit?: boolean
+  }) {
+    if (!editor.value) return
+
+    const {
+      state: { selection, doc, tr },
+      view: { dispatch },
+    } = editor.value
+
+    setNodeSelection(pos)
+
+    const { $from } = selection
+    const node = doc.nodeAt($from.pos)
+
+    if (!node) {
+      return
+    }
+
+    tr.setNodeMarkup($from.pos, undefined, { ...node.attrs, ...attrs })
+
+    if (preventAddToHistory) {
+      tr.setMeta('addToHistory', false)
+    }
+
+    if (preventUpdateEmit) {
+      tr.setMeta('preventUpdateEmit', true)
+    }
+
+    dispatch(tr)
+  }
+
   const { rects } = useTextSelection()
 
   function initEditor({
@@ -314,7 +366,9 @@ export default function useEditor() {
         readyCallback()
       },
 
-      onUpdate({ editor }) {
+      onUpdate({ editor, transaction }) {
+        if (transaction.getMeta('preventUpdateEmit')) return
+
         data.value = editor.getJSON() as ArticleBody
       },
 
@@ -359,6 +413,7 @@ export default function useEditor() {
     moveNode,
     removeNode,
     changeNodeType,
+    updateNodeAttributes,
     selectionIsEmpty,
     selectionRect,
   }

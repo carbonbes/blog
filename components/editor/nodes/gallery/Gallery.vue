@@ -101,6 +101,7 @@ export type MediaType = 'image' | 'video'
 
 const props = defineProps<NodeViewProps>()
 
+const { updateNodeAttributes } = useEditor()
 const { errorNotify } = useNotifications()
 
 const pasteFromClipboardDialogRef = ref<InstanceType<typeof Dialog>>()
@@ -160,8 +161,11 @@ async function addItems(files: File[]) {
     })
   )
 
-  props.updateAttributes({
-    items: items.value,
+  updateNodeAttributes({
+    pos: props.getPos(),
+    attrs: { items: items.value },
+    preventAddToHistory: true,
+    preventUpdateEmit: true
   })
 }
 
