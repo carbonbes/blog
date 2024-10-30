@@ -78,10 +78,20 @@ export async function uploadMediaByUrl(url: string) {
   })
 }
 
-export async function getEmbed(url: string) {
-  return await $fetch<Response<SNEmbed>>('/api/v1/embed', {
-    query: { url },
-  })
+export async function getTelegramEmbed(url: string) {
+  return (
+    await $fetch<Response<SNEmbed>>('/api/v1/embeds/telegram', {
+      query: { url },
+    })
+  ).data
+}
+
+export async function getXEmbed(url: string) {
+  return (
+    await $fetch<Response<SNEmbed>>('/api/v1/embeds/x', {
+      query: { url },
+    })
+  ).data
 }
 
 export async function createArticle(body: ArticleBody) {

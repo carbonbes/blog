@@ -9,7 +9,10 @@
       center
       class="px-4 py-24 border-2 border-gray-100 rounded-xl"
     >
-      <ITablerBrandX class="!size-16 animate-pulse" v-if="node.attrs.type === 'x'" />
+      <ITablerBrandX
+        class="!size-16 animate-pulse"
+        v-if="node.attrs.type === 'x'"
+      />
       <IIconsTelegram class="!size-16 animate-pulse" v-else />
     </Flex>
 
@@ -19,7 +22,7 @@
 
 <script lang="ts" setup>
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/vue-3'
-import SNEmbed from '~/components/global/embeds/SNEmbed.vue'
+import SNEmbed from '~/components/global/SNEmbed.vue'
 
 const props = defineProps<NodeViewProps>()
 
@@ -28,7 +31,11 @@ const { errorNotify } = useNotifications()
 onMounted(async () => {
   if (props.node.attrs.url) {
     try {
-      const { data: embed } = await getEmbed(props.node.attrs.url)
+      const embed =
+        props.node.attrs.type === 'telegram'
+          ? await getTelegramEmbed(props.node.attrs.url)
+          : await getXEmbed(props.node.attrs.url)
+
       props.updateAttributes({ url: null, embed })
     } catch (error: any) {
       props.deleteNode()

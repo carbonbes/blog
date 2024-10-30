@@ -1,5 +1,5 @@
 import sharp from 'sharp'
-import { Supabase } from '~/types'
+import { StorageMedia, Supabase } from '~/types'
 import getFileTypeFromMimeType from '~/utils/getFileTypeFromMimeType'
 import getMimeTypeFromBuffer from '~/utils/getMimeTypeFromBuffer'
 
@@ -25,7 +25,7 @@ export default async function uploadFileToStorage({
   supabase: Supabase
   file: Buffer
   description?: string
-}) {
+}): Promise<StorageMedia> {
   const fileMimeType = await getMimeTypeFromBuffer(file)
 
   if (!fileMimeType) {

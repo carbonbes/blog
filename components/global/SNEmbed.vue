@@ -12,22 +12,24 @@
           target="_blank"
           class="row-[1/2_span] col-[1] overflow-hidden rounded-full inner-border"
         >
-          <Image
-            :src="embed.author.avatar.url"
-            class="size-9"
-          />
+          <Image :src="embed.author.avatar.url" class="size-9" />
         </a>
         <Flex
           itemsCenter
           class="min-w-0 gap-2 row-[1_span] col-[2] leading-[18px] whitespace-nowrap"
         >
-          <a
-            :href="embed.author.url"
-            target="_blank"
-            class="!no-underline !text-[inherit] font-medium text-[15px] overflow-hidden text-ellipsis"
-          >
-            {{ embed.author.name }}
-          </a>
+          <Flex itemsCenter class="gap-1">
+            <a
+              :href="embed.author.url"
+              target="_blank"
+              class="!no-underline !text-[inherit] font-medium text-[15px] overflow-hidden text-ellipsis"
+            >
+              {{ embed.author.name }}
+            </a>
+            <div class="bg-blue-500 rounded-full">
+              <ITablerCheck class="p-0.5 !size-4 text-white" />
+            </div>
+          </Flex>
           <a
             :href="embed.author.url"
             class="!no-underline !text-gray-400 text-[15px] overflow-hidden text-ellipsis"
@@ -35,14 +37,14 @@
             @{{ embed.author.username }}
           </a>
         </Flex>
-        <Tooltip :tooltip="new Date(embed.published).toLocaleString()">
+        <Tooltip :tooltip="new Date(embed.created_at).toLocaleString()">
           <a
             :href="embed.url"
             target="_blank"
-            class="max-w-fit row-[2_span] col-[2] translate-y-[2px] !no-underline"
+            class="max-w-fit row-[2_span] col-[2] translate-y-[3px] !no-underline"
           >
             <DateTime
-              :dateTime="embed.published!"
+              :dateTime="embed.created_at!"
               class="text-gray-500 leading-[18px] text-sm"
             />
           </a>

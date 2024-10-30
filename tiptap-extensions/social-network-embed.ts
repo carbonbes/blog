@@ -42,7 +42,7 @@ const SNEmbedNode = Node.create({
   addPasteRules() {
     return [
       nodePasteRule({
-        find: /(?:https?:\/\/)?(?:www\.)?(?:twitter|x)\.com\/.+\/(?:[0-9]{19})/gi,
+        find: /(?:https?:\/\/)?(?:www\.)?(?:twitter|x)\.com\/.+\/(?:[0-9]{0,19})/gi,
         type: this.type,
         getAttributes: (match) => {
           return { url: match[0], type: 'x' }
