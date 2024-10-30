@@ -12,10 +12,7 @@
           target="_blank"
           class="row-[1/2_span] col-[1] overflow-hidden rounded-full inner-border"
         >
-          <Image
-            :src="embed.author.avatar.url"
-            class="size-9"
-          />
+          <Image :src="embed.author.avatar.url" class="size-9" />
         </a>
         <Flex
           itemsCenter
@@ -35,14 +32,14 @@
             @{{ embed.author.username }}
           </a>
         </Flex>
-        <Tooltip :tooltip="new Date(embed.published).toLocaleString()">
+        <Tooltip :tooltip="new Date(embed.created_at).toLocaleString()">
           <a
             :href="embed.url"
             target="_blank"
             class="max-w-fit row-[2_span] col-[2] translate-y-[2px] !no-underline"
           >
             <DateTime
-              :dateTime="embed.published!"
+              :dateTime="embed.created_at"
               class="text-gray-500 leading-[18px] text-sm"
             />
           </a>

@@ -81,7 +81,15 @@ export default defineApiRoute(
 
     const { url } = query.data
 
-    const telegramPostRegexp = /https?:\/\/(?:telegram|t)\.me\/(.+)\/(\d+)/gi
+    const telegramPostRegexp = /https?:\/\/(?:telegram|t)\.me\/(.+)\/(\d+)/i
+
+    if (!telegramPostRegexp.test(url)) {
+      throw createError({
+        statusCode: 400,
+        message: 'Некорректная ссылка на пост',
+      })
+    }
+
     const [, channelUsername, postId] = telegramPostRegexp.exec(url) || []
 
     const telegram = await initTelegramClient()

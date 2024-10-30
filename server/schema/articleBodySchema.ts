@@ -146,7 +146,7 @@ export const SNEmbedNode = z.object({
       }),
       text: z.string().trim().min(1).optional(),
       media: z.array(StorageMediaSchema).optional(),
-      published: Rfc2822DateSchema,
+      created_at: Rfc2822DateSchema,
       type: z.union([z.literal('x'), z.literal('telegram')]),
       url: z.string().url(),
     }),

@@ -9,7 +9,10 @@
       center
       class="px-4 py-24 border-2 border-gray-100 rounded-xl"
     >
-      <ITablerBrandX class="!size-16 animate-pulse" v-if="node.attrs.type === 'x'" />
+      <ITablerBrandX
+        class="!size-16 animate-pulse"
+        v-if="node.attrs.type === 'x'"
+      />
       <IIconsTelegram class="!size-16 animate-pulse" v-else />
     </Flex>
 
@@ -28,7 +31,11 @@ const { errorNotify } = useNotifications()
 onMounted(async () => {
   if (props.node.attrs.url) {
     try {
-      const { data: embed } = await getEmbed(props.node.attrs.url)
+      const embed =
+        props.node.attrs.type === 'x'
+          ? await getXEmbed(props.node.attrs.url)
+          : await getTelegramEmbed(props.node.attrs.url)
+
       props.updateAttributes({ url: null, embed })
     } catch (error: any) {
       props.deleteNode()
