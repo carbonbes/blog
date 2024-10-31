@@ -70,7 +70,14 @@ const props = defineProps<
 
 const emits = defineEmits<DrawerRootEmits>()
 
-const forward = useForwardPropsEmits(props, emits)
+const {
+  class: classProp,
+  contentClass: contentClassProp,
+  footerClass: footerClassProp,
+  ...drawerRootProps
+} = props
+
+const forward = useForwardPropsEmits(drawerRootProps, emits)
 
 const isOpen = ref(false)
 

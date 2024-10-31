@@ -1,11 +1,10 @@
 <template>
-  <BottomSheet
-    class="top-full !bg-gray-100 after:!bg-gray-100"
-    footerClass="p-4"
-    ref="bottomsheetRef"
-    @onOpen="onOpen"
+  <Drawer
+    class="!bg-gray-100 after:!bg-gray-100"
+    ref="drawerRef"
+    @update:open="onOpen"
   >
-    <Flex col class="w-full pb-4 !flex gap-4">
+    <Flex col class="flex gap-4">
       <UIButton
         v-for="(button, i) in buttons"
         :key="i"
@@ -18,11 +17,11 @@
         {{ button.label }}
       </UIButton>
     </Flex>
-  </BottomSheet>
+  </Drawer>
 </template>
 
 <script lang="ts" setup>
-import type BottomSheet from '~/components/global/BottomSheet.vue'
+import type Drawer from '~/components/global/Drawer.vue'
 import Heading1 from '~icons/tabler/h1'
 import Heading2 from '~icons/tabler/h2'
 import Paragraph from '~icons/tabler/letter-case'
@@ -49,7 +48,7 @@ const buttons = markRaw([
     action: () => {
       insertNode({ type: 'heading', attrs: { level: 1 } })
       setOpen(false)
-    }
+    },
   },
   {
     icon: Heading2,
@@ -57,7 +56,7 @@ const buttons = markRaw([
     action: () => {
       insertNode({ type: 'heading', attrs: { level: 2 } })
       setOpen(false)
-    }
+    },
   },
   {
     icon: Paragraph,
@@ -65,7 +64,7 @@ const buttons = markRaw([
     action: () => {
       insertNode({ type: 'paragraph' })
       setOpen(false)
-    }
+    },
   },
   {
     icon: ListNumbers,
@@ -73,7 +72,7 @@ const buttons = markRaw([
     action: () => {
       insertNode({ type: 'orderedList' })
       setOpen(false)
-    }
+    },
   },
   {
     icon: List,
@@ -81,13 +80,16 @@ const buttons = markRaw([
     action: () => {
       insertNode({ type: 'bulletList' })
       setOpen(false)
-    }
+    },
   },
   {
     icon: Photo,
     label: 'Медиа с устройства',
     action: () => {
-      insertNode({ type: 'gallery', attrs: { galleryOpenFileFromDeviceDialog: true } })
+      insertNode({
+        type: 'gallery',
+        attrs: { galleryOpenFileFromDeviceDialog: true },
+      })
       setOpen(false)
     },
   },
@@ -95,7 +97,18 @@ const buttons = markRaw([
     icon: Photo,
     label: 'Медиа из буфера',
     action: () => {
-      insertNode({ type: 'gallery', attrs: { galleryOpenFileFromClipboardDialog: true } })
+      insertNode({
+        type: 'gallery',
+        attrs: { galleryOpenFileFromClipboardDialog: true },
+      })
+      setOpen(false)
+    },
+  },
+  {
+    icon: Link,
+    label: 'Ссылка',
+    action: () => {
+      insertNode({ type: 'link' })
       setOpen(false)
     },
   },
@@ -105,14 +118,14 @@ const buttons = markRaw([
     action: () => {
       insertNode({ type: 'separator' })
       setOpen(false)
-    }
+    },
   },
 ])
 
-const bottomsheetRef = ref<InstanceType<typeof BottomSheet>>()
+const drawerRef = ref<InstanceType<typeof Drawer>>()
 
 function setOpen(value: boolean) {
-  bottomsheetRef.value?.setOpen(value)
+  drawerRef.value?.setOpen(value)
   onOpen(false)
 }
 
