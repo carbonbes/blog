@@ -57,7 +57,10 @@ export default defineApiRoute(
       tweet.user.profile_image_url_https
     )
 
-    const authorVerified = tweet.user.verified
+    const authorVerified = tweet.user.verified || tweet.user.is_blue_verified
+
+    const text =
+      tweet.text.replace(/https:\/\/t\.co\/\S+\s*$/gm, '').trim() || undefined
 
     let media: StorageMedia[] | undefined = undefined
 
@@ -80,7 +83,10 @@ export default defineApiRoute(
       ).filter((media) => !!media)
     }
 
-    const { name: authorName, screen_name: authorScreenName } = tweet.user
+    const {
+      user: { name: authorName, screen_name: authorScreenName },
+      created_at,
+    } = tweet
 
     return {
       author: {
@@ -90,11 +96,9 @@ export default defineApiRoute(
         verified: authorVerified,
         url: `https://x.com/${authorScreenName}`,
       },
-      text:
-        tweet.text.replace(/https:\/\/t\.co\/\S+\s*$/gm, '').trim() ||
-        undefined,
+      text,
       media,
-      created_at: tweet.created_at,
+      created_at,
       type: 'x',
       url,
     }

@@ -75,24 +75,34 @@ const MimeTypeSchema = z.custom<MimeType>(
   }
 )
 
-export const StorageMediaSchema = z.object({
-  name: z.string().uuid(),
-  url: z.string().url(),
-  thumbnail: z
-    .object({
-      name: z.string().uuid(),
-      url: z.string().url(),
-      width: z.number(),
-      height: z.number(),
-      mime_type: MimeTypeSchema,
-    })
-    .optional(),
-  width: z.number(),
-  height: z.number(),
-  mime_type: MimeTypeSchema,
-  duration: z.number().optional(),
-  description: z.string().trim().min(1).optional(),
-})
+export const StorageMediaSchema = z
+  .object({
+    name: z.string().uuid(),
+    url: z.string().url(),
+    thumbnail: z
+      .object({
+        name: z.string().uuid(),
+        url: z.string().url(),
+        width: z.number(),
+        height: z.number(),
+        mime_type: MimeTypeSchema,
+      })
+      .optional(),
+    width: z.number(),
+    height: z.number(),
+    mime_type: MimeTypeSchema,
+    duration: z.number().optional(),
+    description: z.string().trim().min(1).optional(),
+  })
+  .refine(
+    (data) => {
+      return !(data.mime_type.startsWith('video/') && !data.thumbnail)
+    },
+    {
+      message: 'Thumbnail is required when mime_type is video/*',
+      path: ['thumbnail'],
+    }
+  )
 
 const GalleryItem = z.object({
   src: z.string().url(),

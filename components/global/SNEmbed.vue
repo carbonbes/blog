@@ -26,7 +26,7 @@
             >
               {{ embed.author.name }}
             </a>
-            <div class="bg-blue-500 rounded-full">
+            <div v-if="embed.author.verified" class="bg-blue-500 rounded-full">
               <ITablerCheck class="p-0.5 !size-4 text-white" />
             </div>
           </Flex>
@@ -44,7 +44,7 @@
             class="max-w-fit row-[2_span] col-[2] translate-y-[3px] !no-underline"
           >
             <DateTime
-              :dateTime="embed.created_at!"
+              :dateTime="embed.created_at"
               class="text-gray-500 leading-[18px] text-sm"
             />
           </a>
