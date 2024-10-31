@@ -64,6 +64,7 @@
     "typescript": "^5.4.5",
     "unplugin-icons": "^0.19.0",
     "unplugin-vue-components": "^0.27.0",
+    "vaul-vue": "^0.2.0",
     "vite-plugin-mkcert": "^1.17.6",
     "vue-use-spring": "^0.3.3",
     "vuedraggable": "^4.1.0",
