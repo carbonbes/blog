@@ -12,7 +12,7 @@
       v-for="(id, index) in length"
       :key="id"
       :index="index"
-      class="w-10 h-10 sm:w-8 sm:h-8 rounded-lg placeholder:text-gray-400 text-center outline-none border-2 border-gray-200 hover:border-blue-300 focus:border-blue-500 disabled:opacity-25 disabled:pointer-events-none transition"
+      class="w-10 h-10 sm:w-8 sm:h-8 rounded-lg placeholder:text-gray-400 text-center outline-none border-2 border-gray-200 hover:border-blue-500/50 focus:border-blue-500 disabled:opacity-25 disabled:pointer-events-none transition"
       :class="pinInputInputClasses"
       :disabled
       ref="pinInputs"

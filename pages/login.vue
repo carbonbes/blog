@@ -2,11 +2,12 @@
   <Flex center class="h-full">
     <Flex
       center
-      class="w-full h-full sm:w-96 sm:h-96 bg-white sm:ring-1 sm:ring-gray-200 sm:rounded-xl sm:shadow-md overflow-hidden"
+      class="w-full h-full sm:w-[400px] sm:h-[450px] bg-white sm:rounded-xl sm:shadow-sm overflow-hidden"
     >
       <Swiper
         :speed="250"
         :allowTouchMove="false"
+        @swipertransitionend="onTransitionEnd"
         class="w-full h-full"
         ref="swiperTabRef"
       >
@@ -14,37 +15,47 @@
           <Swiper
             :speed="250"
             :allowTouchMove="false"
+            @swipertransitionend="onTransitionEnd"
             class="w-full h-full"
             ref="swiperSignInViewRef"
           >
             <SwiperSlide :class="stepClasses">
-              <Flex col class="mt-auto gap-4">
-                <p class="text-center text-lg font-bold">Вход</p>
-                <UIInput
-                  type="email"
-                  placeholder="Почта"
-                  :disabled="state.signInRequesting"
-                  class="rounded-xl"
-                  v-model.trim="signInEmail"
-                  ref="emailInputRef"
-                />
-                <UIButton
-                  class="font-medium rounded-xl"
-                  :disabled="!isValidEmail(signInEmail) || state.signInRequesting"
-                  @click="requestSignIn"
-                >
-                  Войти
-                </UIButton>
+              <Flex col class="mt-auto gap-8">
+                <Flex col class="gap-2">
+                  <ITablerLogin2 class="mx-auto !size-8 text-gray-500" />
+                  <p class="text-center text-lg font-bold">Вход</p>
+                </Flex>
+
+                <Flex col class="gap-4">
+                  <UIInput
+                    type="email"
+                    placeholder="Почта"
+                    :disabled="state.signInRequesting"
+                    class="rounded-xl"
+                    v-model.trim="signInEmail"
+                    @keydown.enter="requestSignIn"
+                    ref="signinEmailInputRef"
+                  />
+                  <UIButton
+                    class="font-medium rounded-xl"
+                    :disabled="
+                      !isValidEmail(signInEmail) || state.signInRequesting
+                    "
+                    @click="requestSignIn"
+                  >
+                    Войти
+                  </UIButton>
+                </Flex>
               </Flex>
 
-              <UIButton
+              <button
                 variant="secondary"
-                class="mt-auto !text-gray-500 hover:!text-gray-900 border rounded-xl"
+                class="mt-auto text-gray-400 hover:text-gray-900 transition-colors"
                 :disabled="state.signInRequesting"
                 @click="nextTab"
               >
                 У меня нет аккаунта
-              </UIButton>
+              </button>
             </SwiperSlide>
 
             <SwiperSlide :class="stepClasses">
@@ -62,7 +73,11 @@
                 <p class="text-center text-gray-500">Не пришел код?</p>
                 <UIButton
                   class="font-medium rounded-xl"
-                  :disabled="state.otpVerifying || state.signInRequesting || !state.canResendOtp"
+                  :disabled="
+                    state.otpVerifying ||
+                    state.signInRequesting ||
+                    !state.canResendOtp
+                  "
                   @click="requestSignIn"
                 >
                   Выслать повторно
@@ -83,45 +98,57 @@
           <Swiper
             :speed="250"
             :allowTouchMove="false"
+            @swipertransitionend="onTransitionEnd"
             class="w-full h-full"
             ref="swiperSignUpViewRef"
           >
             <SwiperSlide :class="stepClasses">
-              <Flex col class="mt-auto gap-4">
-                <p class="text-center text-lg font-bold">Регистрация</p>
-                <UIInput
-                  type="email"
-                  placeholder="Почта"
-                  :disabled="state.signUpRequesting"
-                  class="rounded-xl"
-                  v-model.trim="signUpFormData.email"
-                  ref="emailInputRef"
-                />
-                <UIInput
-                  placeholder="Имя"
-                  :disabled="state.signUpRequesting"
-                  class="rounded-xl"
-                  v-model.trim="signUpFormData.name"
-                />
-                <UIButton
-                  class="font-medium rounded-xl"
-                  :disabled="
-                    !(isValidEmail(signUpFormData.email) && signUpFormData.name) || state.signUpRequesting
-                  "
-                  @click="requestSignUp"
-                >
-                  Зарегистрироваться
-                </UIButton>
+              <Flex col class="mt-auto gap-8">
+                <Flex col class="gap-2">
+                  <ITablerUserPlus class="mx-auto !size-8 text-gray-500" />
+                  <p class="text-center text-lg font-bold">Регистрация</p>
+                </Flex>
+
+                <Flex col class="gap-4">
+                  <UIInput
+                    type="email"
+                    placeholder="Почта"
+                    :disabled="state.signUpRequesting"
+                    class="rounded-xl"
+                    v-model.trim="signUpFormData.email"
+                    @keydown.enter="signupNameInputRef?.focus()"
+                    ref="signupEmailInputRef"
+                  />
+                  <UIInput
+                    placeholder="Имя"
+                    :disabled="state.signUpRequesting"
+                    class="rounded-xl"
+                    v-model.trim="signUpFormData.name"
+                    ref="signupNameInputRef"
+                  />
+                  <UIButton
+                    class="font-medium rounded-xl"
+                    :disabled="
+                      !(
+                        isValidEmail(signUpFormData.email) &&
+                        signUpFormData.name
+                      ) || state.signUpRequesting
+                    "
+                    @click="requestSignUp"
+                  >
+                    Зарегистрироваться
+                  </UIButton>
+                </Flex>
               </Flex>
 
-              <UIButton
+              <button
                 variant="secondary"
-                class="mt-auto !text-gray-500 hover:!text-gray-900 rounded-xl"
+                class="mt-auto text-gray-400 hover:text-gray-900 transition-colors"
                 :disabled="state.signUpRequesting"
                 @click="prevTab"
               >
                 У меня есть аккаунт
-              </UIButton>
+              </button>
             </SwiperSlide>
 
             <SwiperSlide :class="stepClasses">
@@ -134,12 +161,16 @@
                   ref="pinInputRef"
                 />
               </Flex>
-              
+
               <Flex col class="mt-auto w-full gap-2">
                 <p class="text-center text-gray-500">Не пришел код?</p>
                 <UIButton
                   class="font-medium rounded-xl"
-                  :disabled="state.otpVerifying || state.signUpRequesting || !state.canResendOtp"
+                  :disabled="
+                    state.otpVerifying ||
+                    state.signUpRequesting ||
+                    !state.canResendOtp
+                  "
                   @click="requestSignUp"
                 >
                   Выслать повторно
@@ -166,7 +197,7 @@ import type Countdown from '~/components/global/Countdown.vue'
 import type Swiper from '~/components/global/swiper/Swiper.vue'
 
 definePageMeta({
-  name: 'LoginPage'
+  name: 'LoginPage',
 })
 
 const { getMe } = useUser()
@@ -179,14 +210,16 @@ const state = reactive({
   signInRequesting: false,
   signUpRequesting: false,
   otpVerifying: false,
-  canResendOtp: false
+  canResendOtp: false,
 })
 
 const swiperTabRef = ref<InstanceType<typeof Swiper>>()
 const swiperSignInViewRef = ref<InstanceType<typeof Swiper>>()
 const swiperSignUpViewRef = ref<InstanceType<typeof Swiper>>()
 
-const emailInputRef = ref<HTMLInputElement>()
+const signinEmailInputRef = ref<HTMLInputElement>()
+const signupEmailInputRef = ref<HTMLInputElement>()
+const signupNameInputRef = ref<HTMLInputElement>()
 
 function prevTab() {
   state.tab--
@@ -209,21 +242,31 @@ function nextSignUpView() {
 }
 
 function emailInputFocus() {
-  if (state.tab === 1 && state.signInStep === 1 && emailInputRef.value) {
-    emailInputRef.value.focus()
-  } else if (state.tab === 2 && state.signUpStep === 1 && emailInputRef.value) {
-    emailInputRef.value.focus()
+  if (state.tab === 1 && state.signInStep === 1) {
+    signinEmailInputRef.value?.focus()
+  } else if (state.tab === 2 && state.signUpStep === 1) {
+    signupEmailInputRef.value?.focus()
   }
 }
 
-onMounted(emailInputFocus)
-
 function pinInputFocus() {
-  if (state.tab === 1 && state.signInStep === 2 && pinInputRef.value) {
-    pinInputRef.value.focus()
-  } else if (state.tab === 2 && state.signUpStep === 2 && pinInputRef.value) {
-    pinInputRef.value.focus()
+  if (state.tab === 1 && state.signInStep === 2) {
+    pinInputRef.value?.focus()
+  } else if (state.tab === 2 && state.signUpStep === 2) {
+    pinInputRef.value?.focus()
   }
+}
+
+onMounted(async () => {
+  await nextTick()
+
+  emailInputFocus()
+  pinInputFocus()
+})
+
+function onTransitionEnd() {
+  emailInputFocus()
+  pinInputFocus()
 }
 
 const signInEmail = ref('')
@@ -239,15 +282,25 @@ const stepClasses = 'p-8 w-full h-full flex flex-col justify-center'
 const countdownRef = ref<InstanceType<typeof Countdown>>()
 
 async function requestSignIn(resend?: boolean) {
-  state.signInRequesting = true
+  if (
+    !signinEmailInputRef.value ||
+    !isValidEmail(signInEmail.value) ||
+    state.signInRequesting
+  )
+    return
 
   try {
+    state.signInRequesting = true
+
     await signIn({ email: signInEmail.value })
+
     nextSignInView()
+
     if (resend) {
       state.canResendOtp = false
       countdownRef.value?.startCounting()
     }
+
     successNotify({ text: 'Письмо с кодом было выслано на указанную почту' })
   } catch (error: any) {
     errorNotify({ text: error.data.message })
@@ -257,15 +310,18 @@ async function requestSignIn(resend?: boolean) {
 }
 
 async function requestSignUp(resend?: boolean) {
-  state.signUpRequesting = true
-
   try {
+    state.signUpRequesting = true
+
     await signUp(signUpFormData)
+
     nextSignUpView()
+
     if (resend) {
       state.canResendOtp = false
       countdownRef.value?.startCounting()
     }
+
     successNotify({ text: 'Письмо с кодом было выслано на указанную почту' })
   } catch (error: any) {
     errorNotify({ text: error.data.message })
@@ -293,7 +349,7 @@ async function requestVerifySignInOtp(code: string) {
 
 async function requestVerifySignUpOtp(code: string) {
   state.otpVerifying = true
-  
+
   try {
     await verifyOtp({ email: signUpFormData.email, token: code })
     await getMe()

@@ -1,7 +1,9 @@
 <template>
   <Header />
 
-  <main class="mx-auto pb-[60px] sm:pb-[unset] w-full max-w-[640px] h-full">
+  <main
+    class="mx-auto pb-[var(--header-height)] sm:pb-[unset] sm:pt-[var(--header-height)] w-full max-w-[640px] h-full"
+  >
     <NuxtPage />
   </main>
 
