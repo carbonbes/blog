@@ -37,9 +37,17 @@
         </UIButton>
 
         <Flex itemsCenter class="gap-2">
-          <button class="hover:opacity-50 transition-opacity duration-[250ms]">
-            <ITablerUserCircle />
-          </button>
+          <Dropdown
+            :items="profileDropdownMenu"
+            :sideOffset="10"
+            :collisionPadding="10"
+          >
+            <button
+              class="hover:opacity-50 transition-opacity duration-[250ms]"
+            >
+              <ITablerUserCircle />
+            </button>
+          </Dropdown>
         </Flex>
       </Flex>
     </Flex>
@@ -47,6 +55,8 @@
 </template>
 
 <script lang="ts" setup>
+import DoorExit from '~icons/tabler/door-exit'
+
 const route = useRoute()
 
 const isIndexPage = computed(() => route.name === 'IndexPage')
@@ -58,4 +68,15 @@ const { setOpen } = useEditorDialog()
 function openEditor() {
   setOpen(true)
 }
+
+const { logout } = useUser()
+
+const profileDropdownMenu = [
+  {
+    label: 'Выйти',
+    icon: DoorExit,
+    class: 'text-red-500',
+    action: () => logout(),
+  },
+]
 </script>

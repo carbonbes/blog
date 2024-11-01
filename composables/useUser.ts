@@ -1,4 +1,5 @@
 import type { Profile } from '~/types'
+import { logout as _logout } from '~/utils/api'
 
 export default function useUser() {
   const pending = useState('pending', () => false)
@@ -16,14 +17,14 @@ export default function useUser() {
     isAuthenticated.value = true
   }
 
-  async function logoutMe() {
+  async function logout() {
     try {
-      await logout()
+      await _logout()
       user.value = null
       isAuthenticated.value = false
       await navigateTo('/login')
     } catch (error) {}
   }
 
-  return { pending, user, isAuthenticated, getMe, logoutMe }
+  return { pending, user, isAuthenticated, getMe, logout }
 }
