@@ -1,6 +1,6 @@
+import { Supabase, StorageMedia } from '~/types'
 import { useSafeValidatedQuery, z } from 'h3-zod'
 import { Api, TelegramClient } from 'telegram'
-import { Supabase } from '~/types'
 import getFileFromBuffer from '~/utils/getFileFromBuffer'
 import { StringSession } from 'telegram/sessions/index.js'
 
@@ -23,30 +23,17 @@ const { telegramApiId, telegramApiHash, telegramApiStringSession } =
 
 async function initTelegramClient() {
   const stringSession = new StringSession(telegramApiStringSession)
+
   const telegram = new TelegramClient(
     stringSession,
     +telegramApiId,
     telegramApiHash,
     {}
   )
+
   await telegram.connect()
 
   return telegram
-}
-
-async function getChannelName(
-  telegram: TelegramClient,
-  channelUsername: string
-) {
-  const {
-    chats: [{ title: channelName }],
-  } = await telegram.invoke(
-    new Api.channels.GetChannels({
-      id: [channelUsername],
-    })
-  )
-
-  return channelName as string
 }
 
 async function getMedia(args: TelegramMediaArgs) {
@@ -69,7 +56,7 @@ async function getMedia(args: TelegramMediaArgs) {
 }
 
 export default defineApiRoute(
-  async ({ event }) => {
+  async ({ event, supabase }) => {
     const query = await useSafeValidatedQuery(event, { url: z.string().url() })
 
     if (!query.success) {
@@ -92,26 +79,100 @@ export default defineApiRoute(
 
     const [, channelUsername, postId] = telegramPostRegexp.exec(url) || []
 
-    const telegram = await initTelegramClient()
+    try {
+      const telegram = await initTelegramClient()
 
-    const channelName = await getChannelName(telegram, channelUsername)
+      const { title: channelName, verified } = (await telegram.getEntity(
+        channelUsername
+      )) as Api.Channel
 
-    const [post] = await telegram.getMessages(channelUsername, {
-      ids: new Api.InputMessageID({ id: +postId }),
-    })
+      const authorAvatar = await getMedia({
+        supabase,
+        telegram,
+        channelUsername,
+        type: 'userAvatar',
+      })
 
-    return {
-      author: {
-        avatar: authorAvatar || null,
-        name: channelName,
-        username: channelUsername,
-        url: `https://t.me/${channelUsername}`,
-      },
-      text: post.text,
-      media: post.media,
-      created_at: post.date,
-      type: 'telegram',
-      url,
+      const [post] = await telegram.getMessages(channelUsername, {
+        ids: new Api.InputMessageID({ id: +postId }),
+      })
+
+      let media: StorageMedia[] | undefined = undefined
+
+      if (post.media) {
+        if (post.groupedId) {
+          const ids: number[] = []
+
+          for (let i = +postId + 1; i <= +postId + 10; i++) {
+            ids.push(i)
+          }
+
+          const posts = (
+            await telegram.getMessages(channelUsername, {
+              ids,
+            })
+          ).filter(
+            (gPost) => Number(gPost?.groupedId) === Number(post.groupedId)
+          )
+
+          posts.unshift(post)
+
+          const mediaForUpload = [
+            post.media,
+            ...posts.map((post) => post.media),
+          ]
+
+          media = (
+            await Promise.all(
+              mediaForUpload.map(async (media) => {
+                if (!media) return
+
+                const mediaItem = await getMedia({
+                  supabase,
+                  telegram,
+                  media,
+                  type: 'postMedia',
+                })
+
+                if (!mediaItem) return
+
+                return mediaItem
+              })
+            )
+          ).filter((media) => !!media)
+        } else {
+          const mediaItem = await getMedia({
+            supabase,
+            telegram,
+            media: post.media,
+            type: 'postMedia',
+          })
+
+          if (!mediaItem) return
+
+          media = [mediaItem]
+        }
+      }
+
+      return {
+        author: {
+          avatar: authorAvatar,
+          name: channelName,
+          username: channelUsername,
+          verified: verified ?? false,
+          url: `https://t.me/${channelUsername}`,
+        },
+        text: post.text,
+        media,
+        created_at: post.date * 1000,
+        type: 'telegram',
+        url,
+      }
+    } catch (error) {
+      throw createError({
+        statusCode: 400,
+        message: 'Не удалось получить пост',
+      })
     }
   },
   { requireAuth: true }
