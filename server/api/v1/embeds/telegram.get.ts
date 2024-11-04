@@ -115,8 +115,6 @@ export default defineApiRoute(
             (gPost) => Number(gPost?.groupedId) === Number(post.groupedId)
           )
 
-          posts.unshift(post)
-
           const mediaForUpload = [
             post.media,
             ...posts.map((post) => post.media),
