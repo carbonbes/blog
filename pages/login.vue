@@ -189,6 +189,10 @@ definePageMeta({
   name: 'LoginPage',
 })
 
+useSeoMeta({
+  title: 'Авторизация',
+})
+
 const { getMe } = useUser()
 const { successNotify, errorNotify } = useNotifications()
 
