@@ -33,14 +33,12 @@
                     :disabled="state.signInRequesting"
                     class="rounded-xl"
                     v-model.trim="signInEmail"
-                    @keydown.enter="requestSignIn"
+                    @keydown.enter="onInputEnterDown"
                     ref="signinEmailInputRef"
                   />
                   <UIButton
                     class="font-medium rounded-xl"
-                    :disabled="
-                      !isValidEmail(signInEmail) || state.signInRequesting
-                    "
+                    :disabled="!canSignin"
                     @click="requestSignIn"
                   >
                     Войти
@@ -64,6 +62,8 @@
                 <PinInput
                   :disabled="state.otpVerifying || state.signInRequesting"
                   @complete="requestVerifySignInOtp"
+                  size="size-12 sm:size-10"
+                  rounded="rounded-xl"
                   class="justify-center"
                   ref="pinInputRef"
                 />
@@ -73,17 +73,13 @@
                 <p class="text-center text-gray-500">Не пришел код?</p>
                 <UIButton
                   class="font-medium rounded-xl"
-                  :disabled="
-                    state.otpVerifying ||
-                    state.signInRequesting ||
-                    !state.canResendOtp
-                  "
-                  @click="requestSignIn"
+                  :disabled="!canSendSigninOtp"
+                  @click="requestSignIn({ resend: true })"
                 >
                   Выслать повторно
                 </UIButton>
                 <Countdown
-                  v-if="!state.canResendOtp"
+                  v-if="state.signInStep === 2 && !state.canResendOtp"
                   :initial="Date.now() + 60000"
                   @complete="state.canResendOtp = true"
                   class="text-center"
@@ -116,7 +112,7 @@
                     :disabled="state.signUpRequesting"
                     class="rounded-xl"
                     v-model.trim="signUpFormData.email"
-                    @keydown.enter="signupNameInputRef?.focus()"
+                    @keydown.enter="onInputEnterDown"
                     ref="signupEmailInputRef"
                   />
                   <UIInput
@@ -124,16 +120,12 @@
                     :disabled="state.signUpRequesting"
                     class="rounded-xl"
                     v-model.trim="signUpFormData.name"
+                    @keydown.enter="onInputEnterDown"
                     ref="signupNameInputRef"
                   />
                   <UIButton
                     class="font-medium rounded-xl"
-                    :disabled="
-                      !(
-                        isValidEmail(signUpFormData.email) &&
-                        signUpFormData.name
-                      ) || state.signUpRequesting
-                    "
+                    :disabled="!canSignup"
                     @click="requestSignUp"
                   >
                     Зарегистрироваться
@@ -157,6 +149,7 @@
                 <PinInput
                   :disabled="state.otpVerifying || state.signUpRequesting"
                   @complete="requestVerifySignUpOtp"
+                  rounded="rounded-xl"
                   class="justify-center"
                   ref="pinInputRef"
                 />
@@ -166,17 +159,13 @@
                 <p class="text-center text-gray-500">Не пришел код?</p>
                 <UIButton
                   class="font-medium rounded-xl"
-                  :disabled="
-                    state.otpVerifying ||
-                    state.signUpRequesting ||
-                    !state.canResendOtp
-                  "
-                  @click="requestSignUp"
+                  :disabled="!canSendSignupOtp"
+                  @click="requestSignUp({ resend: true })"
                 >
                   Выслать повторно
                 </UIButton>
                 <Countdown
-                  v-if="!state.canResendOtp"
+                  v-if="state.signUpStep === 2 && !state.canResendOtp"
                   :initial="Date.now() + 60000"
                   @complete="state.canResendOtp = true"
                   class="text-center"
@@ -269,6 +258,24 @@ function onTransitionEnd() {
   pinInputFocus()
 }
 
+function onInputEnterDown() {
+  if (state.tab === 1) {
+    if (!signInEmail.value) return
+
+    requestSignIn()
+  }
+
+  if (state.tab === 2) {
+    if (isValidEmail(signUpFormData.email) && !signUpFormData.name) {
+      signupNameInputRef.value?.focus()
+    }
+
+    if (isValidEmail(signUpFormData.email) && signUpFormData.name) {
+      requestSignUp()
+    }
+  }
+}
+
 const signInEmail = ref('')
 
 const signUpFormData = reactive({
@@ -276,25 +283,41 @@ const signUpFormData = reactive({
   name: '',
 })
 
+const canSignin = computed(
+  () => isValidEmail(signInEmail.value) && !state.signInRequesting
+)
+
+const canSignup = computed(
+  () =>
+    isValidEmail(signUpFormData.email) &&
+    !!signUpFormData.name &&
+    !state.signUpRequesting
+)
+
+const canSendSigninOtp = computed(
+  () => state.canResendOtp && !(state.otpVerifying || state.signInRequesting)
+)
+
+const canSendSignupOtp = computed(
+  () => state.canResendOtp && !(state.otpVerifying || state.signUpRequesting)
+)
+
 const tabClasses = 'h-full flex flex-col overflow-hidden'
 const stepClasses = 'p-8 w-full h-full flex flex-col justify-center'
 
 const countdownRef = ref<InstanceType<typeof Countdown>>()
 
-async function requestSignIn(resend?: boolean) {
-  if (
-    !signinEmailInputRef.value ||
-    !isValidEmail(signInEmail.value) ||
-    state.signInRequesting
-  )
-    return
+async function requestSignIn({ resend }: { resend?: boolean } = {}) {
+  if (!canSignin) return
 
   try {
     state.signInRequesting = true
 
     await signIn({ email: signInEmail.value })
 
-    nextSignInView()
+    if (!resend) {
+      nextSignInView()
+    }
 
     if (resend) {
       state.canResendOtp = false
@@ -309,13 +332,17 @@ async function requestSignIn(resend?: boolean) {
   }
 }
 
-async function requestSignUp(resend?: boolean) {
+async function requestSignUp({ resend }: { resend?: boolean } = {}) {
+  if (!canSignup) return
+
   try {
     state.signUpRequesting = true
 
     await signUp(signUpFormData)
 
-    nextSignUpView()
+    if (!resend) {
+      nextSignUpView()
+    }
 
     if (resend) {
       state.canResendOtp = false
@@ -333,9 +360,9 @@ async function requestSignUp(resend?: boolean) {
 const pinInputRef = ref<InstanceType<typeof PinInput>>()
 
 async function requestVerifySignInOtp(code: string) {
-  state.otpVerifying = true
-
   try {
+    state.otpVerifying = true
+
     await verifyOtp({ email: signInEmail.value, token: code })
     await getMe()
     await navigateTo('/')
@@ -348,9 +375,9 @@ async function requestVerifySignInOtp(code: string) {
 }
 
 async function requestVerifySignUpOtp(code: string) {
-  state.otpVerifying = true
-
   try {
+    state.otpVerifying = true
+
     await verifyOtp({ email: signUpFormData.email, token: code })
     await getMe()
     await navigateTo('/')
