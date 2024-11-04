@@ -16,10 +16,6 @@ export default defineNuxtConfig({
     supabaseUrl: env.NUXT_SUPABASE_URL,
     supabasekey: env.NUXT_SUPABASE_KEY,
 
-    xApiGuestTokenUrl: env.NUXT_X_API_GUEST_TOKEN_URL,
-    xApiAuthToken: env.NUXT_X_API_AUTH_TOKEN,
-    xApiUrl: env.NUXT_X_API_URL,
-
     telegramApiHash: env.NUXT_TELEGRAM_API_HASH,
     telegramApiId: env.NUXT_TELEGRAM_API_ID,
     telegramApiStringSession: env.NUXT_TELEGRAM_API_STRING_SESSION,
@@ -41,7 +37,7 @@ export default defineNuxtConfig({
     'dayjs-nuxt',
     'radix-vue/nuxt',
     '@nuxt/scripts',
-    '@bicou/prosemirror-render-nuxt'
+    '@bicou/prosemirror-render-nuxt',
   ],
 
   supabase: {
