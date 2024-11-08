@@ -17,12 +17,14 @@
       v-else
       col
       itemsCenter
-      class="p-4 bg-white gap-4 text-gray-500 rounded-xl"
+      class="p-4 bg-white gap-6 text-gray-500 rounded-xl"
     >
-      <ITablerArticle />
-
       <Flex col itemsCenter class="gap-2">
+        <ITablerArticle />
         У вас еще нет записей
+      </Flex>
+
+      <Flex col itemsCenter>
         <UIButton
           class="flex items-center gap-2 font-medium rounded-xl"
           @click="openEditor"
