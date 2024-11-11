@@ -8,7 +8,7 @@
   </main>
 
   <LazyEditorDialog />
-  <LazyNotifications />
+  <LazyToasts />
   <LazyLightbox />
 </template>
 

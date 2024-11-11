@@ -97,7 +97,7 @@ const onUpdate = useDebounceFn(async (body: ArticleBody) => {
   }
 }, 500)
 
-const { errorNotify } = useNotifications()
+const { errorToastify } = useToasts()
 
 async function create(body: ArticleBody) {
   try {
@@ -117,7 +117,7 @@ async function create(body: ArticleBody) {
 
     return newArticle
   } catch (error: any) {
-    errorNotify({
+    errorToastify({
       text: error.data.message,
     })
   } finally {
@@ -144,7 +144,7 @@ async function update(articleId: number, body: ArticleBody) {
 
     return updatedArticle
   } catch (error: any) {
-    errorNotify({
+    errorToastify({
       text: error.data.message,
     })
   } finally {

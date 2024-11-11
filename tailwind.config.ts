@@ -25,10 +25,18 @@ export default {
           '0%': { opacity: 1, transform: 'translate3d(0, 0, 0)' },
           '100%': { opacity: 0, transform: 'translate3d(-100%, 0, 0)' },
         },
-        notification: {
+        toast: {
           '0%': { opacity: 0, transform: 'translateX(100%)' },
           '70%': { transform: 'translateX(-5%)' },
           '100%': { opacity: 1, transform: 'translateX(0)' },
+        },
+        'toast-swipe-end': {
+          '0%': {
+            transform: 'translateX(var(--radix-toast-swipe-end-x))',
+          },
+          '100%': {
+            transform: 'translateX(100%)',
+          },
         },
         'fade-in-top-side': {
           '0%': { transform: 'translateY(-100%)' },
@@ -45,6 +53,10 @@ export default {
         'fade-in-left-side': {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(0)' },
+        },
+        hide: {
+          '0%': { opacity: '100%' },
+          '100%': { opacity: '0%' },
         },
         pulse: {
           '0%': { transform: 'scale(1)' },
@@ -64,7 +76,7 @@ export default {
         'next-reverse': 'next reverse 0.33s',
         previous: 'previous 0.33s',
         'previous-reverse': 'previous reverse 0.33s',
-        notification: 'notification .25s ease',
+        toast: 'toast .25s ease',
         'fade-in-top-side': 'fade-in-top-side',
         'fade-in-right-side': 'fade-in-right-side',
         'fade-in-bottom-side': 'fade-in-bottom-side',
@@ -80,11 +92,14 @@ export default {
       boxShadow: {
         '-sm': '0 -1px 2px 0 rgb(0 0 0 / 0.05)',
         '-': '0 -1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
-        '-md': '0 -4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-        '-lg': '0 -10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-        '-xl': '0 -20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
-        '-2xl': '0 -25px 50px -12px rgb(0 0 0 / 0.25)'
-      }
+        '-md':
+          '0 -4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+        '-lg':
+          '0 -10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+        '-xl':
+          '0 -20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+        '-2xl': '0 -25px 50px -12px rgb(0 0 0 / 0.25)',
+      },
     },
   },
 
@@ -120,6 +135,9 @@ export default {
             borderRadius: 'inherit',
             pointerEvents: 'none',
           },
+        },
+        '.break-anywhere': {
+          'overflow-wrap': 'anywhere',
         },
       })
     }),

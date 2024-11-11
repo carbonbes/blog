@@ -102,7 +102,7 @@ export type MediaType = 'image' | 'video'
 const props = defineProps<NodeViewProps>()
 
 const { updateNodeAttributes } = useEditor()
-const { errorNotify } = useNotifications()
+const { errorToastify } = useToasts()
 
 const pasteFromClipboardDialogRef = ref<InstanceType<typeof Dialog>>()
 const itemsContainerRef = ref<InstanceType<typeof Flex>>()
@@ -131,7 +131,7 @@ async function addItems(files: File[]) {
   await Promise.all(
     Object.values(files).map(async (file) => {
       if (file.size > MEDIAFILE_MAX_SIZE) {
-        errorNotify({
+        errorToastify({
           title: 'Ошибка',
           text: 'Слишком большой файл',
         })

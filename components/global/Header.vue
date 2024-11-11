@@ -81,4 +81,6 @@ const profileDropdownMenu = [
     action: () => logout(),
   },
 ]
+
+const { successToastify, errorToastify } = useToasts()
 </script>

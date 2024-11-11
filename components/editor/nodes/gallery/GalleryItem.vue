@@ -164,11 +164,11 @@ function updateItem(data: StorageMedia) {
   })
 }
 
-const { errorNotify } = useNotifications()
+const { errorToastify } = useToasts()
 
 function showError() {
   emits('remove', props.item.id as string)
-  errorNotify({ title: 'Ошибка', text: 'Не удалось загрузить файл' })
+  errorToastify({ title: 'Ошибка', text: 'Не удалось загрузить файл' })
 }
 
 async function upload() {

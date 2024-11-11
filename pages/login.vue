@@ -194,7 +194,7 @@ useSeoMeta({
 })
 
 const { getMe } = useUser()
-const { successNotify, errorNotify } = useNotifications()
+const { successToastify, errorToastify } = useToasts()
 
 const state = reactive({
   tab: 1,
@@ -328,9 +328,9 @@ async function requestSignIn({ resend }: { resend?: boolean } = {}) {
       countdownRef.value?.startCounting()
     }
 
-    successNotify({ text: 'Письмо с кодом было выслано на указанную почту' })
+    successToastify({ text: 'Письмо с кодом было выслано на указанную почту' })
   } catch (error: any) {
-    errorNotify({ text: error.data.message })
+    errorToastify({ text: error.data.message })
   } finally {
     state.signInRequesting = false
   }
@@ -353,9 +353,9 @@ async function requestSignUp({ resend }: { resend?: boolean } = {}) {
       countdownRef.value?.startCounting()
     }
 
-    successNotify({ text: 'Письмо с кодом было выслано на указанную почту' })
+    successToastify({ text: 'Письмо с кодом было выслано на указанную почту' })
   } catch (error: any) {
-    errorNotify({ text: error.data.message })
+    errorToastify({ text: error.data.message })
   } finally {
     state.signUpRequesting = false
   }
@@ -372,7 +372,7 @@ async function requestVerifySignInOtp(code: string) {
     await navigateTo('/')
   } catch (error: any) {
     pinInputRef.value?.showError(error.data.message)
-    errorNotify({ text: error.data.message })
+    errorToastify({ text: error.data.message })
   } finally {
     state.otpVerifying = false
   }
@@ -387,7 +387,7 @@ async function requestVerifySignUpOtp(code: string) {
     await navigateTo('/')
   } catch (error: any) {
     pinInputRef.value?.showError(error.data.message)
-    errorNotify({ text: error.data.message })
+    errorToastify({ text: error.data.message })
   } finally {
     state.otpVerifying = false
   }

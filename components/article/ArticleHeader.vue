@@ -24,7 +24,7 @@ const props = defineProps<{
 }>()
 
 const { setOpen } = useEditorDialog()
-const { successNotify, errorNotify } = useNotifications()
+const { successToastify, errorToastify } = useToasts()
 
 const dropdownRef = ref<InstanceType<typeof Dropdown>>()
 
@@ -48,9 +48,9 @@ const dropdownItems = computed(() => [
     action: async () => {
       try {
         await removeArticle(props.article.id)
-        successNotify({ text: 'Запись удалена' })
+        successToastify({ text: 'Запись удалена' })
       } catch (error: any) {
-        errorNotify({ text: error.data.message })
+        errorToastify({ text: error.data.message })
       } finally {
         dropdownRef.value?.setOpen(false)
       }

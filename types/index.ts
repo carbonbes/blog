@@ -25,7 +25,7 @@ export interface Response<T = {}> {
 
 export type Supabase = SupabaseClient<Database>
 
-export interface Notification {
+export interface Toast {
   id?: string
   title?: string
   text: string

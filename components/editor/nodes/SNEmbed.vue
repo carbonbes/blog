@@ -26,7 +26,7 @@ import SNEmbed from '~/components/global/SNEmbed.vue'
 
 const props = defineProps<NodeViewProps>()
 
-const { errorNotify } = useNotifications()
+const { errorToastify } = useToasts()
 
 onMounted(async () => {
   if (props.node.attrs.url) {
@@ -39,7 +39,7 @@ onMounted(async () => {
       props.updateAttributes({ url: null, embed })
     } catch (error: any) {
       props.deleteNode()
-      errorNotify({ text: error.data.message })
+      errorToastify({ text: error.data.message })
     }
   }
 })
