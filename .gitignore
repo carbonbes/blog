@@ -19,6 +19,7 @@ logs
 .idea
 .vscode
 certs
+.yarn
 
 # Local env files
 .env
