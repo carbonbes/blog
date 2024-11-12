@@ -38,6 +38,7 @@ export default defineNuxtConfig({
     'radix-vue/nuxt',
     '@nuxt/scripts',
     '@bicou/prosemirror-render-nuxt',
+    'nuxt-api-shield',
   ],
 
   supabase: {
@@ -58,6 +59,14 @@ export default defineNuxtConfig({
 
   dayjs: {
     plugins: ['relativeTime'],
+  },
+
+  nuxtApiShield: {
+    limit: {
+      max: env.apiRateLimitMaxRequestsPerDuration,
+      duration: env.apiRateLimitDuration,
+      routes: env.NUXT_API_RATE_LIMIT_PROTECTED_ROUTES?.split(','),
+    },
   },
 
   css: ['~/assets/styles/index.sass'],
@@ -117,6 +126,16 @@ export default defineNuxtConfig({
     compilerOptions: {
       isCustomElement: (tag) =>
         ['swiper-container', 'swiper-slide'].includes(tag),
+    },
+  },
+
+  nitro: {
+    experimental: {
+      tasks: true,
+    },
+
+    scheduledTasks: {
+      '*/15 * * * *': ['shield:clean'],
     },
   },
 })
