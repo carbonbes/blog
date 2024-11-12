@@ -1,12 +1,18 @@
-export default defineApiRoute(async ({ event, supabase }) => {
-  const id = getRouterParam(event, 'id')
+import { z, useSafeValidatedParams } from 'h3-zod'
 
-  if (!id) {
+export default defineApiRoute(async ({ event, supabase }) => {
+  const params = await useSafeValidatedParams(event, {
+    id: z.string().trim().min(1),
+  })
+
+  if (!params.success) {
     throw createError({
       statusCode: 400,
       message: 'Заполните все необходимые поля',
     })
   }
+
+  const id = params.data.id
 
   const { data, error } = await supabase
     .from('articles')

@@ -1,23 +1,29 @@
 import isValidEmail from '~/utils/isValidEmail'
+import { z, useSafeValidatedBody } from 'h3-zod'
 
 export default defineApiRoute(async ({ event, supabase }) => {
-  const {
-    email,
-  }: {
-    email: string
-  } = await readBody(event)
+  const body = await useSafeValidatedBody(
+    event,
+    z.object({
+      email: z.string().trim().min(1),
+    })
+  )
 
-  if (!email)
+  if (!body.success) {
     throw createError({
       statusCode: 400,
       message: 'Заполните все необходимые поля',
     })
+  }
 
-  if (!isValidEmail(email))
+  const email = body.data.email
+
+  if (!isValidEmail(email)) {
     throw createError({
       statusCode: 400,
       message: 'Невалидная почта',
     })
+  }
 
   const { data, error } = await supabase.auth.signInWithOtp({
     email,
