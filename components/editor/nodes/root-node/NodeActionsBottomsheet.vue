@@ -24,7 +24,7 @@
         :spaceBetween="50"
         :speed="250"
         :allowTouchMove="false"
-        slide-prev-class="h-0"
+        slide-prev-class="!h-0"
         slide-next-class="!h-0"
         slide-active-class="!h-full"
         ref="swiperRef"
