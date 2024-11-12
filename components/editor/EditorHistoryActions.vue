@@ -3,7 +3,7 @@
     <Tooltip tooltip="Отменить">
       <UIButton
         variant="secondary"
-        :disabled="!canUndo || pending"
+        :disabled="!canUndo || pending || uploading"
         class="rounded-xl"
         @click="undo"
       >
@@ -14,7 +14,7 @@
     <Tooltip tooltip="Вернуть">
       <UIButton
         variant="secondary"
-        :disabled="!canRedo || pending"
+        :disabled="!canRedo || pending || uploading"
         class="rounded-xl"
         @click="redo"
       >
@@ -26,7 +26,7 @@
 
 <script lang="ts" setup>
 const { editor } = useEditor()
-const { pending } = useEditorDialogArticle()
+const { pending, uploading } = useEditorDialogArticle()
 
 const canUndo = computed(() => editor.value?.can().undo())
 const canRedo = computed(() => editor.value?.can().redo())

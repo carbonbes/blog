@@ -51,6 +51,7 @@ const props = defineProps<
     class?: string | object
     headerClass?: string | object
     footerClass?: string | object
+    ignoreClose?: boolean
   }
 >()
 
@@ -66,10 +67,20 @@ const emitsAsProps = useEmitAsProps(emits)
 const isOpen = ref(false)
 
 function setOpen(value: boolean) {
+  if (props.ignoreClose) {
+
+    return
+  }
+
   isOpen.value = value
 }
 
 function toggleOpen() {
+  if (isOpen.value && props.ignoreClose) {
+
+    return
+  }
+
   isOpen.value = !isOpen.value
 }
 

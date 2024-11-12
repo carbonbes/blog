@@ -2,6 +2,7 @@ import type { Article } from '~/types'
 
 export function useEditorDialogArticle() {
   const pending = useState(() => false)
+  const uploading = useState(() => false)
   const article = useState<Article | null | undefined>()
 
   async function requestArticle(id: number) {
@@ -19,5 +20,5 @@ export function useEditorDialogArticle() {
 
   }
 
-  return { pending, article, requestArticle, newArticle }
+  return { pending, uploading, article, requestArticle, newArticle }
 }
