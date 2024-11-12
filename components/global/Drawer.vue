@@ -1,6 +1,4 @@
 <template>
-  <Html :style="'--drawer-footer-height: 0px'" />
-
   <DrawerRoot
     v-bind="forward"
     v-model:open="isOpen"
@@ -15,7 +13,7 @@
       <DrawerContent
         aria-describedby=""
         v-bind="props"
-        class="fixed right-0 bottom-0 left-0 w-full h-full max-h-[95%] bg-white rounded-t-2xl"
+        class="fixed right-0 bottom-0 left-0 w-full h-full max-h-[95%] flex flex-col bg-white rounded-t-2xl"
         ref="drawerContentRef"
         @closeAutoFocus="(e) => e.preventDefault()"
       >
@@ -29,7 +27,7 @@
 
         <Primitive
           asChild
-          class="px-4 w-full h-[calc(100%-48px-var(--drawer-footer-height))] overflow-y-auto"
+          class="px-4 w-full h-full overflow-y-auto"
           :class="[contentClass, scrollableContentClasses]"
           ref="scrollableContentRef"
         >

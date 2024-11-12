@@ -1,6 +1,4 @@
 <template>
-  <Html v-if="state.view === 2" :style="'--drawer-footer-height: 80px'" />
-
   <Drawer
     class="!bg-gray-100 after:!bg-gray-100"
     contentClass="!px-0"
