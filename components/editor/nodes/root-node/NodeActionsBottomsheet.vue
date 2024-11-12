@@ -29,14 +29,13 @@
         slide-active-class="!h-full"
         ref="swiperRef"
       >
-        <SwiperSlide class="px-4 pb-4 w-full h-full flex flex-col gap-4">
+        <SwiperSlide :class="slideClasses">
           <UIButton
-            v-for="(button, i) in nodeActionButtons"
+            v-for="(button, i) in firstSlideButtons"
             :key="i"
             variant="secondary"
             size="l"
-            class="flex items-center gap-3 !rounded-2xl !shadow"
-            :class="{ 'text-blue-500': button.active }"
+            :class="[slideButtonClasses, { 'text-blue-500': button.active }]"
             @click="button.action"
             :disabled="button.disabled"
           >
@@ -46,13 +45,13 @@
           </UIButton>
         </SwiperSlide>
 
-        <SwiperSlide class="px-4 pb-4 w-full h-full flex flex-col gap-4">
+        <SwiperSlide :class="slideClasses">
           <UIButton
-            v-for="(button, i) in changeNodeTypeButtons"
+            v-for="(button, i) in secondSlideButtons"
             :key="i"
             variant="secondary"
             size="l"
-            class="flex items-center gap-3 !rounded-2xl !shadow"
+            :class="slideButtonClasses"
             @click="button.action"
             :disabled="button.disabled"
           >
@@ -122,7 +121,10 @@ function resetView() {
   state.view = 1
 }
 
-const nodeActionButtons = computed(() => [
+const slideClasses = 'px-4 pb-4 w-full h-full flex flex-col gap-4'
+const slideButtonClasses = 'flex items-center gap-3 !rounded-2xl !shadow'
+
+const firstSlideButtons = computed(() => [
   {
     icon: Pin,
     label: 'Вывести в карточке',
@@ -178,7 +180,7 @@ const nodeActionButtons = computed(() => [
   },
 ])
 
-const changeNodeTypeButtons = computed(() => [
+const secondSlideButtons = computed(() => [
   {
     icon: Heading1,
     label: 'Заголовок 1',
