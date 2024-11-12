@@ -3,7 +3,7 @@
 
   <Drawer
     class="!bg-gray-100 after:!bg-gray-100"
-    contentClass="px-0"
+    contentClass="!px-0"
     @update:open="onOpen"
     ref="drawerRef"
   >
