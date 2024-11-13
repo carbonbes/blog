@@ -27,11 +27,7 @@
       </Tooltip>
 
       <Tooltip v-if="article" tooltip="Предпросмотр записи">
-        <UIButton
-          variant="secondary"
-          class="rounded-xl"
-          :disabled="pending || uploading"
-        >
+        <UIButton variant="secondary" class="rounded-xl" :disabled="pending">
           <ITablerEye />
         </UIButton>
       </Tooltip>
@@ -40,7 +36,7 @@
         v-if="article"
         class="flex items-center gap-3 rounded-xl"
         @click="emits('save')"
-        :disabled="pending || uploading"
+        :disabled="pending"
       >
         Сохранить
       </UIButton>
@@ -56,7 +52,7 @@ const emits = defineEmits<{
   save: [void]
 }>()
 
-const { pending, uploading, article } = useEditorDialogArticle()
+const { pending, article } = useEditorDialogArticle()
 
 watch(pending, (v) => {
   if (v) savingIndicatorIsShow.value = true

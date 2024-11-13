@@ -1,9 +1,6 @@
 <template>
   <Dialog
-    class="w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none sm:!rounded-xl editor-dialog"
-    :ignoreClose="pending || uploading"
-    @interactOutside="onInteractOutside"
-    @escapeKeyDown="onClose"
+    class="w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none sm:!rounded-xl"
     @open="onOpen"
     @close="onClose"
     ref="dialogRef"
@@ -35,20 +32,6 @@
       </Flex>
     </template>
   </Dialog>
-
-  <Dialog ref="confirmationDialogRef">
-    <Flex col class="gap-4">
-      <Flex col itemsCenter class="gap-2">
-        <p>Вы действительно хотите закрыть редактор?</p>
-        <p>У вас есть сохраняющиеся на сервер изменения прямо сейчас</p>
-      </Flex>
-
-      <Flex justifyBetween class="w-full gap-4">
-        <UIButton class="flex-1">Да</UIButton>
-        <UIButton variant="secondary" class="flex-1">Нет</UIButton>
-      </Flex>
-    </Flex>
-  </Dialog>
 </template>
 
 <script lang="ts" setup>
@@ -64,14 +47,13 @@ import { isEqual } from 'lodash'
 import type Editor from '~/components/editor/Editor.client.vue'
 
 const dialogRef = ref<InstanceType<typeof Dialog>>()
-const confirmationDialogRef = ref<InstanceType<typeof Dialog>>()
 const editorRef = ref<InstanceType<typeof Editor>>()
 
 const isReady = ref(false)
 
 const { editor } = useEditor()
 const { setOpen } = useEditorDialog(dialogRef)
-const { pending, uploading, article, requestArticle } = useEditorDialogArticle()
+const { pending, article, requestArticle } = useEditorDialogArticle()
 
 const route = useRoute()
 
@@ -94,19 +76,6 @@ async function onOpen() {
 function onClose() {
   setOpen(false)
   article.value = undefined
-}
-
-function showConfirmationDialog() {
-  if (e && (pending.value || uploading.value)) {
-    e.preventDefault()
-    confirmationDialogRef.value?.setOpen(true)
-
-    return
-  }
-}
-
-function onInteractOutside(e: Event) {
-  
 }
 
 const onUpdate = useDebounceFn(async (body: ArticleBody) => {
