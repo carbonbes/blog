@@ -1,9 +1,10 @@
 <template>
   <Dialog
     class="w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none sm:!rounded-xl editor-dialog"
-    :ignoreClose="pending || uploading"
-    @interactOutside="onInteractOutside"
-    @escapeKeyDown="onClose"
+    :confirmClose="pending || uploading"
+    @interactOutside="canConfirmationDialogOpen"
+    @escapeKeyDown="canConfirmationDialogOpen"
+    @confirmClose="canConfirmationDialogOpen"
     @open="onOpen"
     @close="onClose"
     ref="dialogRef"
@@ -36,16 +37,41 @@
     </template>
   </Dialog>
 
-  <Dialog ref="confirmationDialogRef">
-    <Flex col class="gap-4">
-      <Flex col itemsCenter class="gap-2">
-        <p>Вы действительно хотите закрыть редактор?</p>
-        <p>У вас есть сохраняющиеся на сервер изменения прямо сейчас</p>
+  <Dialog
+    class="w-full max-w-[400px] max-[400px]:rounded-none"
+    ref="confirmationDialogRef"
+    @interactOutside="(e) => e.preventDefault()"
+    @escapeKeyDown="(e) => e.preventDefault()"
+  >
+    <Flex col class="gap-8">
+      <Flex col class="gap-4">
+        <ITablerAlertTriangle class="mx-auto !size-10 text-red-500" />
+
+        <p class="text-lg font-bold text-center">
+          Вы действительно хотите закрыть редактор?
+        </p>
+        <p class="text-gray-500 text-center">
+          У вас есть сохраняющиеся изменения на сервер прямо сейчас
+        </p>
       </Flex>
 
       <Flex justifyBetween class="w-full gap-4">
-        <UIButton class="flex-1">Да</UIButton>
-        <UIButton variant="secondary" class="flex-1">Нет</UIButton>
+        <UIButton
+          class="flex-1"
+          @click="
+            confirmationDialogRef.setOpen(false);
+            onClose()
+          "
+        >
+          Да
+        </UIButton>
+        <UIButton
+          variant="secondary"
+          class="flex-1"
+          @click="confirmationDialogRef.setOpen(false)"
+        >
+          Нет
+        </UIButton>
       </Flex>
     </Flex>
   </Dialog>
@@ -96,17 +122,13 @@ function onClose() {
   article.value = undefined
 }
 
-function showConfirmationDialog() {
-  if (e && (pending.value || uploading.value)) {
-    e.preventDefault()
+function canConfirmationDialogOpen(e?: Event) {
+  if (pending.value || uploading.value) {
+    e?.preventDefault()
     confirmationDialogRef.value?.setOpen(true)
 
     return
   }
-}
-
-function onInteractOutside(e: Event) {
-  
 }
 
 const onUpdate = useDebounceFn(async (body: ArticleBody) => {

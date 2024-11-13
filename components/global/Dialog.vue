@@ -18,9 +18,9 @@
           <Flex itemsCenter class="pb-4" :class="[headerClass]">
             <slot name="header" />
 
-            <DialogClose class="ml-auto">
+            <button class="ml-auto" @click="setOpen(false)">
               <ITablerX class="hover:opacity-50 transition-opacity" />
-            </DialogClose>
+            </button>
           </Flex>
 
           <slot />
@@ -51,7 +51,7 @@ const props = defineProps<
     class?: string | object
     headerClass?: string | object
     footerClass?: string | object
-    ignoreClose?: boolean
+    confirmClose?: boolean
   }
 >()
 
@@ -59,6 +59,7 @@ const emits = defineEmits<
   DialogContentEmits & {
     open: [void]
     close: [void]
+    confirmClose: [void]
   }
 >()
 
@@ -67,7 +68,8 @@ const emitsAsProps = useEmitAsProps(emits)
 const isOpen = ref(false)
 
 function setOpen(value: boolean) {
-  if (props.ignoreClose) {
+  if (!value && props.confirmClose) {
+    emits('confirmClose')
 
     return
   }
@@ -76,7 +78,8 @@ function setOpen(value: boolean) {
 }
 
 function toggleOpen() {
-  if (isOpen.value && props.ignoreClose) {
+  if (isOpen.value && props.confirmClose) {
+    emits('confirmClose')
 
     return
   }

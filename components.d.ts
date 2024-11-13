@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     IIconsTelegram: typeof import('~icons/icons/telegram')['default']
     IIconsYoutube: typeof import('~icons/icons/youtube')['default']
+    ITablerAlertTriangle: typeof import('~icons/tabler/alert-triangle')['default']
     ITablerArrowBackUp: typeof import('~icons/tabler/arrow-back-up')['default']
     ITablerArrowForwardUp: typeof import('~icons/tabler/arrow-forward-up')['default']
     ITablerArticle: typeof import('~icons/tabler/article')['default']
