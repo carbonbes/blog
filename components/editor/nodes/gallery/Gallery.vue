@@ -10,9 +10,11 @@
         <ITablerPhoto class="!size-10" />
 
         <Flex class="gap-2">
-          <UIButton class="rounded-xl" @click="openFileSelectDialog"> Выбрать файлы </UIButton>
+          <UIButton class="rounded-xl" @click="openFileSelectDialog">
+            Выбрать файлы
+          </UIButton>
 
-          <UIButton class="rounded-xl" @click="pasteFromClipboardDialogRef?.setOpen(true)">
+          <UIButton class="rounded-xl" @click="pasteDialogIsOpen = true">
             Вставить из буфера
           </UIButton>
         </Flex>
@@ -38,7 +40,7 @@
             @uploaded="(newItem) => onUploaded(index, newItem)"
             @remove="onRemove(index)"
             @openFileFromDeviceDialog="openFileSelectDialog"
-            @openFileFromClipboardDialog="pasteFromClipboardDialogRef?.setOpen(true)"
+            @openFileFromClipboardDialog="pasteDialogIsOpen = true"
           />
         </template>
       </Draggable>
@@ -54,7 +56,7 @@
           <UIButton
             size="s"
             class="rounded-xl"
-            @click="pasteFromClipboardDialogRef?.setOpen(true)"
+            @click="pasteDialogIsOpen = true"
           >
             <ITablerClipboard />
           </UIButton>
@@ -65,7 +67,7 @@
 
   <Dialog
     class="w-full max-w-80"
-    ref="pasteFromClipboardDialogRef"
+    v-model:open="pasteDialogIsOpen"
     @closeAutoFocus="(e) => e.preventDefault()"
   >
     <UITextArea
@@ -101,23 +103,26 @@ export type MediaType = 'image' | 'video'
 
 const props = defineProps<NodeViewProps>()
 
+const pasteDialogIsOpen = ref(false)
+
 const { updateNodeAttributes } = useEditor()
 const { errorToastify } = useToasts()
 
-const pasteFromClipboardDialogRef = ref<InstanceType<typeof Dialog>>()
 const itemsContainerRef = ref<InstanceType<typeof Flex>>()
 
 const isEmpty = computed(() => !props.node.attrs.items.length)
 const isSingle = computed(() => props.node.attrs.items.length === 1)
 const isGallery = computed(() => props.node.attrs.items.length > 1)
 
-const items = ref<GalleryItem[]>(Object.assign([], props.node.attrs.items).map((item: GalleryItem) => {
-  if (item.id) return item
+const items = ref<GalleryItem[]>(
+  Object.assign([], props.node.attrs.items).map((item: GalleryItem) => {
+    if (item.id) return item
 
-  item.id = window.crypto.randomUUID()
+    item.id = window.crypto.randomUUID()
 
-  return item
-}))
+    return item
+  })
+)
 
 const {
   reset,
@@ -139,8 +144,7 @@ async function addItems(files: File[]) {
         return
       }
 
-      if (!ALLOWED_MEDIAFILE_MIME_TYPES.includes(file.type as MimeType))
-        return
+      if (!ALLOWED_MEDIAFILE_MIME_TYPES.includes(file.type as MimeType)) return
 
       const base64Item = await getBase64FromFile(file)
 
@@ -148,9 +152,10 @@ async function addItems(files: File[]) {
 
       const type = getFileTypeFromMimeType(file.type)
 
-      const thumbnail = type === 'video'
-        ? await getScreenshotFromBase64Video(base64Item as string)
-        : undefined
+      const thumbnail =
+        type === 'video'
+          ? await getScreenshotFromBase64Video(base64Item as string)
+          : undefined
 
       items.value?.push({
         src: base64Item as string,
@@ -165,7 +170,7 @@ async function addItems(files: File[]) {
     pos: props.getPos(),
     attrs: { items: items.value },
     preventAddToHistory: true,
-    preventUpdateEmit: true
+    preventUpdateEmit: true,
   })
 }
 
@@ -184,7 +189,7 @@ function onPaste(e: ClipboardEvent) {
   if (!items) return
 
   addItems(items)
-  pasteFromClipboardDialogRef.value?.setOpen(false)
+  pasteDialogIsOpen.value = false
 }
 
 async function onUpdate() {
@@ -217,7 +222,7 @@ onMounted(async () => {
   }
 
   if (props.node.attrs.galleryOpenFileFromClipboardDialog) {
-    pasteFromClipboardDialogRef.value?.setOpen(true)
+    pasteDialogIsOpen.value = true
     props.updateAttributes({ galleryOpenFileFromClipboardDialog: false })
   }
 })

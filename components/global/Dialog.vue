@@ -1,5 +1,5 @@
 <template>
-  <DialogRoot v-model:open="isOpen">
+  <DialogRoot v-model:open="open">
     <DialogPortal to="#teleports">
       <FadeInOpacityTransition>
         <DialogOverlay class="fixed inset-0 bg-black/50 backdrop-blur-sm" />
@@ -18,9 +18,11 @@
           <Flex itemsCenter class="pb-4" :class="[headerClass]">
             <slot name="header" />
 
-            <DialogClose class="ml-auto">
-              <ITablerX class="hover:opacity-50 transition-opacity" />
-            </DialogClose>
+            <slot name="close">
+              <DialogClose class="ml-auto">
+                <ITablerX class="hover:opacity-50 transition-opacity" />
+              </DialogClose>
+            </slot>
           </Flex>
 
           <slot />
@@ -54,29 +56,9 @@ const props = defineProps<
   }
 >()
 
-const emits = defineEmits<
-  DialogContentEmits & {
-    open: [void]
-    close: [void]
-  }
->()
+const emits = defineEmits<DialogContentEmits>()
 
 const emitsAsProps = useEmitAsProps(emits)
 
-const isOpen = ref(false)
-
-function setOpen(value: boolean) {
-  isOpen.value = value
-}
-
-function toggleOpen() {
-  isOpen.value = !isOpen.value
-}
-
-watch(isOpen, (v) => {
-  if (!v) emits('close')
-  else emits('open')
-})
-
-defineExpose({ setOpen, toggleOpen })
+const open = defineModel('open', { type: Boolean, default: false })
 </script>

@@ -5,7 +5,8 @@
     :style="floatingStyles"
     ref="popoverRef"
   >
-    <Flex itemsCenter
+    <Flex
+      itemsCenter
       class="p-1 gap-1 bg-white shadow-lg ring-1 ring-gray-200 rounded-xl"
       ref="popoverBodyRef"
     >
@@ -24,9 +25,8 @@
   </Popover>
 
   <EditorLinkInsertingDialog
+    v-model:open="editorLinkInsertingDialogIsOpen"
     @complete="(link) => setLink(link)"
-    @close="editor?.commands.focus()"
-    ref="editorLinkInsertingDialogRef"
   />
 </template>
 
@@ -60,23 +60,27 @@ const underlineActive = computed(() => !!editor.value?.isActive('underline'))
 const canSetUnderline = computed(() => editor.value?.can().setUnderline()!)
 const linkActive = computed(() => !!editor.value?.isActive('link'))
 const canSetLink = computed(() => editor.value?.can().setLink()!)
-const inlineSpoilerActive = computed(() => !!editor.value?.isActive('inlineSpoiler'))
-const canSetInlineSpoiler = computed(() => editor.value?.can().toggleInlineSpoiler()!)
+const inlineSpoilerActive = computed(
+  () => !!editor.value?.isActive('inlineSpoiler')
+)
+const canSetInlineSpoiler = computed(
+  () => editor.value?.can().toggleInlineSpoiler()!
+)
 
 const popoverBodyRef = ref<HTMLDivElement>()
 
 const { floatingStyles } = useFloating(selectionRect, popoverBodyRef, {
-  middleware: [shift(), offset(5)]
+  middleware: [shift(), offset(5)],
 })
 
-const editorLinkInsertingDialogRef = ref()
-
-const marks = computed<{
-  action: () => void
-  icon: SVGIcon
-  active: boolean
-  disabled: boolean
-}[]>(() => ([
+const marks = computed<
+  {
+    action: () => void
+    icon: SVGIcon
+    active: boolean
+    disabled: boolean
+  }[]
+>(() => [
   {
     action: () => toggleBold(),
     icon: markRaw(Bold),
@@ -105,7 +109,7 @@ const marks = computed<{
     action: () => toggleLink(),
     icon: markRaw(Link),
     active: linkActive.value,
-    disabled: !canSetLink.value
+    disabled: !canSetLink.value,
   },
   {
     action: () => toggleInlineSpoiler(),
@@ -113,7 +117,13 @@ const marks = computed<{
     active: inlineSpoilerActive.value,
     disabled: !canSetInlineSpoiler.value,
   },
-]))
+])
+
+const editorLinkInsertingDialogIsOpen = ref(false)
+
+watch(editorLinkInsertingDialogIsOpen, (v) => {
+  if (!v) editor.value?.commands.focus()
+})
 
 function toggleBold() {
   editor.value?.chain().focus().toggleBold().run()
@@ -132,7 +142,7 @@ function toggleLink() {
 }
 
 function openLinkInsertingDialog() {
-  editorLinkInsertingDialogRef.value?.open()
+  editorLinkInsertingDialogIsOpen.value = true
 }
 
 function setLink(link: string) {

@@ -1,10 +1,6 @@
-import type Dialog from '~/components/global/Dialog.vue'
-
 type Options = { id: number; title_slug: string }
 
-export default function useEditorDialog(
-  dialogRef?: Ref<InstanceType<typeof Dialog> | undefined>
-) {
+export default function useEditorDialog() {
   const isOpen = useState(() => false)
 
   const router = useRouter()
@@ -33,10 +29,14 @@ export default function useEditorDialog(
     value ? await open(options) : await close()
   }
 
-  watchEffect(() => {
-    if (!dialogRef?.value) return
+  watch(
+    () => route.query.dialog === 'editor',
+    (v) => (isOpen.value = v),
+    { immediate: true }
+  )
 
-    dialogRef.value.setOpen(route.query.dialog === 'editor')
+  watch(isOpen, (v) => {
+    if (!v) router.push({ path: route.path, replace: true })
   })
 
   return { setOpen, isOpen }

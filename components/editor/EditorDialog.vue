@@ -1,9 +1,7 @@
 <template>
   <Dialog
     class="w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none sm:!rounded-xl"
-    @open="onOpen"
-    @close="onClose"
-    ref="dialogRef"
+    v-model:open="isOpen"
   >
     <template v-if="isReady" #header>
       <EditorActionsPanel class="sm:hidden" @save="onSave" />
@@ -35,7 +33,6 @@
 </template>
 
 <script lang="ts" setup>
-import type Dialog from '~/components/global/Dialog.vue'
 import type {
   ArticleBody,
   GalleryNode,
@@ -46,19 +43,27 @@ import type {
 import { isEqual } from 'lodash'
 import type Editor from '~/components/editor/Editor.client.vue'
 
-const dialogRef = ref<InstanceType<typeof Dialog>>()
 const editorRef = ref<InstanceType<typeof Editor>>()
 
 const isReady = ref(false)
 
 const { editor } = useEditor()
-const { setOpen } = useEditorDialog(dialogRef)
+const { isOpen } = useEditorDialog()
 const { pending, article, requestArticle } = useEditorDialogArticle()
 
 const route = useRoute()
 
 const articleId = computed(
   () => route.query.id as unknown as number | undefined
+)
+
+watch(
+  isOpen,
+  (v) => {
+    if (v) onOpen()
+    else onClose()
+  },
+  { immediate: true }
 )
 
 async function onOpen() {
@@ -74,7 +79,6 @@ async function onOpen() {
 }
 
 function onClose() {
-  setOpen(false)
   article.value = undefined
 }
 

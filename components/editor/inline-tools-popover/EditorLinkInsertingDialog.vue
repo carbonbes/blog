@@ -1,10 +1,15 @@
 <template>
-  <Dialog class="w-80" @close="emit('close')" ref="dialogRef">
-    <UITextArea autofocus placeholder="Ссылка" class="max-h-80" v-model.trim="link" />
+  <Dialog class="w-80" v-model:open="open">
+    <UITextArea
+      autofocus
+      placeholder="Ссылка"
+      class="max-h-80"
+      v-model.trim="link"
+    />
 
     <template #footer>
       <Flex itemsCenter class="ml-auto gap-2">
-        <UIButton variant="secondary" @click="close">
+        <UIButton variant="secondary" @click="setOpen(false)">
           Отменить
         </UIButton>
         <UIButton :disabled="!isValidURL(link)" @click="complete">
@@ -20,28 +25,24 @@ import type Dialog from '~/components/global/Dialog.vue'
 
 const emit = defineEmits<{
   complete: [string]
-  close: any
 }>()
 
-const dialogRef = ref<InstanceType<typeof Dialog>>()
+const open = defineModel('open', { type: Boolean, default: false })
 
 const link = ref('')
 
 function complete() {
-  dialogRef.value?.setOpen(false)
+  open.value = false
   emit('complete', link.value)
   link.value = ''
 }
 
-function open() {
-  dialogRef.value?.setOpen(true)
+function setOpen(value: boolean) {
+  if (value) {
+    open.value = true
+  } else {
+    open.value = false
+    link.value = ''
+  }
 }
-
-function close() {
-  dialogRef.value?.setOpen(false)
-  emit('close')
-  link.value = ''
-}
-
-defineExpose({ open })
 </script>
