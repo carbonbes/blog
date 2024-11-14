@@ -124,6 +124,19 @@ const items = ref<GalleryItem[]>(
   })
 )
 
+const { uploading } = useEditorDialog()
+
+watch(
+  items,
+  (v) => {
+    const uploadingItems = v.filter((item) => !item.uploaded)
+    
+    if (uploadingItems.length > 0) uploading.value = true
+    else uploading.value = false
+  },
+  { deep: true }
+)
+
 const {
   reset,
   open: openFileSelectDialog,

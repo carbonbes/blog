@@ -1,7 +1,13 @@
+import type { Article } from '~/types'
+
 type Options = { id: number; title_slug: string }
 
 export default function useEditorDialog() {
   const isOpen = useState(() => false)
+  const confirmationDialogInOpen = useState(() => false)
+  const pending = useState(() => false)
+  const uploading = useState(() => false)
+  const article = useState<Article | null | undefined>()
 
   const router = useRouter()
   const route = useRoute()
@@ -39,5 +45,24 @@ export default function useEditorDialog() {
     if (!v) router.push({ path: route.path, replace: true })
   })
 
-  return { setOpen, isOpen }
+  async function requestArticle(id: number) {
+    try {
+      pending.value = true
+
+      article.value = await getArticle(id)
+    } catch (error) {
+    } finally {
+      pending.value = false
+    }
+  }
+
+  return {
+    setOpen,
+    isOpen,
+    confirmationDialogInOpen,
+    pending,
+    uploading,
+    article,
+    requestArticle,
+  }
 }

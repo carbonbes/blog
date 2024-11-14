@@ -18,11 +18,9 @@
           <Flex itemsCenter class="pb-4" :class="[headerClass]">
             <slot name="header" />
 
-            <slot name="close">
-              <DialogClose class="ml-auto">
-                <ITablerX class="hover:opacity-50 transition-opacity" />
-              </DialogClose>
-            </slot>
+            <button class="ml-auto" @click="onCloseDown">
+              <ITablerX class="hover:opacity-50 transition-opacity" />
+            </button>
           </Flex>
 
           <slot />
@@ -53,6 +51,7 @@ const props = defineProps<
     class?: string | object
     headerClass?: string | object
     footerClass?: string | object
+    closeCallback?: () => void
   }
 >()
 
@@ -61,4 +60,9 @@ const emits = defineEmits<DialogContentEmits>()
 const emitsAsProps = useEmitAsProps(emits)
 
 const open = defineModel('open', { type: Boolean, default: false })
+
+function onCloseDown() {
+  if (props.closeCallback) props.closeCallback()
+  else open.value = false
+}
 </script>
