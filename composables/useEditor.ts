@@ -367,8 +367,6 @@ export default function useEditor() {
       },
 
       onUpdate({ editor, transaction }) {
-        console.log(transaction)
-
         if (transaction.getMeta('preventUpdateEmit')) return
 
         data.value = editor.getJSON() as ArticleBody
