@@ -1,14 +1,27 @@
 <template>
   <Dialog
-    class="w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none sm:!rounded-xl"
-    headerClass="pb-8"
+    class="w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none"
+    :class="dialogClasses"
+    headerClass="pb-8 sm:pb-4"
     :closeCallback="onCloseDown"
     v-model:open="isOpen"
     @interactOutside="showConfirmationDialog"
     @escapeKeyDown="showConfirmationDialog"
   >
-    <template v-if="isReady" #header>
+    <template v-if="state.isReady" #left-header>
       <EditorActionsPanel class="sm:hidden" @save="onSave" />
+    </template>
+
+    <template #right-header>
+      <Tooltip :tooltip="state.isExpand ? 'Свернуть' : 'Развернуть'">
+        <button
+          class="hover:opacity-50 transition-opacity"
+          @click="toggleExpand"
+        >
+          <ITablerArrowsDiagonal v-if="!state.isExpand" class="hidden sm:block" />
+          <ITablerArrowsDiagonalMinimize2 v-else class="hidden sm:block" />
+        </button>
+      </Tooltip>
     </template>
 
     <FadeInOpacityTransition>
@@ -16,19 +29,23 @@
         <Loader color="!bg-black" />
       </Flex>
 
-      <Flex v-else col class="h-full overflow-hidden">
+      <Flex
+        v-else
+        col
+        class="sm:mx-auto w-full sm:max-w-[780px] h-full overflow-hidden"
+      >
         <Editor
           :data="article?.body"
           :manualInit="!!articleId"
-          @ready="isReady = true"
+          @ready="state.isReady = true"
           @update="onUpdate"
           ref="editorRef"
         />
       </Flex>
     </FadeInOpacityTransition>
 
-    <template v-if="isReady" #footer>
-      <Flex class="w-full">
+    <template v-if="state.isReady" #footer>
+      <Flex class="sm:mx-auto w-full sm:max-w-[780px]">
         <EditorHistoryActions class="sm:hidden" />
         <EditorActionsPanel class="ml-auto hidden sm:flex" @save="onSave" />
       </Flex>
@@ -59,8 +76,7 @@
           "
         >
           Да
-        </UIButton
-        >
+        </UIButton>
         <UIButton
           variant="secondary"
           class="flex-1"
@@ -83,12 +99,24 @@ import type {
 } from '~/types'
 import { isEqual } from 'lodash'
 import type Editor from '~/components/editor/Editor.client.vue'
+import { promiseTimeout } from '@vueuse/core'
+
+const state = reactive({
+  isReady: false,
+  isExpand: false,
+  enableTransition: false
+})
+
+const dialogClasses = computed(() => ({
+  'sm:!rounded-xl': !state.isExpand,
+  'max-w-full sm:max-h-full sm:!rounded-none': state.isExpand,
+  'sm:transition-[max-width,max-height,border-radius] sm:duration-200': state.enableTransition
+}))
 
 const editorRef = ref<InstanceType<typeof Editor>>()
 
-const isReady = ref(false)
-
 const { editor } = useEditor()
+
 const {
   isOpen,
   confirmationDialogInOpen,
@@ -125,10 +153,12 @@ async function onOpen() {
   }
 }
 
-function onClose() {
+async function onClose() {
   pending.value = false
   uploading.value = false
   article.value = undefined
+  await promiseTimeout(200)
+  state.isExpand = false
 }
 
 const onUpdate = useDebounceFn(async (body: ArticleBody) => {
@@ -277,4 +307,11 @@ useEventListener('beforeunload', (e) => {
     return false
   }
 })
+
+async function toggleExpand() {
+  state.enableTransition = true
+  state.isExpand = !state.isExpand
+  await promiseTimeout(200)
+  state.enableTransition = false
+}
 </script>

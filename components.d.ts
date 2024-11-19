@@ -12,6 +12,8 @@ declare module 'vue' {
     ITablerAlertTriangle: typeof import('~icons/tabler/alert-triangle')['default']
     ITablerArrowBackUp: typeof import('~icons/tabler/arrow-back-up')['default']
     ITablerArrowForwardUp: typeof import('~icons/tabler/arrow-forward-up')['default']
+    ITablerArrowsDiagonal: typeof import('~icons/tabler/arrows-diagonal')['default']
+    ITablerArrowsDiagonalMinimize2: typeof import('~icons/tabler/arrows-diagonal-minimize2')['default']
     ITablerArticle: typeof import('~icons/tabler/article')['default']
     ITablerBrandX: typeof import('~icons/tabler/brand-x')['default']
     ITablerCheck: typeof import('~icons/tabler/check')['default']

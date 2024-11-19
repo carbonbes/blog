@@ -16,11 +16,15 @@
           </VisuallyHidden>
 
           <Flex itemsCenter class="pb-4" :class="[headerClass]">
-            <slot name="header" />
+            <slot name="left-header" />
 
-            <button class="ml-auto" @click="onCloseDown">
-              <ITablerX class="hover:opacity-50 transition-opacity" />
-            </button>
+            <Flex itemsCenter class="ml-auto gap-4">
+              <slot name="right-header" />
+
+              <button @click="onCloseDown">
+                <ITablerX class="hover:opacity-50 transition-opacity" />
+              </button>
+            </Flex>
           </Flex>
 
           <slot />
