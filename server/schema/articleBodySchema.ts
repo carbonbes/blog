@@ -109,6 +109,7 @@ const GalleryItem = z.object({
   type: z.union([z.literal('image'), z.literal('video')]),
   width: z.number().int(),
   height: z.number().int(),
+  thumbnail: z.string().url().optional(),
   media: StorageMediaSchema,
   uploaded: z.boolean(),
 })

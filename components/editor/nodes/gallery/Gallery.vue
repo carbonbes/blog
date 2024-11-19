@@ -110,10 +110,6 @@ const { errorToastify } = useToasts()
 
 const itemsContainerRef = ref<InstanceType<typeof Flex>>()
 
-const isEmpty = computed(() => !props.node.attrs.items.length)
-const isSingle = computed(() => props.node.attrs.items.length === 1)
-const isGallery = computed(() => props.node.attrs.items.length > 1)
-
 const items = ref<GalleryItem[]>(
   Object.assign([], props.node.attrs.items).map((item: GalleryItem) => {
     if (item.id) return item
@@ -123,6 +119,10 @@ const items = ref<GalleryItem[]>(
     return item
   })
 )
+
+const isEmpty = computed(() => !items.value.length)
+const isSingle = computed(() => items.value.length === 1)
+const isGallery = computed(() => items.value.length > 1)
 
 const { uploading } = useEditorDialog()
 
@@ -220,7 +220,7 @@ function onRemove(index: number) {
 }
 
 onMounted(async () => {
-  const items = props.node.attrs.forUpload as File[]
+  const items = props.node.attrs.forUpload as File[] | null
 
   if (items) {
     await addItems(items)
