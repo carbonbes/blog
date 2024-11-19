@@ -27,7 +27,13 @@
       </Tooltip>
 
       <Tooltip v-if="article" tooltip="Предпросмотр записи">
-        <UIButton variant="secondary" class="rounded-xl" :disabled="pending || uploading">
+        <UIButton
+          variant="secondary"
+          class="rounded-xl"
+          :disabled="pending || uploading"
+          :to="articleURL"
+          target="_blank"
+        >
           <ITablerEye />
         </UIButton>
       </Tooltip>
@@ -87,5 +93,11 @@ const status = computed(() => {
     class: statuses[article.value.status].class,
     label: statuses[article.value.status].label,
   }
+})
+
+const articleURL = computed(() => {
+  if (!article.value) return
+
+  return getArticleURL(article.value)
 })
 </script>

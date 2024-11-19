@@ -2,6 +2,7 @@
   <Component
     :is="to ? nuxtLink : 'button'"
     :to
+    :target
     :disabled
     :data-disabled="to ? disabled : undefined"
     v-bind="$attrs"
@@ -15,6 +16,7 @@
 const props = withDefaults(
   defineProps<{
     to?: string
+    target?: '_blank'
     variant?: 'primary' | 'secondary'
     size?: 's' | 'm' | 'l'
     disabled?: boolean

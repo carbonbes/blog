@@ -1,6 +1,7 @@
 <template>
   <Dialog
     class="w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none sm:!rounded-xl"
+    headerClass="pb-8"
     :closeCallback="onCloseDown"
     v-model:open="isOpen"
     @interactOutside="showConfirmationDialog"
