@@ -5,10 +5,7 @@
     @touchstart="onTouch(true)"
     @touchend="onTouch(false)"
   >
-    <Tooltip
-      v-if="isGallery && !state.loading"
-      tooltip="Удалить"
-    >
+    <Tooltip v-if="isGallery && !state.loading" tooltip="Удалить">
       <button
         class="absolute top-0 left-full -translate-y-1/2 -translate-x-1/2 p-1 bg-white border border-gray-200/75 rounded-full group/remove-btn z-[1]"
         @click="emits('remove', item.id as string)"
@@ -55,7 +52,7 @@
         :classes="{
           'pointer-events-none opacity-50': state.loading,
           'w-full aspect-video': isSingle,
-          'w-20 h-20 !bg-cover': isGallery
+          'w-20 h-20 !bg-cover': isGallery,
         }"
         ref="videoRef"
       />
@@ -65,31 +62,48 @@
       </Flex>
     </Flex>
 
-    <Flex v-if="isSingle" class="absolute left-0 bottom-0 p-2 w-full">
-      <Flex class="gap-2">
+    <Flex
+      v-if="isSingle"
+      class="absolute inset-0 p-2 sm:opacity-0 sm:group-hover:opacity-100 sm:transition-opacity pointer-events-none"
+    >
+      <Flex
+        class="gap-2 pointer-events-auto"
+        :class="{
+          'self-start': item.type === 'video',
+          'self-end': item.type === 'image',
+        }"
+      >
         <Tooltip tooltip="Выбрать еще с устройства">
-          <UIButton size="s" class="rounded-xl" @click="emits('openFileFromDeviceDialog')">
+          <UIButton
+            size="s"
+            class="rounded-xl"
+            @click="emits('openFileFromDeviceDialog')"
+          >
             <ITablerPlus />
           </UIButton>
         </Tooltip>
 
         <Tooltip tooltip="Вставить еще из буфера">
-          <UIButton size="s" class="rounded-xl" @click="emits('openFileFromClipboardDialog')">
+          <UIButton
+            size="s"
+            class="rounded-xl"
+            @click="emits('openFileFromClipboardDialog')"
+          >
             <ITablerClipboard />
           </UIButton>
         </Tooltip>
       </Flex>
-    </Flex>
 
-    <Tooltip v-if="isSingle && !state.loading" tooltip="Удалить">
-      <UIButton
-        size="s"
-        class="absolute top-0 right-0 m-2 !bg-red-500 hover:!bg-red-700 rounded-xl"
-        @click="emits('remove', item.id as string)"
-      >
-        <ITablerTrash />
-      </UIButton>
-    </Tooltip>
+      <Tooltip v-if="!state.loading" tooltip="Удалить">
+        <UIButton
+          size="s"
+          class="absolute top-0 right-0 m-2 !bg-red-500 hover:!bg-red-700 rounded-xl sm:opacity-0 sm:group-hover:opacity-100 sm:transition-opacity pointer-events-auto"
+          @click="emits('remove', item.id as string)"
+        >
+          <ITablerTrash />
+        </UIButton>
+      </Tooltip>
+    </Flex>
   </div>
 </template>
 
@@ -141,16 +155,13 @@ function onTouch(value: boolean) {
 }
 
 const { swipeEnabled } = useRootNode()
-watch(() => state.dragging, (v) => swipeEnabled.value = !v)
+watch(
+  () => state.dragging,
+  (v) => (swipeEnabled.value = !v)
+)
 
 function updateItem(data: StorageMedia) {
-  const {
-    url: src,
-    thumbnail,
-    width,
-    height,
-    description
-  } = data
+  const { url: src, thumbnail, width, height, description } = data
 
   emits('uploaded', {
     src,

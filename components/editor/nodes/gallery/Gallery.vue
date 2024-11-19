@@ -1,6 +1,6 @@
 <template>
   <NodeViewWrapper
-    class="flex flex-col"
+    class="flex flex-col group"
     :class="{ 'p-3 sm:p-4 bg-gray-100 rounded-xl': isEmpty || !isSingle }"
     contenteditable="false"
     data-prevent-focus="true"
@@ -130,7 +130,7 @@ watch(
   items,
   (v) => {
     const uploadingItems = v.filter((item) => !item.uploaded)
-    
+
     if (uploadingItems.length > 0) uploading.value = true
     else uploading.value = false
   },
