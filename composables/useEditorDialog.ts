@@ -1,4 +1,5 @@
 import type { Article } from '~/types'
+import { getArticle as _getArticle } from '~/utils/api'
 
 type Options = { id: number; title_slug: string }
 
@@ -11,6 +12,8 @@ export default function useEditorDialog() {
 
   const router = useRouter()
   const route = useRoute()
+
+  const { errorToastify } = useToasts()
 
   async function open(options?: Options) {
     await router.push({
@@ -45,12 +48,14 @@ export default function useEditorDialog() {
     if (!v) router.push({ path: route.path, replace: true })
   })
 
-  async function requestArticle(id: number) {
+  async function getArticle(id: number) {
     try {
       pending.value = true
 
-      article.value = await getArticle(id)
+      article.value = await _getArticle(id)
     } catch (error) {
+      isOpen.value = false
+      errorToastify({ text: 'Не удалось открыть редактирование поста' })
     } finally {
       pending.value = false
     }
@@ -63,6 +68,6 @@ export default function useEditorDialog() {
     pending,
     uploading,
     article,
-    requestArticle,
+    getArticle,
   }
 }

@@ -1,11 +1,12 @@
 import type { Toast } from '~/types'
+import { v4 as uuidv4 } from 'uuid'
 
 export function useToasts() {
   const toasts = useState<Toast[]>(() => [])
 
   function add({ title, text, duration = 3000, type }: Toast) {
     toasts.value.unshift({
-      id: process.server ? useId() : window.crypto.randomUUID(),
+      id: uuidv4(),
       title,
       text,
       duration,

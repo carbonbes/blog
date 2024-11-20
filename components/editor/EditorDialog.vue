@@ -123,7 +123,7 @@ const {
   pending,
   uploading,
   article,
-  requestArticle,
+  getArticle,
 } = useEditorDialog()
 
 const route = useRoute()
@@ -148,7 +148,7 @@ async function onOpen() {
   }
 
   if (articleId.value) {
-    await requestArticle(articleId.value)
+    await getArticle(articleId.value)
     editorRef.value?.manualInit()
   }
 }
