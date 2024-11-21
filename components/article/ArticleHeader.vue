@@ -23,6 +23,8 @@ const props = defineProps<{
   article: Article
 }>()
 
+const { $api } = useNuxtApp()
+
 const { setOpen } = useEditorDialog()
 const { successToastify, errorToastify } = useToasts()
 
@@ -47,7 +49,7 @@ const dropdownItems = computed(() => [
     class: 'text-red-500',
     action: async () => {
       try {
-        await removeArticle(props.article.id)
+        await $api.removeArticle(props.article.id)
         successToastify({ text: 'Запись удалена' })
       } catch (error: any) {
         errorToastify({ text: error.data.message })

@@ -1,9 +1,10 @@
 import type { Article } from '~/types'
-import { getProfileArticles as _getProfileArticles } from '~/utils/api'
 
 export default function useArticlesPage() {
   const pending = useState(() => false)
   const articles = useState<Article[]>(() => [])
+
+  const { $api } = useNuxtApp()
 
   const { user } = useUser()
 
@@ -11,7 +12,7 @@ export default function useArticlesPage() {
     try {
       pending.value = true
 
-      const r = await _getProfileArticles(user.value!.id, page)
+      const r = await $api.getProfileArticles(user.value!.id, page)
 
       if (!r) return
 

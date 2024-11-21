@@ -14,5 +14,10 @@
 
 <script lang="ts" setup>
 const { getMe } = useUser()
-await getMe()
+
+await useAsyncData(async () => {
+  await getMe()
+
+  return true
+})
 </script>

@@ -127,6 +127,8 @@ const emits = defineEmits<{
   uploaded: [GalleryItem]
 }>()
 
+const { $api } = useNuxtApp()
+
 const videoRef = ref<InstanceType<typeof Video>>()
 
 watch(
@@ -191,7 +193,7 @@ async function upload() {
       return
     }
 
-    const data = await uploadMediaByFile(file)
+    const data = await $api.uploadMediaByFile(file)
 
     if (!data) {
       showError()

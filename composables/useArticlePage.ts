@@ -1,15 +1,16 @@
 import type { Article } from '~/types'
-import { getArticle as _getArticle } from '~/utils/api'
 
 export default function useArticlePage() {
-  const article = useState<Article | null | undefined>()
+  const article = useState<Article | undefined>()
   const pending = useState(() => false)
+
+  const { $api } = useNuxtApp()
 
   async function getArticle(id: number) {
     try {
       pending.value = true
 
-      article.value = await _getArticle(id)
+      article.value = await $api.getArticle(id)
     } catch (error) {
     } finally {
       pending.value = false

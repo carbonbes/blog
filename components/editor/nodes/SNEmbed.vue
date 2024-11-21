@@ -26,6 +26,8 @@ import SNEmbed from '~/components/global/SNEmbed.vue'
 
 const props = defineProps<NodeViewProps>()
 
+const { $api } = useNuxtApp()
+
 const { errorToastify } = useToasts()
 
 onMounted(async () => {
@@ -33,8 +35,8 @@ onMounted(async () => {
     try {
       const embed =
         props.node.attrs.type === 'telegram'
-          ? await getTelegramEmbed(props.node.attrs.url)
-          : await getXEmbed(props.node.attrs.url)
+          ? await $api.getTelegramEmbed(props.node.attrs.url)
+          : await $api.getXEmbed(props.node.attrs.url)
 
       props.updateAttributes({ url: null, embed })
     } catch (error: any) {

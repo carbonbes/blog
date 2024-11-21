@@ -1,5 +1,4 @@
 import type { Article } from '~/types'
-import { getArticle as _getArticle } from '~/utils/api'
 
 type Options = { id: number; title_slug: string }
 
@@ -8,7 +7,9 @@ export default function useEditorDialog() {
   const confirmationDialogInOpen = useState(() => false)
   const pending = useState(() => false)
   const uploading = useState(() => false)
-  const article = useState<Article | null | undefined>()
+  const article = useState<Article | undefined>()
+
+  const { $api } = useNuxtApp()
 
   const router = useRouter()
   const route = useRoute()
@@ -52,7 +53,7 @@ export default function useEditorDialog() {
     try {
       pending.value = true
 
-      article.value = await _getArticle(id)
+      article.value = await $api.getArticle(id)
     } catch (error) {
       isOpen.value = false
       errorToastify({ text: 'Не удалось открыть редактирование поста' })

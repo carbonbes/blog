@@ -101,6 +101,8 @@ import { isEqual } from 'lodash'
 import type Editor from '~/components/editor/Editor.client.vue'
 import { promiseTimeout } from '@vueuse/core'
 
+const { $api } = useNuxtApp()
+
 const state = reactive({
   isReady: false,
   isExpand: false,
@@ -186,7 +188,7 @@ async function create(body: ArticleBody) {
   try {
     pending.value = true
 
-    const newArticle = await createArticle(body)
+    const newArticle = await $api.createArticle(body)
 
     if (!newArticle) {
       throw createError({
@@ -212,7 +214,7 @@ async function update(articleId: number, body: ArticleBody) {
   try {
     pending.value = true
 
-    const updatedArticle = await updateArticle(articleId, body)
+    const updatedArticle = await $api.updateArticle(articleId, body)
 
     if (!updatedArticle) {
       throw createError({

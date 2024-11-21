@@ -193,6 +193,8 @@ useSeoMeta({
   title: 'Авторизация',
 })
 
+const { $api } = useNuxtApp()
+
 const { getMe } = useUser()
 const { successToastify, errorToastify } = useToasts()
 
@@ -317,7 +319,7 @@ async function requestSignIn({ resend }: { resend?: boolean } = {}) {
   try {
     state.signInRequesting = true
 
-    await signIn({ email: signInEmail.value })
+    await $api.signIn({ email: signInEmail.value })
 
     if (!resend) {
       nextSignInView()
@@ -342,7 +344,7 @@ async function requestSignUp({ resend }: { resend?: boolean } = {}) {
   try {
     state.signUpRequesting = true
 
-    await signUp(signUpFormData)
+    await $api.signUp(signUpFormData)
 
     if (!resend) {
       nextSignUpView()
@@ -367,7 +369,7 @@ async function requestVerifySignInOtp(code: string) {
   try {
     state.otpVerifying = true
 
-    await verifyOtp({ email: signInEmail.value, token: code })
+    await $api.verifyOtp({ email: signInEmail.value, token: code })
     await getMe()
     await navigateTo('/')
   } catch (error: any) {
@@ -382,7 +384,7 @@ async function requestVerifySignUpOtp(code: string) {
   try {
     state.otpVerifying = true
 
-    await verifyOtp({ email: signUpFormData.email, token: code })
+    await $api.verifyOtp({ email: signUpFormData.email, token: code })
     await getMe()
     await navigateTo('/')
   } catch (error: any) {
