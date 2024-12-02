@@ -1,6 +1,6 @@
 <template>
   <NuxtImg
-    :src="src.optimized || src.original"
+    :src
     :alt
     :loading
     class="object-contain"
@@ -16,7 +16,6 @@
 
 <script lang="ts" setup>
 import type { NuxtImg } from '#build/components'
-import type { ImageTransformOptions } from '~/types'
 
 const props = withDefaults(
   defineProps<{
@@ -24,7 +23,6 @@ const props = withDefaults(
     src: string
     alt?: string
     loading?: 'lazy' | 'eager'
-    options?: ImageTransformOptions
     originalWidth?: number
     originalHeight?: number
     zoomable?: boolean
@@ -41,43 +39,6 @@ const emit = defineEmits<{
   isOpen: [boolean]
 }>()
 
-const {
-  public: { imageRoute },
-} = useRuntimeConfig()
-
-const imageOptions = computed(() => {
-  if (!props.options) return
-
-  const queryString = Object.entries(props.options)
-    .filter(([_, value]) => value !== undefined)
-    .map(
-      ([key, value]) =>
-        `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`
-    )
-    .join('&')
-
-  return queryString ? `?${queryString}` : undefined
-})
-
-const src = computed(() => {
-  const imageRouteRegex =
-    /^https?:\/\/[a-zA-Z0-9.-]+(?::\d+)?\/media\/image\/([a-f0-9-]{36})$/
-
-  const match = props.src.match(imageRouteRegex)
-
-  if (match) {
-    const imageUuid = match[1]
-
-    return {
-      original: props.src,
-      optimized: `${imageRoute}/${imageUuid}${imageOptions.value || ''}`,
-    }
-  } else
-    return {
-      original: props.src,
-    }
-})
-
 const { setItems } = useLightboxDialog()
 
 const imgRef = ref<InstanceType<typeof NuxtImg>>()
@@ -87,7 +48,7 @@ const lightboxAttrs = computed(() => {
 
   return {
     'data-lightbox-item': true,
-    'data-lightbox-src': src.value.original,
+    'data-lightbox-src': props.src,
     'data-lightbox-alt': props.alt,
     'data-lightbox-width': props.originalWidth,
     'data-lightbox-height': props.originalHeight,

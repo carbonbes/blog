@@ -21,9 +21,8 @@ export default defineNuxtConfig({
     telegramApiStringSession: env.NUXT_TELEGRAM_API_STRING_SESSION,
 
     public: {
-      baseUrl: env.NUXT_BASE_URL,
-      imageRoute: env.NUXT_BASE_URL + '/media/image',
-      videoRoute: env.NUXT_BASE_URL + '/media/video',
+      imageRoute: '/media/image',
+      videoRoute: '/media/video',
     },
   },
 
@@ -54,6 +53,10 @@ export default defineNuxtConfig({
         weights: [400, 500, 700],
       },
     ],
+  },
+
+  image: {
+    provider: 'none'
   },
 
   dayjs: {

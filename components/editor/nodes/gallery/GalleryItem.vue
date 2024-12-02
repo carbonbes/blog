@@ -25,7 +25,6 @@
         v-if="item.type === 'image'"
         :src="item.src"
         :alt="item.description"
-        :options="{ width: isGallery ? 160 : undefined, quality: 50 }"
         :originalWidth="item.width"
         :originalHeight="item.height"
         :parent

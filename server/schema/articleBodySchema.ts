@@ -78,11 +78,11 @@ const MimeTypeSchema = z.custom<MimeType>(
 export const StorageMediaSchema = z
   .object({
     name: z.string().uuid(),
-    url: z.string().url(),
+    url: z.string(),
     thumbnail: z
       .object({
         name: z.string().uuid(),
-        url: z.string().url(),
+        url: z.string(),
         width: z.number(),
         height: z.number(),
         mime_type: MimeTypeSchema,
@@ -105,11 +105,11 @@ export const StorageMediaSchema = z
   )
 
 const GalleryItem = z.object({
-  src: z.string().url(),
+  src: z.string(),
   type: z.union([z.literal('image'), z.literal('video')]),
   width: z.number().int(),
   height: z.number().int(),
-  thumbnail: z.string().url().optional(),
+  thumbnail: z.string().optional(),
   media: StorageMediaSchema,
   uploaded: z.boolean(),
 })
