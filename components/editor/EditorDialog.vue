@@ -103,9 +103,11 @@ import { promiseTimeout } from '@vueuse/core'
 
 const { $api } = useNuxtApp()
 
+const isExpand = useCookie('editor-dialog/is-expand')
+
 const state = reactive({
   isReady: false,
-  isExpand: false,
+  isExpand: isExpand.value,
   enableTransition: false
 })
 
@@ -313,6 +315,7 @@ useEventListener('beforeunload', (e) => {
 async function toggleExpand() {
   state.enableTransition = true
   state.isExpand = !state.isExpand
+  isExpand.value = !isExpand.value
   await promiseTimeout(200)
   state.enableTransition = false
 }
