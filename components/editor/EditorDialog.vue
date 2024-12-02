@@ -2,7 +2,6 @@
   <Dialog
     class="w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none"
     :class="dialogClasses"
-    headerClass="pb-8 sm:pb-4"
     :closeCallback="onCloseDown"
     v-model:open="isOpen"
     @interactOutside="showConfirmationDialog"
@@ -32,7 +31,7 @@
       <Flex
         v-else
         col
-        class="sm:mx-auto w-full sm:max-w-[780px] h-full overflow-hidden"
+        class="w-full h-full overflow-hidden [&_.editor]:sm:mx-auto [&_.editor]:sm:max-w-[748px]"
       >
         <Editor
           :data="article?.body"
@@ -45,7 +44,7 @@
     </FadeInOpacityTransition>
 
     <template v-if="state.isReady" #footer>
-      <Flex class="sm:mx-auto w-full sm:max-w-[780px]">
+      <Flex class="sm:mx-auto w-full sm:max-w-[748px]">
         <EditorHistoryActions class="sm:hidden" />
         <EditorActionsPanel class="ml-auto hidden sm:flex" @save="onSave" />
       </Flex>

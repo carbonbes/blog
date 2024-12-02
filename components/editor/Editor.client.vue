@@ -1,6 +1,9 @@
 <template>
   <ScrollArea scrollAreaClass="editor-scrollable-container">
-    <EditorContent :editor class="editor h-full" />
+    <EditorContent
+      :editor
+      class="editor [&_.tiptap]:sm:pt-4 [&_.tiptap]:pb-[15vh] [&_.tiptap]:h-full [&_.tiptap]:min-[780px]:mx-8 [&_.tiptap_h1.is-empty]:before:content-[attr(data-placeholder)] [&_.tiptap_h1.is-empty]:before:h-0 [&_.tiptap_h1.is-empty]:before:text-gray-300 [&_.tiptap_h1.is-empty]:before:float-left [&_.tiptap_h2.is-empty]:before:content-[attr(data-placeholder)] [&_.tiptap_h2.is-empty]:before:h-0 [&_.tiptap_h2.is-empty]:before:text-gray-300 [&_.tiptap_h2.is-empty]:before:float-left [&_.tiptap_p.is-empty]:before:content-[attr(data-placeholder)] [&_.tiptap_p.is-empty]:before:h-0 [&_.tiptap_p.is-empty]:before:text-gray-300 [&_.tiptap_p.is-empty]:before:float-left [&_.tiptap_p.is-empty]:before:pointer-events-none [&_.tiptap_a]:text-blue-500 [&_.tiptap_a]:underline [&_.tiptap_[data-type=inline-spoiler]]:blur-sm [&_.tiptap_[data-type=inline-spoiler]]:transition-[filter] [&_.tiptap_[data-type=inline-spoiler]:hover]:blur-0"
+    />
   </ScrollArea>
 
   <EditorInlineToolsPopover />
@@ -42,29 +45,3 @@ function manualInit() {
 
 defineExpose({ manualInit })
 </script>
-
-<style lang="sass" scoped>
-:deep()
-  .tiptap
-    padding-bottom: 15vh
-    height: 100%
-    outline: none
-
-    @media (min-width: 780px)
-      margin: 0 2rem
-
-    h1, h2, p
-      &.is-empty::before
-        content: attr(data-placeholder)
-        height: 0
-        color: lightgray
-        float: left
-        pointer-events: none
-
-    [data-type='inline-spoiler']
-      filter: blur(4px)
-      transition: filter .25s
-
-    a
-      @apply text-blue-600 underline
-</style>
