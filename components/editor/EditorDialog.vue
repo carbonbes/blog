@@ -145,6 +145,8 @@ watch(
 )
 
 async function onOpen() {
+  state.isExpand = isExpand.value
+
   if (article.value) {
     const articleURL = getArticleEditorURL(article.value)
     navigateTo(articleURL, { replace: true })
