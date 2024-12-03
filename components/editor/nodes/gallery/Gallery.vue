@@ -81,7 +81,6 @@
 <script lang="ts" setup>
 import type Flex from '~/components/global/Flex.vue'
 import { NodeViewWrapper, type NodeViewProps } from '@tiptap/vue-3'
-import type Dialog from '~/components/global/Dialog.vue'
 import GalleryItem from '~/components/editor/nodes/gallery/GalleryItem.vue'
 import type { MimeType } from 'file-type'
 import Draggable from 'vuedraggable'
@@ -211,7 +210,7 @@ async function onUpdate() {
 
 function onUploaded(index: number, newItem: GalleryItem) {
   items.value.splice(index, 1, newItem)
-  props.updateAttributes({ items: items.value })
+  props.updateAttributes({ items: items.value, forUpload: null })
 }
 
 function onRemove(index: number) {
