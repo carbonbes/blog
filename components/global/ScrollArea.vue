@@ -16,22 +16,22 @@
 
     <FadeInOpacityTransition>
       <ScrollAreaScrollbar
-        class="flex select-none touch-none p-0.5 transition-colors duration-[160ms] ease-out data-[orientation=vertical]:w-2.5 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2.5"
+        class="flex select-none touch-none p-0.5 transition-colors duration-[160ms] ease-out data-[orientation=vertical]:w-2 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2"
         orientation="vertical"
         v-if="direction === 'vertical'"
       >
         <ScrollAreaThumb
-          class="relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px] flex-1 rounded-[10px] bg-gray-300 hover:bg-gray-400 transition-colors"
+          class="relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[20px] before:min-h-[20px] flex-1 rounded-[10px] bg-gray-300 cursor-grab active:cursor-grabbing hover:bg-gray-400 transition-colors"
         />
       </ScrollAreaScrollbar>
 
       <ScrollAreaScrollbar
-        class="flex select-none touch-none p-0.5 transition-colors duration-[160ms] ease-out data-[orientation=vertical]:w-2.5 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2.5"
+        class="flex select-none touch-none p-0.5 transition-colors duration-[160ms] ease-out data-[orientation=vertical]:w-2 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2"
         orientation="horizontal"
         v-else
       >
         <ScrollAreaThumb
-          class="relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px] flex-1 rounded-[10px] bg-gray-300 hover:bg-gray-400 transition-colors"
+          class="relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[20px] before:min-h-[20px] flex-1 rounded-[10px] bg-gray-300 cursor-grab hover:bg-gray-400 transition-colors"
         />
       </ScrollAreaScrollbar>
     </FadeInOpacityTransition>

@@ -34,6 +34,7 @@ declare module 'vue' {
     ITablerTrash: typeof import('~icons/tabler/trash')['default']
     ITablerUserCircle: typeof import('~icons/tabler/user-circle')['default']
     ITablerUserPlus: typeof import('~icons/tabler/user-plus')['default']
+    ITablerVerticalGrip: typeof import('~icons/tabler/vertical-grip')['default']
     ITablerX: typeof import('~icons/tabler/x')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

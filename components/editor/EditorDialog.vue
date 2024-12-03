@@ -1,6 +1,8 @@
 <template>
   <Dialog
-    class="w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none"
+    class="!p-0 sm:!p-4 w-full h-full max-w-[780px] sm:max-h-[800px] !rounded-none"
+    headerClass="p-4 sm:p-0 sm:pb-4"
+    footerClass="p-4 sm:p-0 sm:pt-4"
     :class="dialogClasses"
     :closeCallback="onCloseDown"
     v-model:open="isOpen"
@@ -17,7 +19,10 @@
           class="hover:opacity-50 transition-opacity"
           @click="toggleExpand"
         >
-          <ITablerArrowsDiagonal v-if="!state.isExpand" class="hidden sm:block" />
+          <ITablerArrowsDiagonal
+            v-if="!state.isExpand"
+            class="hidden sm:block"
+          />
           <ITablerArrowsDiagonalMinimize2 v-else class="hidden sm:block" />
         </button>
       </Tooltip>
@@ -107,13 +112,14 @@ const isExpand = useCookie('editor-dialog/is-expand')
 const state = reactive({
   isReady: false,
   isExpand: isExpand.value,
-  enableTransition: false
+  enableTransition: false,
 })
 
 const dialogClasses = computed(() => ({
   'sm:!rounded-xl': !state.isExpand,
   'max-w-full sm:max-h-full sm:!rounded-none': state.isExpand,
-  'sm:transition-[max-width,max-height,border-radius] sm:duration-200': state.enableTransition
+  'sm:transition-[max-width,max-height,border-radius] sm:duration-200':
+    state.enableTransition,
 }))
 
 const editorRef = ref<InstanceType<typeof Editor>>()

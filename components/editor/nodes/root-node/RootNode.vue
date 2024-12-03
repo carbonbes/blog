@@ -17,7 +17,7 @@
       <Flex
         itemsCenter
         justifyEnd
-        class="absolute right-full mr-4 pr-4 w-full h-full bg-blue-500 gap-2 sm:hidden rounded-r-xl text-base font-normal text-white"
+        class="absolute right-full mr-4 pr-4 w-full h-full bg-green-500 gap-2 sm:hidden rounded-r-xl text-base font-medium text-white"
       >
         <ITablerPlus />
         Новый узел
@@ -27,8 +27,11 @@
 
       <Flex
         itemsCenter
-        class="absolute top-1/2 left-full -translate-y-1/2 ml-4 pl-4 py-4 w-full h-full bg-gray-100 gap-2 sm:hidden rounded-l-xl"
-      />
+        class="absolute top-1/2 left-full -translate-y-1/2 ml-4 pl-4 py-4 w-full h-full bg-blue-500 gap-2 sm:hidden rounded-l-xl text-base font-medium text-white"
+      >
+        Настройки узла
+        <ITablerGripVertical />
+      </Flex>
 
       <Flex col class="absolute top-0 right-0 gap-2 sm:hidden">
         <UIButton
