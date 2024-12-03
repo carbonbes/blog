@@ -131,7 +131,7 @@ export default {
             content: '""',
             position: 'absolute',
             inset: '0',
-            boxShadow: 'inset 0 0 0 1px rgba(0, 0, 0, 0.1)',
+            boxShadow: 'inset 0 0 0 1px rgba(0, 0, 0, 0.05)',
             borderRadius: 'inherit',
             pointerEvents: 'none',
           },

@@ -55,36 +55,44 @@
       <IIconsTelegram v-else class="pl-4 box-content" />
     </Flex>
 
-    <Flex col>
+    <Flex col class="px-5 pb-5">
       <CollapsibleText
         v-if="embed.text"
         :text="embed.text"
         :maxLength="175"
-        class="px-5 pb-5 whitespace-pre-line"
+        class="not-last:mb-5 whitespace-pre-line"
       />
 
-      <Flex v-if="singleImage" center class="bg-gray-100">
+      <Flex
+        v-if="singleImage"
+        center
+        class="bg-gray-50 inner-border rounded-xl overflow-hidden"
+      >
         <Image
           :src="singleImage.url"
           :alt="singleImage.alt"
           :originalWidth="singleImage.width"
           :originalHeight="singleImage.height"
           zoomable
-          class="w-fit max-h-80"
+          class="w-fit max-h-[350px]"
         />
       </Flex>
 
-      <Video
+      <div
         v-else-if="singleVideo"
-        :src="singleVideo.url"
-        :description="singleVideo.alt"
-        :thumbnail="singleVideo.thumbnail!.url"
-        :originalWidth="singleVideo.width"
-        :originalHeight="singleVideo.height"
-        autoplay
-        controls
-        classes="w-full h-80"
-      />
+        class="inner-border rounded-xl overflow-hidden"
+      >
+        <Video
+          :src="singleVideo.url"
+          :description="singleVideo.alt"
+          :thumbnail="singleVideo.thumbnail!.url"
+          :originalWidth="singleVideo.width"
+          :originalHeight="singleVideo.height"
+          autoplay
+          controls
+          classes="w-full h-80"
+        />
+      </div>
 
       <GalleryGrid v-else-if="gallery" :items="gallery.media" />
     </Flex>

@@ -2,7 +2,7 @@
   <Flex
     v-if="!isPlaying"
     center
-    class="relative bg-contain bg-center bg-no-repeat cursor-pointer group/overlay before:content-[''] before:absolute before:inset-0 before:bg-black/35 bg-gray-100/50"
+    class="relative bg-contain bg-center bg-no-repeat cursor-pointer group/overlay bg-gray-100/50"
     :class="[
       classes,
       {

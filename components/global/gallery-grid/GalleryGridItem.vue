@@ -1,6 +1,6 @@
 <template>
   <div
-    class="cursor-zoom-in"
+    class="cursor-zoom-in rounded-xl overflow-hidden inner-border"
     :class
     v-bind="lightboxAttrs"
     :data-residue="dataResidue"
