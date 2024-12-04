@@ -1,4 +1,5 @@
 import { useSafeValidatedParams, useSafeValidatedQuery, z } from 'h3-zod'
+import { PROFILE_PAGE_ARTICLES_PAGE_SIZE } from '~/utils/consts'
 
 export default defineApiRoute(async ({ event, supabase }) => {
   const params = await useSafeValidatedParams(event, {
@@ -26,13 +27,12 @@ export default defineApiRoute(async ({ event, supabase }) => {
   const profileId = params.data.id
   const page = +query.data.page!
 
-  const pageSize = 10
-  const from = (page - 1) * pageSize
-  const to = from + pageSize - 1
+  const from = (page - 1) * PROFILE_PAGE_ARTICLES_PAGE_SIZE
+  const to = from + PROFILE_PAGE_ARTICLES_PAGE_SIZE - 1
 
-  const { data, error } = await supabase
+  const { data, count, error } = await supabase
     .from('articles')
-    .select('*, author(id, name)')
+    .select('*, author(id, name)', { count: 'exact' })
     .eq('author.id', profileId)
     .order('created_at', { ascending: false })
     .range(from, to)
@@ -44,5 +44,8 @@ export default defineApiRoute(async ({ event, supabase }) => {
     })
   }
 
-  return data
+  return {
+    articles: data,
+    total: count,
+  }
 })

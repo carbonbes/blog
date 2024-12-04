@@ -16,3 +16,5 @@ export const ALLOWED_MEDIAFILE_MIME_TYPES: MimeType[] = [
 
 export const YOUTUBE_REGEX =
   /(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|v\/|.+\?v=)?([^&\s]+)/g
+
+export const PROFILE_PAGE_ARTICLES_PAGE_SIZE = 10

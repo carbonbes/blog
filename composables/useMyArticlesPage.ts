@@ -1,14 +1,15 @@
 import type { Article } from '~/types'
 
-export default function useArticlesPage() {
+export default function useMyArticlesPage() {
   const pending = useState(() => false)
   const articles = useState<Article[]>(() => [])
+  const total = useState(() => 0)
 
   const { $api } = useNuxtApp()
 
   const { user } = useUser()
 
-  async function getProfileArticles(page = 1) {
+  async function getArticles(page = 1) {
     try {
       pending.value = true
 
@@ -16,14 +17,18 @@ export default function useArticlesPage() {
 
       if (!r) return
 
-      articles.value.push(...r)
+      articles.value.push(...r.articles)
+      total.value = r.total || 0
     } catch (error) {
     } finally {
       pending.value = false
     }
   }
 
-  onUnmounted(() => (articles.value = []))
+  onUnmounted(() => {
+    articles.value = []
+    total.value = 0
+  })
 
-  return { pending, articles, getProfileArticles }
+  return { pending, articles, total, getArticles }
 }

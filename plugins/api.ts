@@ -56,7 +56,7 @@ export default defineNuxtPlugin(() => {
 
     async getProfileArticles(profileId: number, page = 1) {
       return (
-        await fetchInstance<Response<Article[]>>(
+        await fetchInstance<Response<{ articles: Article[], total: number | null }>>(
           `/v1/profile/${profileId}/articles`,
           {
             query: { page },
@@ -67,7 +67,7 @@ export default defineNuxtPlugin(() => {
 
     async getProfileDrafts(profileId: number, page = 1) {
       return (
-        await fetchInstance<Response<Article[]>>(
+        await fetchInstance<Response<{ articles: Article[], total: number | null }>>(
           `/v1/profile/${profileId}/drafts`,
           {
             query: { page },

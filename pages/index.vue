@@ -1,6 +1,6 @@
 <template>
   <Flex col justifyCenter class="py-8 w-full gap-4">
-    <h1 class="px-6 text-lg font-medium">Мои записи</h1>
+    <h1 class="px-6 text-lg font-medium">Мои черновики</h1>
 
     <PaginatedContent
       v-if="articles?.length"
@@ -44,25 +44,37 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Мои записи',
+  title: 'Мои черновики',
 })
 
-const { user } = useUser()
-const { pending, articles, getProfileArticles } = useArticlesPage()
+const { pending, articles, total, getArticles } = useMyArticlesPage()
 
 const page = ref(1)
-const totalPages = ref(Math.ceil(user.value?.articles! / 10))
+
+const totalPages = computed(() =>
+  Math.ceil(total.value / PROFILE_PAGE_ARTICLES_PAGE_SIZE)
+)
 
 await useAsyncData(async () => {
-  await getProfileArticles(page.value)
+  await getArticles(page.value)
 
   return true
 })
 
-async function onNextPage() {
-  await getProfileArticles(page.value + 1)
-  page.value += 1
-}
+const { errorToastify } = useToasts()
+
+const onNextPage = useDebounceFn(
+  async () => {
+    try {
+      await getArticles(page.value + 1)
+      page.value += 1
+    } catch (error) {
+      errorToastify({ text: 'Не удалось загрузить следующую страницу' })
+    }
+  },
+  1250,
+  { maxWait: 60000 }
+)
 
 const { setOpen } = useEditorDialog()
 

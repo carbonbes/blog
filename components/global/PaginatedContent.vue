@@ -9,8 +9,6 @@
 </template>
 
 <script lang="ts" setup>
-import { promiseTimeout } from '@vueuse/core'
-
 const props = withDefaults(
   defineProps<{
     tag?: 'div'
@@ -18,7 +16,6 @@ const props = withDefaults(
     totalPages: number
     pending?: boolean
     loaderThreshold?: number
-    delayBeforeEmit?: number
   }>(),
   {
     tag: 'div',
@@ -36,12 +33,6 @@ const { stop } = useIntersectionObserver(
   loaderRef,
   async ([{ isIntersecting }]) => {
     if (isIntersecting && props.page !== props.totalPages) {
-      if (props.pending) return
-
-      if (props.delayBeforeEmit) {
-        await promiseTimeout(props.delayBeforeEmit)
-      }
-
       emits('nextPage')
     }
 
