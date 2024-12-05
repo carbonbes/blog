@@ -56,23 +56,21 @@ export default defineNuxtPlugin(() => {
 
     async getProfileArticles(profileId: number, page = 1) {
       return (
-        await fetchInstance<Response<{ articles: Article[], total: number | null }>>(
-          `/v1/profile/${profileId}/articles`,
-          {
-            query: { page },
-          }
-        )
+        await fetchInstance<
+          Response<{ articles: Article[]; total: number | null }>
+        >(`/v1/profile/${profileId}/articles`, {
+          query: { page },
+        })
       ).data
     },
 
     async getProfileDrafts(profileId: number, page = 1) {
       return (
-        await fetchInstance<Response<{ articles: Article[], total: number | null }>>(
-          `/v1/profile/${profileId}/drafts`,
-          {
-            query: { page },
-          }
-        )
+        await fetchInstance<
+          Response<{ articles: Article[]; total: number | null }>
+        >(`/v1/profile/${profileId}/drafts`, {
+          query: { page },
+        })
       ).data
     },
 
@@ -142,6 +140,15 @@ export default defineNuxtPlugin(() => {
 
     async getArticle(id: number) {
       return (await fetchInstance<Response<Article>>(`/v1/article/${id}`)).data
+    },
+
+    async createProfile(body: { email: string; name: string }) {
+      return (
+        await fetchInstance<Response<AuthResponse>>('/v1/admin/auth/profile', {
+          method: 'POST',
+          body,
+        })
+      ).data
     },
   }
 

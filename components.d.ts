@@ -32,6 +32,7 @@ declare module 'vue' {
     ITablerPlayerPlay: typeof import('~icons/tabler/player-play')['default']
     ITablerPlus: typeof import('~icons/tabler/plus')['default']
     ITablerTrash: typeof import('~icons/tabler/trash')['default']
+    ITablerUser: typeof import('~icons/tabler/user')['default']
     ITablerUserCircle: typeof import('~icons/tabler/user-circle')['default']
     ITablerUserPlus: typeof import('~icons/tabler/user-plus')['default']
     ITablerVerticalGrip: typeof import('~icons/tabler/vertical-grip')['default']

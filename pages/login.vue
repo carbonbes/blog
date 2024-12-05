@@ -20,7 +20,7 @@
             ref="swiperSignInViewRef"
           >
             <SwiperSlide :class="stepClasses">
-              <Flex col class="mt-auto gap-8">
+              <Flex col class="gap-8">
                 <Flex col class="gap-2">
                   <ITablerLogin2 class="mx-auto !size-8 text-gray-500" />
                   <p class="text-center text-lg font-bold">Вход</p>
@@ -46,14 +46,14 @@
                 </Flex>
               </Flex>
 
-              <button
+              <!-- <button
                 variant="secondary"
                 class="mt-auto text-gray-400 hover:text-gray-900 transition-colors"
                 :disabled="state.signInRequesting"
                 @click="nextTab"
               >
                 У меня нет аккаунта
-              </button>
+              </button> -->
             </SwiperSlide>
 
             <SwiperSlide :class="stepClasses">
@@ -90,7 +90,7 @@
           </Swiper>
         </SwiperSlide>
 
-        <SwiperSlide :class="tabClasses">
+        <!-- <SwiperSlide :class="tabClasses">
           <Swiper
             :speed="250"
             :allowTouchMove="false"
@@ -174,7 +174,7 @@
               </Flex>
             </SwiperSlide>
           </Swiper>
-        </SwiperSlide>
+        </SwiperSlide> -->
       </Swiper>
     </Flex>
   </Flex>

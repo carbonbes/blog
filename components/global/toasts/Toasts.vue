@@ -4,7 +4,7 @@
       <Toast v-for="toast in toasts" :key="toast.id" :toast />
 
       <ToastViewport
-        class="fixed inset-0 sm:inset-[unset] sm:top-[60px] sm:right-0 p-4 w-full sm:w-[350px] flex flex-col gap-2 pointer-events-none z-[1]"
+        class="fixed inset-0 sm:inset-[unset] sm:top-0 sm:right-0 p-4 w-full sm:w-[350px] flex flex-col gap-2 pointer-events-none z-[1]"
       />
     </ToastProvider>
   </Teleport>
