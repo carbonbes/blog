@@ -9,8 +9,6 @@ declare module 'h3' {
 }
 
 export default defineEventHandler(async (event) => {
-  if (event.context.user) return
-
   event.context.user = null
 
   const supabase = await serverSupabaseClient<Database>(event)

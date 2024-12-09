@@ -13,9 +13,6 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    supabaseUrl: env.NUXT_SUPABASE_URL,
-    supabasekey: env.NUXT_SUPABASE_KEY,
-
     telegramApiHash: env.NUXT_TELEGRAM_API_HASH,
     telegramApiId: env.NUXT_TELEGRAM_API_ID,
     telegramApiStringSession: env.NUXT_TELEGRAM_API_STRING_SESSION,
@@ -42,6 +39,7 @@ export default defineNuxtConfig({
   supabase: {
     url: env.NUXT_SUPABASE_URL,
     key: env.NUXT_SUPABASE_KEY,
+    serviceKey: env.NUXT_SUPABASE_SERVICE_KEY,
     redirect: false,
   },
 

@@ -25,6 +25,7 @@ declare module 'vue' {
     ITablerEyeOff: typeof import('~icons/tabler/eye-off')['default']
     ITablerGripVertical: typeof import('~icons/tabler/grip-vertical')['default']
     ITablerHome: typeof import('~icons/tabler/home')['default']
+    ITablerLinkPlus: typeof import('~icons/tabler/link-plus')['default']
     ITablerLogin2: typeof import('~icons/tabler/login2')['default']
     ITablerPencil: typeof import('~icons/tabler/pencil')['default']
     ITablerPhoto: typeof import('~icons/tabler/photo')['default']

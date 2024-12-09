@@ -142,9 +142,9 @@ export default defineNuxtPlugin(() => {
       return (await fetchInstance<Response<Article>>(`/v1/article/${id}`)).data
     },
 
-    async createProfile(body: { email: string; name: string }) {
+    async sendInvite(body: { email: string; name: string }) {
       return (
-        await fetchInstance<Response<AuthResponse>>('/v1/admin/auth/profile', {
+        await fetchInstance<Response<AuthResponse>>('/api/v1/admin/invite', {
           method: 'POST',
           body,
         })

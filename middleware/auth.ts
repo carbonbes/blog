@@ -1,6 +1,4 @@
-export default defineNuxtRouteMiddleware(async (to) => {
-  if (to.name === 'LoginPage') return
-
+export default defineNuxtRouteMiddleware((to) => {
   if (import.meta.server) {
     const event = useRequestEvent()
 

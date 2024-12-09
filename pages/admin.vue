@@ -4,8 +4,8 @@
       class="flex items-center justify-center gap-2"
       @click="state.createProfileDialogIsOpen = true"
     >
-      <ITablerUserPlus />
-      Создать профиль
+      <ITablerLinkPlus />
+      Новое приглашение
     </UIButton>
   </Flex>
 
@@ -25,9 +25,9 @@
       <UIButton
         class="flex items-center justify-center gap-2"
         :disabled="createButtonIsDisabled"
-        @click="createProfile"
+        @click="sendInvite"
       >
-        Создать
+        Отправить
       </UIButton>
     </Flex>
   </Dialog>
@@ -59,10 +59,11 @@ const { $api } = useNuxtApp()
 
 const { successToastify, errorToastify } = useToasts()
 
-async function createProfile() {
+async function sendInvite() {
   try {
-    await $api.createProfile(createProfileDialogFormState)
-    successToastify({ text: 'Профиль создан' })
+    await $api.sendInvite(createProfileDialogFormState)
+    successToastify({ text: 'Приглашение выслано' })
+    state.createProfileDialogIsOpen = false
   } catch (error: any) {
     errorToastify({ text: error.data.message })
   }

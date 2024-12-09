@@ -2,7 +2,7 @@ import isValidEmail from '~/utils/isValidEmail'
 import { z, useSafeValidatedBody } from 'h3-zod'
 
 export default defineApiRoute(
-  async ({ event, supabase, user }) => {
+  async ({ event, adminSupabase, user }) => {
     if (user.role !== 'admin') {
       throw createError({ statusCode: 403, message: 'Доступ запрещен' })
     }
@@ -31,36 +31,16 @@ export default defineApiRoute(
       })
     }
 
-    const { data: existingProfile, error: existingProfileError } =
-      await supabase.from('profiles').select().eq('email', email).single()
-
-    // if (existingProfileError) {
-    //   throw createError({
-    //     statusCode: +existingProfileError.code,
-    //     message: existingProfileError.message,
-    //   })
-    // }
-
-    if (existingProfile) {
-      throw createError({
-        statusCode: 400,
-        message: 'Профиль с такой почтой уже существует',
-      })
-    }
-
-    const { error: signupError } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        data: {
-          name,
-        },
+    const { error } = await adminSupabase.auth.admin.inviteUserByEmail(email, {
+      data: {
+        name,
       },
     })
 
-    if (signupError) {
+    if (error) {
       throw createError({
-        statusCode: signupError.status,
-        message: signupError.message,
+        statusCode: error.status,
+        message: error.message,
       })
     }
   },
