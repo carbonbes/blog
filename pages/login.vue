@@ -46,14 +46,15 @@
                 </Flex>
               </Flex>
 
-              <!-- <button
+              <button
+                v-if="false"
                 variant="secondary"
                 class="mt-auto text-gray-400 hover:text-gray-900 transition-colors"
                 :disabled="state.signInRequesting"
                 @click="nextTab"
               >
                 У меня нет аккаунта
-              </button> -->
+              </button>
             </SwiperSlide>
 
             <SwiperSlide :class="stepClasses">
@@ -90,7 +91,7 @@
           </Swiper>
         </SwiperSlide>
 
-        <!-- <SwiperSlide :class="tabClasses">
+        <SwiperSlide v-if="false" :class="tabClasses">
           <Swiper
             :speed="250"
             :allowTouchMove="false"
@@ -174,7 +175,7 @@
               </Flex>
             </SwiperSlide>
           </Swiper>
-        </SwiperSlide> -->
+        </SwiperSlide>
       </Swiper>
     </Flex>
   </Flex>
